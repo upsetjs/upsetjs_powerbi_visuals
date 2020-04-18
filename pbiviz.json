@@ -4,7 +4,7 @@
     "displayName": "UpSet.js",
     "guid": "upSetJS61F43BDFCA024B13B6AC5BA73C9427B2",
     "visualClassName": "Visual",
-    "version": "0.4.1",
+    "version": "0.4.2",
     "description": "UpSet.js PowerBI Visuals wrapper",
     "supportUrl": "https://github.com/sgratzl/upsetjs_powerbi_visuals/issues",
     "gitHubUrl": "https://github.com/sgratzl/upsetjs_powerbi_visuals"
