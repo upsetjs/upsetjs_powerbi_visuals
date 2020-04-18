@@ -1,0 +1,43 @@
+{
+  "name": "@upsetjs/powerbi_visuals",
+  "version": "0.0.1",
+  "license": "AGPL-3.0",
+  "author": {
+    "name": "Samuel Gratzl",
+    "email": "samu@sgratzl.com",
+    "url": "https://wwww.sgratzl.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sgratzl/upsetjs_r.git"
+  },
+  "dependenciesMeta": {
+    "powerbi-visuals-tools": {
+      "unplugged": true
+    }
+  },
+  "scripts": {
+    "pbiviz": "pbiviz",
+    "start": "pbiviz start",
+    "package": "pbiviz package",
+    "lint": "tslint -c tslint.json -p tsconfig.json"
+  },
+  "dependencies": {
+    "@babel/runtime": "7.6.0",
+    "@babel/runtime-corejs2": "7.6.0",
+    "@types/d3": "5.7.2",
+    "core-js": "3.2.1",
+    "d3": "5.12.0",
+    "powerbi-visuals-api": "~2.6.1",
+    "powerbi-visuals-utils-dataviewutils": "2.2.1"
+  },
+  "devDependencies": {
+    "@yarnpkg/pnpify": "^2.0.0-rc.20",
+    "powerbi-visuals-tools": "^3.1.12",
+    "prettier": "^2.0.4",
+    "ts-loader": "6.1.0",
+    "tslint": "^5.18.0",
+    "tslint-microsoft-contrib": "^6.2.0",
+    "typescript": "3.6.3"
+  }
+}
