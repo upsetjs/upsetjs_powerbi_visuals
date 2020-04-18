@@ -46,8 +46,73 @@
   ],
   "suppressDefaultTitle": true,
   "objects": {
+    "combinations": {
+      "displayName": "Set Combinations",
+      "objectCategory": 1,
+      "properties": {
+        "type": {
+          "displayName": "Generation Mode",
+          "type": {
+            "enumeration": [
+              {
+                "displayName": "Set Intersections",
+                "value": "intersection"
+              },
+              {
+                "displayName": "Set Unions",
+                "value": "union"
+              }
+            ]
+          }
+        },
+        "min": {
+          "displayName": "Minimum Degree",
+          "type": {
+            "numeric": true
+          }
+        },
+        "max": {
+          "displayName": "Maximum Degree",
+          "type": {
+            "numeric": true
+          }
+        },
+        "empty": {
+          "displayName": "Show Empty Combinations",
+          "type": {
+            "bool": true
+          }
+        },
+        "limit": {
+          "displayName": "Limit to Top N Combinations",
+          "type": {
+            "numeric": true
+          }
+        },
+        "order": {
+          "displayName": "Order Combinations By",
+          "type": {
+            "enumeration": [
+              { "value": "name", "displayName": "1. Name" },
+              { "value": "cardinality,name", "displayName": "1. Cardinality 2. Name" },
+              { "value": "cardinality,degree,name", "displayName": "1. Cardinality 2. Degree 3. Name" },
+              { "value": "degree,name", "displayName": "1. Degree 2. Name" },
+              { "value": "degree,cardinality,name", "displayName": "1. Degree 2. Cardinality 3. Name" },
+              { "value": "group,name", "displayName": "1. Set Group 2. Name" },
+              { "value": "group,cardinality,name", "displayName": "1. Set Group 2. Cardinality 3. Name" },
+              { "value": "group,degree,name", "displayName": "1. Set Group 2. Degree 3. Name" },
+              {
+                "value": "group,degree,cardinality,name",
+                "displayName": "1. Set Group 2. Degree 3. Cardinality 4. Name"
+              }
+            ]
+          }
+        }
+      }
+    },
     "theme": {
       "displayName": "Theme",
+      "objectCategory": 0,
       "properties": {
         "selectionColor": {
           "displayName": "Selection Color",
