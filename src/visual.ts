@@ -17,9 +17,14 @@ import {
   ISetLike,
   generateCombinations,
   ISetCombinations,
+  boxplotAddon,
 } from '@upsetjs/bundle';
 
-declare type IPowerBIElem = powerbi.visuals.ISelectionId | powerbi.PrimitiveValue;
+declare type IPowerBIElem = {
+  s?: powerbi.visuals.ISelectionId;
+  v: powerbi.PrimitiveValue;
+  attrs: number[];
+};
 declare type IPowerBIElems = ReadonlyArray<IPowerBIElem>;
 
 interface IPowerBISet extends ISet<IPowerBIElem> {
@@ -53,7 +58,7 @@ export class Visual implements IVisual {
         this.render();
       });
     } else {
-      this.selectionManager.select(<powerbi.visuals.ISelectionId[]>selection.elems).then(() => {
+      this.selectionManager.select(selection.elems.map((e) => e.s!)).then(() => {
         this.props.selection = selection;
         this.render();
       });
@@ -98,12 +103,48 @@ export class Visual implements IVisual {
       this.settings.style
     );
 
+    this.injectAttributes(dataView.categorical!);
+
     if (!areDummyValues && this.interactive) {
       this.props.onClick = this.setSelection;
     }
 
     console.log('render');
     this.render();
+  }
+
+  private injectAttributes(data: powerbi.DataViewCategorical) {
+    const attrs = data.values.filter((d) => d.source.roles.attributes);
+
+    if (attrs.length === 0) {
+      return;
+    }
+
+    this.props.setAddons = attrs.map((attr, i) =>
+      boxplotAddon(
+        (v) => v.attrs[i],
+        {
+          min: <number>attr.minLocal,
+          max: <number>attr.maxLocal,
+        },
+        {
+          name: attr.source.displayName,
+        }
+      )
+    );
+    this.props.combinationAddons = attrs.map((attr, i) =>
+      boxplotAddon(
+        (v) => v.attrs[i],
+        {
+          min: <number>attr.minLocal,
+          max: <number>attr.maxLocal,
+        },
+        {
+          name: attr.source.displayName,
+          orient: 'vertical',
+        }
+      )
+    );
   }
 
   private deriveSelection(elems: IPowerBIElems, data: powerbi.DataViewCategorical) {
@@ -119,9 +160,7 @@ export class Visual implements IVisual {
     if (sel.length === 0) {
       return undefined;
     }
-    return elems.filter((elem) =>
-      sel.some((s) => elem === s || (isSelection(s) && s.includes(<powerbi.visuals.ISelectionId>elem)))
-    );
+    return elems.filter((elem) => sel.some((s) => elem === s || (elem.s && isSelection(s) && s.includes(elem.s))));
   }
 
   private findSet(
@@ -155,19 +194,33 @@ export class Visual implements IVisual {
   }
 
   private extractElems(data: powerbi.DataViewCategorical): IPowerBIElems {
+    const attrs = data.values.filter((d) => d.source.roles.attributes);
+
     if (data.categories.length === 0) {
-      return data.values.map((_, i) => i);
+      return data.values.map((_, i) => ({
+        v: i,
+        attrs: attrs.map((attr) => <number>attr.values[i]),
+      }));
     }
     const cat = data.categories[0]!;
     if (!this.interactive) {
-      return cat.values;
+      return cat.values.map((v, i) => ({
+        v,
+        attrs: attrs.map((attr) => <number>attr.values[i]),
+      }));
     }
-    return cat.values.map((_, i) => this.host.createSelectionIdBuilder().withCategory(cat, i).createSelectionId());
+    return cat.values.map((v, i) => ({
+      s: this.host.createSelectionIdBuilder().withCategory(cat, i).createSelectionId(),
+      v,
+      attrs: attrs.map((attr) => <number>attr.values[i]),
+    }));
   }
 
   private extractSets(elems: IPowerBIElems, data: powerbi.DataViewCategorical): ReadonlyArray<IPowerBISet> {
+    // just the sets
+    const sets = data.values.filter((d) => d.source.roles.sets);
     return asSets(
-      data.values
+      sets
         .map((value) => {
           const vs = value.values;
           return {

@@ -25,6 +25,19 @@
           "integer": true
         }
       ]
+    },
+    {
+      "name": "attributes",
+      "displayName": "Attributes",
+      "kind": "Measure",
+      "preferredTypes": [
+        {
+          "numeric": true
+        },
+        {
+          "integer": true
+        }
+      ]
     }
   ],
   "dataViewMappings": [
@@ -39,7 +52,7 @@
           "for": { "in": "elements" }
         },
         "values": {
-          "select": [{ "bind": { "to": "sets" } }]
+          "select": [{ "bind": { "to": "sets" } }, { "bind": { "to": "attributes" } }]
         }
       }
     }
