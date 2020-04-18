@@ -21,6 +21,7 @@
     "start": "pbiviz start",
     "test": "echo no tests",
     "build": "pbiviz package",
+    "postbuild": "cp dist/upSetJS* dist/upsetjs.pbiviz",
     "lint": "eslint src --ext ts",
     "posttest": "npm run lint",
     "release:major": "release-it --disable-metrics major",
