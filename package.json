@@ -1,7 +1,7 @@
 {
   "name": "@upsetjs/powerbi_visuals",
   "description": "UpSet.js PowerBI Visuals wrapper",
-  "version": "0.0.1",
+  "version": "0.4.1",
   "license": "AGPL-3.0",
   "author": {
     "name": "Samuel Gratzl",
@@ -20,7 +20,7 @@
     "pbiviz": "pbiviz",
     "start": "pbiviz start",
     "test": "echo no tests",
-    "build": "pbiviz package",
+    "build": "rimraf dist && pbiviz package",
     "postbuild": "cp dist/upSetJS* dist/upsetjs.pbiviz",
     "lint": "eslint src --ext ts",
     "posttest": "npm run lint",
@@ -47,6 +47,7 @@
     "powerbi-visuals-webpack-plugin": "2.2.4",
     "prettier": "^2.0.4",
     "release-it": "^13.5.4",
+    "rimraf": "^3.0.2",
     "ts-loader": "^7.0.0",
     "tslint": "^6.1.1",
     "tslint-microsoft-contrib": "^6.2.0",
