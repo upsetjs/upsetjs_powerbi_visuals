@@ -12,20 +12,17 @@ This package is part of the UpSet.js ecosystem located at the main [Github Monor
 
 ## Dev Environment
 
-requirements:
+see https://docs.microsoft.com/en-us/power-bi/developer/visuals/custom-visual-develop-tutorial
 
 ```sh
-npm i -g yarn
-yarn set version berry
-yarn install
-yarn pnpify --sdk
+npm i
 ```
 
 ### Building
 
 ```
-yarn lint
-yarn build
+npm run lint
+npm run package
 ```
 
 ## License

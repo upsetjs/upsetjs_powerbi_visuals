@@ -21,11 +21,12 @@ export class Visual implements IVisual {
     console.log('Visual constructor', options);
     this.target = options.element;
     this.updateCount = 0;
-    if (document) {
-      const new_p: HTMLElement = document.createElement('p');
-      new_p.appendChild(document.createTextNode('Update count:'));
-      const new_em: HTMLElement = document.createElement('em');
-      this.textNode = document.createTextNode(this.updateCount.toString());
+    const doc = this.target.ownerDocument;
+    if (doc) {
+      const new_p: HTMLElement = doc.createElement('p');
+      new_p.appendChild(doc.createTextNode('Update count:'));
+      const new_em: HTMLElement = doc.createElement('em');
+      this.textNode = doc.createTextNode(this.updateCount.toString());
       new_em.appendChild(this.textNode);
       new_p.appendChild(new_em);
       this.target.appendChild(new_p);
