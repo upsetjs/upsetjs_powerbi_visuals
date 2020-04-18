@@ -1,6 +1,4 @@
 node_modules
-.yarn
-.yarnrc.yml
 .vscode
 *.log
 *.map

@@ -1,0 +1,17 @@
+{
+    "version": "0.0.1",
+    "author": {"name":"Samuel Gratzl","email":"samu@sgratzl.com","url":"https://wwww.sgratzl.com"},
+    "resources": [
+        {
+            "resourceId": "rId0",
+            "sourceType": 5,
+            "file": "resources/upSetJSCard61F43BDFCA024B13B6AC5BA73C9427B2.pbiviz.json"
+        }
+    ],
+    "visual": {"name":"@upsetjs/powerbi_visuals","displayName":"UpSet.js","guid":"upSetJSCard61F43BDFCA024B13B6AC5BA73C9427B2","visualClassName":"Visual","version":"0.0.1","description":"UpSet.js PowerBI Visuals wrapper","supportUrl":"https://github.com/sgratzl/upsetjs_powerbi_visuals/issues","gitHubUrl":"https://github.com/sgratzl/upsetjs_powerbi_visuals"},
+    "metadata": {
+        "pbivizjson": {
+            "resourceId": "rId0"
+        }
+    }  
+}
