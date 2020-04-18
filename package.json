@@ -5,7 +5,7 @@
   "license": "AGPL-3.0",
   "author": {
     "name": "Samuel Gratzl",
-    "email": "samu@sgratzl.com",
+    "email": "sam@sgratzl.com",
     "url": "https://wwww.sgratzl.com"
   },
   "homepage": "https://github.com/upsetjs/upsetjs_powerbi_visuals",
@@ -20,8 +20,12 @@
     "pbiviz": "pbiviz",
     "start": "pbiviz start",
     "test": "echo no tests",
-    "package": "pbiviz package",
-    "lint": "eslint src --ext ts"
+    "build": "pbiviz package",
+    "lint": "eslint src --ext ts",
+    "posttest": "npm run lint",
+    "release:major": "release-it --disable-metrics major",
+    "release:minor": "release-it --disable-metrics minor",
+    "release:patch": "release-it --disable-metrics patch"
   },
   "dependencies": {
     "@babel/runtime": "^7.9.2",
@@ -41,6 +45,7 @@
     "powerbi-visuals-tools": "^3.1.12",
     "powerbi-visuals-webpack-plugin": "2.2.4",
     "prettier": "^2.0.4",
+    "release-it": "^13.5.4",
     "ts-loader": "^7.0.0",
     "tslint": "^6.1.1",
     "tslint-microsoft-contrib": "^6.2.0",

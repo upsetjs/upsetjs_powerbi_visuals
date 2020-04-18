@@ -2,27 +2,48 @@
 
 [![Github Actions][github-actions-image]][github-actions-url]
 
-TODO
+This is a [PowerBI Custom Visual](https://powerbi.microsoft.com/en-us/developers/custom-visualization/?cdn=disable) for rendering [UpSet.js](https://upset.js.org).
 
 This package is part of the UpSet.js ecosystem located at the main [Github Monorepo](https://github.com/upsetjs/upsetjs).
 
+![UpSet.js Report](https://user-images.githubusercontent.com/4129778/79641879-808ea480-819a-11ea-87f9-441c3647812f.png)
+
 ## Installation
+
+Download the `upsetjs.pbivis
 
 ## Example
 
 ## Dev Environment
 
-see https://docs.microsoft.com/en-us/power-bi/developer/visuals/custom-visual-develop-tutorial
+see also https://docs.microsoft.com/en-us/power-bi/developer/visuals/custom-visual-develop-tutorial
 
 ```sh
 npm i
+npm run pbiviz -- --install-cert
+```
+
+### Test Server
+
+```sh
+npm start
 ```
 
 ### Building
 
-```
+```sh
 npm run lint
-npm run package
+npm run build
+```
+
+### Release
+
+via release-it
+
+```sh
+npm run release:major
+npm run release:minor
+npm run release:patch
 ```
 
 ## License
