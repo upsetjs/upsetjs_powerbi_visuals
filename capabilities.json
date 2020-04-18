@@ -3,6 +3,7 @@
     {
       "name": "elements",
       "displayName": "Elements",
+      "description": "exactly one grouping representing the list of elements that are synced",
       "kind": "Grouping",
       "preferredTypes": [
         {
@@ -16,6 +17,7 @@
     {
       "name": "sets",
       "displayName": "Sets",
+      "description": "one or more grouping or measures where each is interpreted as a set, a trueish value in row i is interpreted that the corresponding element i is part of this set",
       "kind": "GroupingOrMeasure",
       "preferredTypes": [
         {
@@ -29,6 +31,7 @@
     {
       "name": "attributes",
       "displayName": "Attributes",
+      "description": "zero or more numerical measures which are used to render boxplots",
       "kind": "Measure",
       "preferredTypes": [
         {
