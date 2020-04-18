@@ -11,14 +11,15 @@ import VisualObjectInstanceEnumerationObject = powerbi.VisualObjectInstanceEnume
 import VisualSettings, { fixOrder } from './VisualSettings';
 import { renderUpSet, asSets, ISet, UpSetProps } from '@upsetjs/bundle';
 
-interface IPowerBISet extends ISet<powerbi.PrimitiveValue> {}
+interface IPowerBISet extends ISet<powerbi.PrimitiveValue> {
+  value: powerbi.DataViewValueColumn;
+}
 
 export class Visual implements IVisual {
   private readonly target: HTMLElement;
   private settings: VisualSettings = <VisualSettings>VisualSettings.getDefault();
 
   constructor(options: VisualConstructorOptions) {
-    console.log('Visual constructor', options);
     this.target = options.element;
   }
 
@@ -26,7 +27,9 @@ export class Visual implements IVisual {
     const dataView = options.dataViews[0];
     this.settings = Visual.parseSettings(dataView);
 
-    const sets = this.extractSets(dataView.categorical!);
+    const { sets, elems } = this.extractSets(dataView.categorical!);
+
+    const selection = this.deriveSelection(elems, dataView.categorical!);
 
     const props: UpSetProps<powerbi.PrimitiveValue> = Object.assign(
       {
@@ -35,7 +38,9 @@ export class Visual implements IVisual {
         height: options.viewport.height,
         combinations: Object.assign({}, this.settings.combinations, {
           order: fixOrder(this.settings.combinations.order),
+          elems,
         }),
+        selection,
         exportButtons: false,
       },
       this.settings.theme.dropDefaults(),
@@ -45,7 +50,16 @@ export class Visual implements IVisual {
     renderUpSet(this.target, props);
   }
 
-  private extractSets(data: powerbi.DataViewCategorical): ReadonlyArray<IPowerBISet> {
+  private deriveSelection(elems: ReadonlyArray<powerbi.PrimitiveValue>, data: powerbi.DataViewCategorical) {
+    if (data.values.length === 0 || data.values[0].highlights == null) {
+      return undefined;
+    }
+    return data.values[0].highlights.map((v, i) => (v === null ? null : elems[i])).filter((v) => v !== null);
+  }
+
+  private extractSets(
+    data: powerbi.DataViewCategorical
+  ): { sets: ReadonlyArray<IPowerBISet>; elems: ReadonlyArray<powerbi.PrimitiveValue> } {
     const defaultElems = () => {
       if (data.values.length === 0) {
         return [];
@@ -54,16 +68,19 @@ export class Visual implements IVisual {
     };
     const elems: powerbi.PrimitiveValue[] = data.categories.length > 0 ? data.categories[0].values : defaultElems();
 
-    return asSets(
+    const sets = asSets(
       data.values
         .map((value) => {
+          const vs = value.values;
           return {
+            value,
             name: value.source.displayName,
-            elems: value.values.map((v, i) => (v ? elems[i] : null)).filter((v) => v != null),
+            elems: vs.map((v, i) => (v ? elems[i] : null)).filter((v) => v != null),
           };
         })
         .reverse()
     );
+    return { sets, elems };
   }
 
   private static parseSettings(dataView: DataView): VisualSettings {
