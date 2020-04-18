@@ -1,14 +1,53 @@
 {
   "dataRoles": [
     {
-      "displayName": "Measure Data",
-      "name": "measure",
-      "kind": "Measure"
+      "name": "elements",
+      "displayName": "Elements",
+      "kind": "Grouping",
+      "preferredTypes": [
+        {
+          "text": true
+        },
+        {
+          "integer": true
+        }
+      ]
+    },
+    {
+      "name": "sets",
+      "displayName": "Sets",
+      "kind": "GroupingOrMeasure",
+      "preferredTypes": [
+        {
+          "bool": true
+        },
+        {
+          "integer": true
+        }
+      ]
     }
   ],
+  "dataViewMappings": [
+    {
+      "conditions": [
+        {
+          "elements": { "max": 1 }
+        }
+      ],
+      "categorical": {
+        "categories": {
+          "for": { "in": "elements" }
+        },
+        "values": {
+          "select": [{ "bind": { "to": "sets" } }]
+        }
+      }
+    }
+  ],
+  "suppressDefaultTitle": true,
   "objects": {
     "theme": {
-      "displayName": "UpSet Theme",
+      "displayName": "Theme",
       "properties": {
         "selectionColor": {
           "displayName": "Selection Color",
@@ -72,28 +111,5 @@
         }
       }
     }
-  },
-  "dataViewMappings": [
-    {
-      "categorical": {
-        "categories": {
-          "for": {
-            "in": "category"
-          },
-          "dataReductionAlgorithm": {
-            "top": {}
-          }
-        },
-        "values": {
-          "select": [
-            {
-              "bind": {
-                "to": "measure"
-              }
-            }
-          ]
-        }
-      }
-    }
-  ]
+  }
 }

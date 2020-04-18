@@ -9,45 +9,51 @@ import DataView = powerbi.DataView;
 import VisualObjectInstanceEnumerationObject = powerbi.VisualObjectInstanceEnumerationObject;
 
 import VisualSettings from './VisualSettings';
+import { renderUpSet, asSets, ISet } from '@upsetjs/bundle';
+
+interface IPowerBISet extends ISet<powerbi.PrimitiveValue> {}
 
 export class Visual implements IVisual {
   private readonly target: HTMLElement;
-  private dataView: DataView | null = null;
-  private settings: VisualSettings | null = null;
+  private settings: VisualSettings = <VisualSettings>VisualSettings.getDefault();
 
-  private updateCount: number;
-  private textNode: Text;
-
-  constructor(options: VisualConstructorOptions | undefined) {
+  constructor(options: VisualConstructorOptions) {
     console.log('Visual constructor', options);
     this.target = options.element;
-    this.updateCount = 0;
-
-    this.textNode = document!.createTextNode(this.updateCount.toString());
-    if (this.target) {
-      const doc = this.target.ownerDocument!;
-      const new_p: HTMLElement = doc.createElement('p');
-      new_p.appendChild(doc.createTextNode('Update count:'));
-      const new_em: HTMLElement = doc.createElement('em');
-      new_em.appendChild(this.textNode);
-      new_p.appendChild(new_em);
-      this.target.appendChild(new_p);
-    }
   }
 
-  update(options: VisualUpdateOptions, _viewModel?: any) {
-    this.dataView = options.dataViews[0];
-    this.settings = Visual.parseSettings(this.dataView);
+  update(options: VisualUpdateOptions) {
+    const dataView = options.dataViews[0];
+    this.settings = Visual.parseSettings(dataView);
 
-    console.log('Visual update', options);
+    const sets = this.extractSets(dataView.categorical!);
 
-    if (this.textNode) {
-      this.textNode.textContent = (this.updateCount++).toString();
-    }
+    renderUpSet(this.target, {
+      sets,
+      width: options.viewport.width,
+      height: options.viewport.height,
+    });
   }
 
-  destroy() {
-    // implement me
+  private extractSets(data: powerbi.DataViewCategorical): ReadonlyArray<IPowerBISet> {
+    const defaultElems = () => {
+      if (data.values.length === 0) {
+        return [];
+      }
+      return data.values[0].values.map((_, i) => i);
+    };
+    const elems: powerbi.PrimitiveValue[] = data.categories.length > 0 ? data.categories[0].values : defaultElems();
+
+    return asSets(
+      data.values
+        .map((value) => {
+          return {
+            name: value.source.displayName,
+            elems: value.values.map((v, i) => (v ? elems[i] : null)).filter((v) => v != null),
+          };
+        })
+        .reverse()
+    );
   }
 
   private static parseSettings(dataView: DataView): VisualSettings {
@@ -62,6 +68,6 @@ export class Visual implements IVisual {
   public enumerateObjectInstances(
     options: EnumerateVisualObjectInstancesOptions
   ): VisualObjectInstance[] | VisualObjectInstanceEnumerationObject {
-    return VisualSettings.enumerateObjectInstances(this.settings || VisualSettings.getDefault(), options);
+    return VisualSettings.enumerateObjectInstances(this.settings, options);
   }
 }
