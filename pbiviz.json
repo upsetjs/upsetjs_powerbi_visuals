@@ -2,7 +2,7 @@
   "visual": {
     "name": "@upsetjs/powerbi_visuals",
     "displayName": "UpSet.js",
-    "guid": "upSetJSCard61F43BDFCA024B13B6AC5BA73C9427B2",
+    "guid": "upSetJS61F43BDFCA024B13B6AC5BA73C9427B2",
     "visualClassName": "Visual",
     "version": "0.0.1",
     "description": "UpSet.js PowerBI Visuals wrapper",

@@ -1,5 +1,4 @@
 import 'core-js/stable';
-import './../style/visual.less';
 import powerbi from 'powerbi-visuals-api';
 import VisualConstructorOptions = powerbi.extensibility.visual.VisualConstructorOptions;
 import VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
@@ -9,40 +8,50 @@ import VisualObjectInstance = powerbi.VisualObjectInstance;
 import DataView = powerbi.DataView;
 import VisualObjectInstanceEnumerationObject = powerbi.VisualObjectInstanceEnumerationObject;
 
-import { VisualSettings } from './settings';
+import VisualSettings from './VisualSettings';
 
 export class Visual implements IVisual {
-  private target: HTMLElement;
+  private readonly target: HTMLElement;
+  private dataView: DataView | null = null;
+  private settings: VisualSettings | null = null;
+
   private updateCount: number;
-  private settings: VisualSettings;
   private textNode: Text;
 
-  constructor(options: VisualConstructorOptions) {
+  constructor(options: VisualConstructorOptions | undefined) {
     console.log('Visual constructor', options);
     this.target = options.element;
     this.updateCount = 0;
-    const doc = this.target.ownerDocument;
-    if (doc) {
+
+    this.textNode = document!.createTextNode(this.updateCount.toString());
+    if (this.target) {
+      const doc = this.target.ownerDocument!;
       const new_p: HTMLElement = doc.createElement('p');
       new_p.appendChild(doc.createTextNode('Update count:'));
       const new_em: HTMLElement = doc.createElement('em');
-      this.textNode = doc.createTextNode(this.updateCount.toString());
       new_em.appendChild(this.textNode);
       new_p.appendChild(new_em);
       this.target.appendChild(new_p);
     }
   }
 
-  public update(options: VisualUpdateOptions) {
-    this.settings = Visual.parseSettings(options && options.dataViews && options.dataViews[0]);
+  update(options: VisualUpdateOptions, _viewModel?: any) {
+    this.dataView = options.dataViews[0];
+    this.settings = Visual.parseSettings(this.dataView);
+
     console.log('Visual update', options);
+
     if (this.textNode) {
       this.textNode.textContent = (this.updateCount++).toString();
     }
   }
 
+  destroy() {
+    // implement me
+  }
+
   private static parseSettings(dataView: DataView): VisualSettings {
-    return <VisualSettings>VisualSettings.parse(dataView);
+    return VisualSettings.parse(dataView);
   }
 
   /**
