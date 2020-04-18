@@ -3,19 +3,50 @@ import DataViewObjectsParser = dataViewObjectsParser.DataViewObjectsParser;
 import { UpSetThemeProps, fillDefaults, GenerateSetCombinationsOptions } from '@upsetjs/bundle';
 
 export default class VisualSettings extends DataViewObjectsParser {
-  theme: UpSetThemeSettings = new UpSetThemeSettings();
-  combinations: UpSetCombinationSettings = new UpSetCombinationSettings();
+  readonly theme = new UpSetThemeSettings();
+  readonly combinations = new UpSetCombinationSettings();
+  readonly style = new UpSetStyleSettings();
 }
 
 const defaults = fillDefaults({ sets: [], width: 100, height: 100 });
 
 export class UpSetThemeSettings implements Required<UpSetThemeProps> {
-  selectionColor = defaults.selectionColor;
-  alternatingBackgroundColor = defaults.alternatingBackgroundColor;
+  theme = 'light';
   color = defaults.color;
   textColor = defaults.textColor;
+  selectionColor = defaults.selectionColor;
+  alternatingBackgroundColor = defaults.alternatingBackgroundColor;
   hoverHintColor = defaults.hoverHintColor;
   notMemberColor = defaults.notMemberColor;
+
+  dropDefaults() {
+    const keys: (keyof UpSetThemeSettings)[] = [
+      'theme',
+      'color',
+      'alternatingBackgroundColor',
+      'hoverHintColor',
+      'notMemberColor',
+      'selectionColor',
+      'textColor',
+    ];
+    const r: any = {};
+    keys.forEach((key) => {
+      const defaultValue = (<any>defaults)[key];
+      const current = this[key];
+      if (current !== defaultValue) {
+        r[key] = current;
+      }
+    });
+    return r;
+  }
+}
+
+export class UpSetStyleSettings {
+  setName = defaults.setName;
+  combinationName = defaults.combinationName;
+  numericScale = defaults.numericScale;
+  setNameAxisOffset = defaults.setNameAxisOffset;
+  combinationNameAxisOffset = defaults.combinationNameAxisOffset;
 }
 
 export class UpSetCombinationSettings implements GenerateSetCombinationsOptions {

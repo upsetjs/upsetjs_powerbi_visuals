@@ -9,7 +9,7 @@ import DataView = powerbi.DataView;
 import VisualObjectInstanceEnumerationObject = powerbi.VisualObjectInstanceEnumerationObject;
 
 import VisualSettings, { fixOrder } from './VisualSettings';
-import { renderUpSet, asSets, ISet } from '@upsetjs/bundle';
+import { renderUpSet, asSets, ISet, UpSetProps } from '@upsetjs/bundle';
 
 interface IPowerBISet extends ISet<powerbi.PrimitiveValue> {}
 
@@ -28,20 +28,21 @@ export class Visual implements IVisual {
 
     const sets = this.extractSets(dataView.categorical!);
 
-    renderUpSet(
-      this.target,
-      Object.assign(
-        {
-          sets,
-          width: options.viewport.width,
-          height: options.viewport.height,
-          combinations: Object.assign({}, this.settings.combinations, {
-            order: fixOrder(this.settings.combinations.order),
-          }),
-        },
-        this.settings.theme
-      )
+    const props: UpSetProps<powerbi.PrimitiveValue> = Object.assign(
+      {
+        sets,
+        width: options.viewport.width,
+        height: options.viewport.height,
+        combinations: Object.assign({}, this.settings.combinations, {
+          order: fixOrder(this.settings.combinations.order),
+        }),
+        exportButtons: false,
+      },
+      this.settings.theme.dropDefaults(),
+      this.settings.style
     );
+
+    renderUpSet(this.target, props);
   }
 
   private extractSets(data: powerbi.DataViewCategorical): ReadonlyArray<IPowerBISet> {

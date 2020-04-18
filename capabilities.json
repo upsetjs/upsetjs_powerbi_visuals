@@ -112,8 +112,23 @@
     },
     "theme": {
       "displayName": "Theme",
-      "objectCategory": 0,
+      "objectCategory": 1,
       "properties": {
+        "theme": {
+          "displayName": "Theme",
+          "type": {
+            "enumeration": [
+              {
+                "displayName": "Dark",
+                "value": "dark"
+              },
+              {
+                "displayName": "Light",
+                "value": "light"
+              }
+            ]
+          }
+        },
         "selectionColor": {
           "displayName": "Selection Color",
           "type": {
@@ -172,6 +187,44 @@
                 "color": true
               }
             }
+          }
+        }
+      }
+    },
+    "style": {
+      "displayName": "Style",
+      "properties": {
+        "numericScale": {
+          "displayName": "Scale",
+          "type": {
+            "enumeration": [
+              { "displayName": "Linear Scale", "value": "linear" },
+              { "displayName": "Log Scale", "value": "log" }
+            ]
+          }
+        },
+        "setName": {
+          "displayName": "Set Axis Name",
+          "type": {
+            "text": true
+          }
+        },
+        "combinationName": {
+          "displayName": "Combination Axis Name",
+          "type": {
+            "text": true
+          }
+        },
+        "setNameAxisOffset": {
+          "displayName": "Set Axis Offset",
+          "type": {
+            "numeric": true
+          }
+        },
+        "combinationNameAxisOffset": {
+          "displayName": "Combination Axis Offset",
+          "type": {
+            "numeric": true
           }
         }
       }
