@@ -6,7 +6,7 @@ function bumpImpl(version) {
   const desc = path.resolve('./pbiviz.json');
   const content = require(desc);
   content.visual.version = version;
-  fs.writeFileSync(desc, JSON.stringify(content, null, 2));
+  fs.writeFileSync(desc, JSON.stringify(content, null, 2) + '\n');
 }
 
 class MyVersionPlugin extends Plugin {
