@@ -1,7 +1,7 @@
 {
   "name": "@upsetjs/powerbi_visuals",
   "description": "UpSet.js PowerBI Visuals wrapper",
-  "version": "0.4.2",
+  "version": "0.5.0",
   "license": "SEE LICENSE IN LICENSE.md",
   "author": {
     "name": "Samuel Gratzl",
