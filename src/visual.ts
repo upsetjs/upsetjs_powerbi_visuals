@@ -72,6 +72,14 @@ export class Visual implements IVisual {
     }
   };
 
+  private onContextMenu = (selection: ISetLike<IPowerBIElem> | null, evt: MouseEvent) => {
+    this.selectionManager.showContextMenu(selection && selection.elems.length > 0 ? selection.elems[0].s : {}, {
+      x: evt.clientX,
+      y: evt.clientY,
+    });
+    evt.preventDefault();
+  };
+
   private render() {
     renderUpSet(this.target, this.props);
   }
@@ -124,6 +132,7 @@ export class Visual implements IVisual {
 
     if (!areDummyValues && this.interactive) {
       this.props.onClick = this.setSelection;
+      this.props.onContextMenu = this.onContextMenu;
     }
 
     this.render();
