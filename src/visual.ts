@@ -1,3 +1,10 @@
+/**
+ * @upsetjs/powerbi_visuals
+ * https://github.com/upsetjs/upsetjs_powerbi_visuals
+ *
+ * Copyright (c) 2020 Samuel Gratzl <sam@sgratzl.com>
+ */
+
 import 'core-js/stable';
 import powerbi from 'powerbi-visuals-api';
 import VisualConstructorOptions = powerbi.extensibility.visual.VisualConstructorOptions;

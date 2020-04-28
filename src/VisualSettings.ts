@@ -1,3 +1,10 @@
+/**
+ * @upsetjs/powerbi_visuals
+ * https://github.com/upsetjs/upsetjs_powerbi_visuals
+ *
+ * Copyright (c) 2020 Samuel Gratzl <sam@sgratzl.com>
+ */
+
 import { dataViewObjectsParser } from 'powerbi-visuals-utils-dataviewutils';
 import DataViewObjectsParser = dataViewObjectsParser.DataViewObjectsParser;
 import { UpSetThemeProps, fillDefaults, GenerateSetCombinationsOptions } from '@upsetjs/bundle';
