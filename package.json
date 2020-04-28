@@ -33,12 +33,13 @@
     "posttest": "npm run lint",
     "release:major": "release-it --disable-metrics major",
     "release:minor": "release-it --disable-metrics minor",
-    "release:patch": "release-it --disable-metrics patch"
+    "release:patch": "release-it --disable-metrics patch",
+    "package": "npm run build"
   },
   "dependencies": {
     "@babel/runtime": "^7.9.2",
     "@babel/runtime-corejs3": "^7.9.2",
-    "@upsetjs/bundle": "^0.5.0",
+    "@upsetjs/bundle": "~0.6.0",
     "core-js": "^3.6.5",
     "powerbi-visuals-api": "~2.6.2",
     "powerbi-visuals-utils-dataviewutils": "~2.2.1"
