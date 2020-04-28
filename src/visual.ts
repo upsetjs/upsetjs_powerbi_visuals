@@ -77,6 +77,16 @@ export class Visual implements IVisual {
   }
 
   update(options: VisualUpdateOptions) {
+    try {
+      this.host.eventService.renderingStarted(options);
+      this.renderImpl(options);
+      this.host.eventService.renderingFinished(options);
+    } catch (error) {
+      this.host.eventService.renderingFailed(options, String(error));
+    }
+  }
+
+  private renderImpl(options: VisualUpdateOptions) {
     const dataView = options.dataViews[0];
     this.settings = Visual.parseSettings(dataView);
 
@@ -116,7 +126,6 @@ export class Visual implements IVisual {
       this.props.onClick = this.setSelection;
     }
 
-    console.log('render');
     this.render();
   }
 
