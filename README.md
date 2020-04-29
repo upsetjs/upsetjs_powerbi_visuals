@@ -17,7 +17,7 @@ Download the latest package from [https://github.com/upsetjs/upsetjs_powerbi_vis
 The UpSet.js visual has three data roles:
 
 - `Elements` exactly one grouping with a unique identifier for each row (e.g., a name)
-- `Sets` one or more measures or groupings which represent the sets. When it's value at row `i` results in a trueish value (e.g., 1, true, ...) UpSet will interpret it that the element at row `i` is part of this set
+- `Sets` one or more measures or groupings which represent the sets. When it's value at row `i` results in a trueish value (e.g., 1, true, ...) UpSet.js will interpret it that the element at row `i` is part of this set
 - `Attributes` zero or more numeric measures that are used to generate boxplots for each set intersection
 
 In addition, the visual supports various styling options including the customization of how the set combinations are generated.
