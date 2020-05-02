@@ -17,7 +17,7 @@ import VisualObjectInstanceEnumerationObject = powerbi.VisualObjectInstanceEnume
 
 import VisualSettings, { fixOrder } from './VisualSettings';
 import {
-  renderUpSetJS,
+  renderUpSet as render,
   asSets,
   ISet,
   UpSetProps,
@@ -81,7 +81,7 @@ export class Visual implements IVisual {
   };
 
   private render() {
-    renderUpSetJS(this.target, this.props);
+    render(this.target, this.props);
   }
 
   update(options: VisualUpdateOptions) {

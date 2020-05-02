@@ -6,7 +6,7 @@ This is a [PowerBI Custom Visual](https://powerbi.microsoft.com/en-us/developers
 
 This package is part of the UpSet.js ecosystem located at the main [Github Monorepo](https://github.com/upsetjs/upsetjs).
 
-![UpSet.js Report](https://user-images.githubusercontent.com/4129778/79641879-808ea480-819a-11ea-87f9-441c3647812f.png)
+![UpSet.js Report](https://user-images.githubusercontent.com/4129778/80864985-9b771380-8c86-11ea-809c-a4473b32ed3b.png)
 
 ## Installation
 
