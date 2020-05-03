@@ -17,7 +17,7 @@ import VisualObjectInstanceEnumerationObject = powerbi.VisualObjectInstanceEnume
 
 import VisualSettings, { fixOrder } from './VisualSettings';
 import {
-  renderUpSet as render,
+  render,
   asSets,
   ISet,
   UpSetProps,
