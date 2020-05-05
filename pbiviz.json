@@ -5,6 +5,7 @@
     "guid": "upSetJS61F43BDFCA024B13B6AC5BA73C9427B2",
     "visualClassName": "Visual",
     "version": "1.0.0",
+    "icon": "assets/icon.png",
     "description": "UpSet.js is a re-implementation of UpSetR to create interactive set visualizations for more than three sets",
     "supportUrl": "https://github.com/sgratzl/upsetjs_powerbi_visuals/issues",
     "gitHubUrl": "https://github.com/sgratzl/upsetjs_powerbi_visuals"
@@ -12,15 +13,10 @@
   "apiVersion": "2.6.0",
   "author": {
     "name": "Samuel Gratzl",
-    "email": "sam@sgratzl.com",
-    "url": "https://wwww.sgratzl.com"
+    "email": "sam@sgratzl.com"
   },
   "assets": {
     "icon": "assets/icon.png"
   },
-  "externalJS": [],
-  "style": null,
-  "capabilities": "capabilities.json",
-  "dependencies": null,
-  "stringResources": []
+  "capabilities": "capabilities.json"
 }
