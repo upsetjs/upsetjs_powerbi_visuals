@@ -52,7 +52,12 @@
       ],
       "categorical": {
         "categories": {
-          "for": { "in": "elements" }
+          "for": { "in": "elements" },
+          "dataReductionAlgorithm": {
+            "window": {
+              "count": 1000
+            }
+          }
         },
         "values": {
           "select": [{ "bind": { "to": "sets" } }, { "bind": { "to": "attributes" } }]

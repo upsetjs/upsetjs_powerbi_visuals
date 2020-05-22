@@ -38,6 +38,8 @@ interface IPowerBISet extends ISet<IPowerBIElem> {
   value: powerbi.DataViewValueColumn;
 }
 
+declare type IPowerBISets = ReadonlyArray<IPowerBISet>;
+
 function isSelection(s: powerbi.extensibility.ISelectionId): s is powerbi.visuals.ISelectionId {
   return s != null && typeof (<powerbi.visuals.ISelectionId>s).includes === 'function';
 }
@@ -57,6 +59,16 @@ export class Visual implements IVisual {
     this.selectionManager = options.host.createSelectionManager();
     this.host = options.host;
     this.renderPlaceholder();
+
+    // // eslint-disable-next-line
+    // options.host.storageService
+    //   .set('l', 'aa')
+    //   .then((r) => {
+    //     this.target.insertAdjacentHTML('afterbegin', `<pre>OK ${r}</pre>`);
+    //   })
+    //   .catch((error) => {
+    //     this.target.insertAdjacentHTML('afterbegin', `<pre>error ${error}</pre>`);
+    //   });
   }
 
   private setSelection = (selection: ISetLike<IPowerBIElem> | null) => {
@@ -169,14 +181,19 @@ export class Visual implements IVisual {
 
     const areDummyValues = dataView.categorical!.categories.length === 0;
 
+    // handle window
     const elems = this.extractElems(dataView.categorical!);
-    if (elems.length === 0) {
-      return false;
-    }
-    const sets = this.extractSets(elems, dataView.categorical!);
+    const sets = elems.length === 0 ? [] : this.extractSets(elems, dataView.categorical!);
+
     if (sets.length === 0) {
       return false;
     }
+
+    if (dataView.metadata.segment) {
+      // load more chunks
+      requestAnimationFrame(() => this.host.fetchMoreData());
+    }
+
     const combinations = generateCombinations(
       sets,
       Object.assign({}, this.settings.combinations, {
@@ -269,7 +286,7 @@ export class Visual implements IVisual {
 
   private findSet(
     selection: IPowerBIElems | undefined,
-    sets: ReadonlyArray<IPowerBISet>,
+    sets: IPowerBISets,
     combinations: ISetCombinations<IPowerBIElem>
   ) {
     if (!selection || selection.length === 0) {
