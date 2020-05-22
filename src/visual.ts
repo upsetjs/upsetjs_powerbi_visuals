@@ -16,6 +16,7 @@ import DataView = powerbi.DataView;
 import VisualObjectInstanceEnumerationObject = powerbi.VisualObjectInstanceEnumerationObject;
 
 import VisualSettings, { fixOrder } from './VisualSettings';
+import LicenceManager from './LicenceManager';
 import {
   render,
   asSets,
@@ -52,6 +53,8 @@ export class Visual implements IVisual {
   private readonly host: powerbi.extensibility.visual.IVisualHost;
 
   private props: UpSetProps<IPowerBIElem> = { sets: [], width: 100, height: 100 };
+
+  private readonly license = new LicenceManager();
 
   constructor(options: VisualConstructorOptions) {
     this.target = options.element;
