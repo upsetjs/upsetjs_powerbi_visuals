@@ -16,7 +16,6 @@ import DataView = powerbi.DataView;
 import VisualObjectInstanceEnumerationObject = powerbi.VisualObjectInstanceEnumerationObject;
 
 import VisualSettings, { fixOrder } from './VisualSettings';
-import LicenceManager from './LicenceManager';
 import {
   render,
   asSets,
@@ -27,6 +26,7 @@ import {
   ISetCombinations,
   boxplotAddon,
 } from '@upsetjs/bundle';
+import { usesProFeatures, createWatermarkUrl } from './LicenceManager';
 
 declare type IPowerBIElem = {
   s?: powerbi.visuals.ISelectionId;
@@ -54,7 +54,7 @@ export class Visual implements IVisual {
 
   private props: UpSetProps<IPowerBIElem> = { sets: [], width: 100, height: 100 };
 
-  private readonly license = new LicenceManager();
+  // private readonly license = new LicenceManager();
 
   constructor(options: VisualConstructorOptions) {
     this.target = options.element;
@@ -62,16 +62,6 @@ export class Visual implements IVisual {
     this.selectionManager = options.host.createSelectionManager();
     this.host = options.host;
     this.renderPlaceholder();
-
-    // // eslint-disable-next-line
-    // options.host.storageService
-    //   .set('l', 'aa')
-    //   .then((r) => {
-    //     this.target.insertAdjacentHTML('afterbegin', `<pre>OK ${r}</pre>`);
-    //   })
-    //   .catch((error) => {
-    //     this.target.insertAdjacentHTML('afterbegin', `<pre>error ${error}</pre>`);
-    //   });
   }
 
   private setSelection = (selection: ISetLike<IPowerBIElem> | null) => {
@@ -176,6 +166,9 @@ export class Visual implements IVisual {
   }
 
   private renderImpl(options: VisualUpdateOptions) {
+    // reset watermark
+    this.target.style.background = null;
+
     if (options.dataViews.length === 0) {
       return false;
     }
@@ -191,6 +184,11 @@ export class Visual implements IVisual {
     if (sets.length === 0) {
       return false;
     }
+
+    this.verifyLicense(
+      sets.length,
+      dataView.categorical!.values.reduce((acc, d) => acc + (d.source.roles.attributes ? 1 : 0), 0)
+    );
 
     if (dataView.metadata.segment) {
       // load more chunks
@@ -235,6 +233,14 @@ export class Visual implements IVisual {
 
     this.render();
     return true;
+  }
+
+  private verifyLicense(numSets: number, numAttributes: number) {
+    const state = this.settings.license.updateLicenseState(this.host);
+    if (state === 'valid' || !usesProFeatures(numSets, numAttributes, this.settings)) {
+      return;
+    }
+    this.target.style.background = createWatermarkUrl();
   }
 
   private injectAttributes(data: powerbi.DataViewCategorical) {

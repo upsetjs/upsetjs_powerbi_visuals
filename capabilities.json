@@ -67,6 +67,21 @@
   ],
   "suppressDefaultTitle": true,
   "objects": {
+    "license": {
+      "displayName": "License",
+      "objectCategory": 1,
+      "properties": {
+        "code": {
+          "displayName": "Code",
+          "type": { "text": true }
+        },
+        "info": {
+          "displayName": "Info",
+          "type": { "text": true }
+        }
+      }
+    },
+
     "combinations": {
       "displayName": "Set Combinations",
       "objectCategory": 1,
