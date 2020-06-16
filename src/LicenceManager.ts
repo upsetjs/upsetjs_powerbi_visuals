@@ -103,14 +103,14 @@ export class LicenseSettings {
       this.updateInfo(host, 'invalid license code');
       return 'invalid';
     }
-    console.log(expirationDate);
     const customer = decode(customerCode);
     const today = new Date();
     if (today <= expirationDate) {
-      this.updateInfo(host, `${customer}: valid license`);
+      const date = expirationDate.toDateString();
+      this.updateInfo(host, `${customer} (valid until ${date})`);
       return 'valid';
     }
-    this.updateInfo(host, `${customer}: license expired`);
+    this.updateInfo(host, `${customer} (license expired)`);
     return 'expired';
   }
 }

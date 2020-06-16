@@ -97,6 +97,10 @@
               {
                 "displayName": "Set Unions",
                 "value": "union"
+              },
+              {
+                "displayName": "Distinct Set Intersections",
+                "value": "distinctIntersection"
               }
             ]
           }
@@ -161,6 +165,10 @@
               {
                 "displayName": "Light",
                 "value": "light"
+              },
+              {
+                "displayName": "Vega",
+                "value": "vega"
               }
             ]
           }
