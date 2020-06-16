@@ -78,6 +78,10 @@
         "info": {
           "displayName": "Info",
           "type": { "text": true }
+        },
+        "contact": {
+          "displayName": "Contact",
+          "type": { "text": true }
         }
       }
     },

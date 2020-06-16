@@ -70,6 +70,7 @@ function isValidDate(license: string) {
 export class LicenseSettings {
   code = '';
   info = '';
+  contact = 'https://dataviz.boutique';
 
   private updateInfo(host: powerbi.extensibility.visual.IVisualHost, info: string) {
     if (this.info === info) {
