@@ -7,7 +7,7 @@
 
 import { dataViewObjectsParser } from 'powerbi-visuals-utils-dataviewutils';
 import DataViewObjectsParser = dataViewObjectsParser.DataViewObjectsParser;
-import { UpSetThemeProps, fillDefaults, GenerateSetCombinationsOptions } from '@upsetjs/bundle';
+import { fillDefaults, GenerateSetCombinationsOptions } from '@upsetjs/bundle';
 import { LicenseSettings } from './LicenceManager';
 
 export default class VisualSettings extends DataViewObjectsParser {
@@ -19,7 +19,7 @@ export default class VisualSettings extends DataViewObjectsParser {
 
 export const defaults = fillDefaults({ sets: [], width: 100, height: 100 });
 
-export class UpSetThemeSettings implements Required<UpSetThemeProps> {
+export class UpSetThemeSettings {
   theme = 'light';
   color = defaults.color;
   textColor = defaults.textColor;
