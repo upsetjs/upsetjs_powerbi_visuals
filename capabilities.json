@@ -163,12 +163,20 @@
           "type": {
             "enumeration": [
               {
-                "displayName": "Dark",
-                "value": "dark"
-              },
-              {
                 "displayName": "Light",
                 "value": "light"
+              },
+              {
+                "displayName": "PowerBI",
+                "value": "powerbi"
+              },
+              {
+                "displayName": "PowerBI Auto",
+                "value": "auto"
+              },
+              {
+                "displayName": "Dark",
+                "value": "dark"
               },
               {
                 "displayName": "Vega",
@@ -187,8 +195,8 @@
             }
           }
         },
-        "alternatingBackgroundColor": {
-          "displayName": "Alternating Background Color",
+        "color": {
+          "displayName": "Color",
           "type": {
             "fill": {
               "solid": {
@@ -197,8 +205,8 @@
             }
           }
         },
-        "color": {
-          "displayName": "Color",
+        "hasSelectionColor": {
+          "displayName": "Color When Selection is Present",
           "type": {
             "fill": {
               "solid": {
@@ -229,6 +237,16 @@
         },
         "notMemberColor": {
           "displayName": "Not Member Color",
+          "type": {
+            "fill": {
+              "solid": {
+                "color": true
+              }
+            }
+          }
+        },
+        "alternatingBackgroundColor": {
+          "displayName": "Alternating Background Color",
           "type": {
             "fill": {
               "solid": {

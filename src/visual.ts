@@ -220,7 +220,7 @@ export class Visual implements IVisual {
         selection: this.findSet(selection, sets, combinations),
         exportButtons: false,
       },
-      this.settings.theme.dropDefaults(),
+      this.settings.theme.generate(this.host.colorPalette, dataView.categorical!),
       this.settings.style
     );
 
