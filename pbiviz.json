@@ -6,9 +6,9 @@
     "visualClassName": "Visual",
     "version": "1.0.1",
     "icon": "assets/icon.png",
-    "description": "UpSet.js is a re-implementation of UpSetR to create interactive set visualizations for more than three sets",
-    "supportUrl": "https://github.com/sgratzl/upsetjs_powerbi_visuals/issues",
-    "gitHubUrl": "https://github.com/sgratzl/upsetjs_powerbi_visuals"
+    "description": "UpSet plots are a scalable alternative to venn diagrams for showing set intersections for more than three sets",
+    "supportUrl": "https://www.sgratzl.com",
+    "gitHubUrl": "https://github.com/upsetjs/upsetjs_powerbi_visuals"
   },
   "apiVersion": "3.2.0",
   "author": {
