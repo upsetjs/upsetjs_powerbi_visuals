@@ -31,7 +31,7 @@
     {
       "name": "attributes",
       "displayName": "Attributes",
-      "description": "zero or more numerical measures which are used to render boxplots",
+      "description": "zero or more numerical/text measures which are used to render boxplots or mosaic plots",
       "kind": "Measure",
       "preferredTypes": [
         {
@@ -39,6 +39,9 @@
         },
         {
           "integer": true
+        },
+        {
+          "text": true
         }
       ]
     }

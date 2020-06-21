@@ -135,37 +135,36 @@ export class LicenseManager {
       this.resetWatermark(target);
       return false;
     }
-    this.applyWatermark(target);
+    applyWatermark(target, this.#url);
     return true;
   }
 
   resetWatermark(target: HTMLElement) {
     target.style.background = '';
   }
+}
 
-  private applyWatermark(target: HTMLElement) {
-    const fontSize = 30;
-    const opacity = 0.2;
-    const size = 110 * 2;
-    const height = 110 * 2;
-    const text = this.#url;
+function applyWatermark(target: HTMLElement, text: string) {
+  const fontSize = 30;
+  const opacity = 0.2;
+  const size = 110 * 2;
+  const height = 110 * 2;
 
-    const x = size / 2;
-    const y = height / 2;
+  const x = size / 2;
+  const y = height / 2;
 
-    const grey = `<text transform='translate(${x},${y}) rotate(-45)'>${text}</text>`;
-    const green = `<text transform='translate(${
-      x + size * 0.5
-    },${y}) rotate(-45)' fill='rgb(190, 227, 190)'>${text}</text>`;
-    const white = `<text transform='translate(${x + size * 1},${y}) rotate(-45)' fill='white'>${text}</text>`;
-    const white2 = `<text transform='translate(${x + size * -0.5},${y}) rotate(-45)' fill='white'>${text}</text>`;
-    const style = `fill: black; font-size: ${fontSize}; text-anchor: middle; dominant-baseline: central; fill-opacity: ${opacity}`;
-    const prefix = `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1'`;
+  const grey = `<text transform='translate(${x},${y}) rotate(-45)'>${text}</text>`;
+  const green = `<text transform='translate(${
+    x + size * 0.5
+  },${y}) rotate(-45)' fill='rgb(190, 227, 190)'>${text}</text>`;
+  const white = `<text transform='translate(${x + size * 1},${y}) rotate(-45)' fill='white'>${text}</text>`;
+  const white2 = `<text transform='translate(${x + size * -0.5},${y}) rotate(-45)' fill='white'>${text}</text>`;
+  const style = `fill: black; font-size: ${fontSize}; text-anchor: middle; dominant-baseline: central; fill-opacity: ${opacity}`;
+  const prefix = `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1'`;
 
-    const url = `${prefix} height='${height}px' width='${
-      size * 1.5
-    }px'><g style='${style}'>${white}${grey}${green}${white2}</g></svg>")`;
+  const url = `${prefix} height='${height}px' width='${
+    size * 1.5
+  }px'><g style='${style}'>${white}${grey}${green}${white2}</g></svg>")`;
 
-    target.style.background = url;
-  }
+  target.style.background = url;
 }
