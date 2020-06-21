@@ -245,7 +245,7 @@ function toHeader(s: ISetLike<any>) {
   }
 }
 
-export function createHoverMenuHandler(
+export function createTooltipHandler(
   target: HTMLElement,
   host: powerbi.extensibility.visual.IVisualHost,
   move = false

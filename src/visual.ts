@@ -18,7 +18,7 @@ import {
   resolveSelection,
   createContextMenuHandler,
   createSelectionHandler,
-  createHoverMenuHandler,
+  createTooltipHandler,
 } from './model';
 
 export class Visual implements powerbi.extensibility.visual.IVisual {
@@ -39,7 +39,7 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
     this.selectionManager = options.host.createSelectionManager();
     this.host = options.host;
     this.renderPlaceholder();
-    this.onHover = createHoverMenuHandler(this.target, this.host);
+    this.onHover = createTooltipHandler(this.target, this.host);
     this.onContextMenu = createContextMenuHandler(this.selectionManager);
     this.setSelection = createSelectionHandler(this.selectionManager, (s) => {
       this.props.selection = s;
@@ -183,7 +183,7 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
       return categoricalAddon(
         (v: IPowerBIElem) => String(v.attrs[i]),
         {
-          categories: Array.from(new Set(attr.values.map((v) => v.toString()))).sort(), // TODO colors
+          categories: Array.from(new Set(attr.values.map((v) => v.toString()))).sort(),
         },
         {
           name: attr.source.displayName,
