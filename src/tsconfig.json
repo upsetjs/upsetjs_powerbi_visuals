@@ -8,5 +8,5 @@
     "strictPropertyInitialization": true,
     "strictFunctionTypes": true
   },
-  "files": ["*.ts"]
+  "include": ["*.ts"]
 }

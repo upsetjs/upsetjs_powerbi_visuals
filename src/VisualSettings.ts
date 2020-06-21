@@ -9,10 +9,10 @@ import powerbi from 'powerbi-visuals-api';
 import { dataViewObjectsParser } from 'powerbi-visuals-utils-dataviewutils';
 import DataViewObjectsParser = dataViewObjectsParser.DataViewObjectsParser;
 import { fillDefaults, GenerateSetCombinationsOptions } from '@upsetjs/bundle';
-import { LicenseSettings } from './LicenceManager';
+import { LicenseManager } from './LicenseManager';
 
 export default class VisualSettings extends DataViewObjectsParser {
-  readonly license = new LicenseSettings();
+  readonly license = new LicenseManager('UVWXYZ01234tuvwxyzABCDEFGHIJKLMhijklmnopqrsNOPQRST56789+/=abcdefg');
   readonly theme = new UpSetThemeSettings();
   readonly combinations = new UpSetCombinationSettings();
   readonly style = new UpSetStyleSettings();
@@ -74,7 +74,7 @@ export function generateAutoPowerBITheme(
   colorPalette: powerbi.extensibility.ISandboxExtendedColorPalette,
   data: powerbi.DataViewCategorical
 ) {
-  if (data.categories.length === 0) {
+  if (!data.categories || data.categories.length === 0) {
     return {};
   }
   const c = colorPalette.getColor(data.categories[0].source.displayName).value;

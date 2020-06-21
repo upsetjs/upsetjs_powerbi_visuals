@@ -12,10 +12,9 @@ import VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
 import IVisual = powerbi.extensibility.visual.IVisual;
 import EnumerateVisualObjectInstancesOptions = powerbi.EnumerateVisualObjectInstancesOptions;
 import VisualObjectInstance = powerbi.VisualObjectInstance;
-import DataView = powerbi.DataView;
 import VisualObjectInstanceEnumerationObject = powerbi.VisualObjectInstanceEnumerationObject;
 
-import VisualSettings, { fixOrder } from './VisualSettings';
+import VisualSettings, { fixOrder, defaults } from './VisualSettings';
 import {
   render,
   asSets,
@@ -26,7 +25,6 @@ import {
   ISetCombinations,
   boxplotAddon,
 } from '@upsetjs/bundle';
-import { usesProFeatures, createWatermarkUrl } from './LicenceManager';
 import createSkeleton from './createSkeleton';
 
 declare type IPowerBIElem = {
@@ -80,7 +78,8 @@ export class Visual implements IVisual {
   };
 
   private onContextMenu = (selection: ISetLike<IPowerBIElem> | null, evt: MouseEvent) => {
-    this.selectionManager.showContextMenu(selection && selection.elems.length > 0 ? selection.elems[0].s : {}, {
+    const id = selection != null && selection.elems.length > 0 ? selection.elems[0].s! : {};
+    this.selectionManager.showContextMenu(id, {
       x: evt.clientX,
       y: evt.clientY,
     });
@@ -112,13 +111,16 @@ export class Visual implements IVisual {
 
   private renderImpl(options: VisualUpdateOptions) {
     // reset watermark
-    this.target.style.background = null;
+    this.settings.license.resetWatermark(this.target);
 
     if (options.dataViews.length === 0) {
       return false;
     }
     const dataView = options.dataViews[0];
-    this.settings = Visual.parseSettings(dataView);
+    this.settings = VisualSettings.parse(dataView);
+    if (!dataView.categorical || !dataView.categorical.categories) {
+      return false;
+    }
 
     const areDummyValues = dataView.categorical!.categories.length === 0;
 
@@ -126,13 +128,13 @@ export class Visual implements IVisual {
     const elems = this.extractElems(dataView.categorical!);
     const sets = elems.length === 0 ? [] : this.extractSets(elems, dataView.categorical!);
 
-    if (sets.length === 0) {
+    if (sets.length === 0 || !dataView.categorical!.values) {
       return false;
     }
 
     this.verifyLicense(
       sets.length,
-      dataView.categorical!.values.reduce((acc, d) => acc + (d.source.roles.attributes ? 1 : 0), 0)
+      dataView.categorical!.values.reduce((acc, d) => acc + (d.source?.roles?.attributes ? 1 : 0), 0)
     );
 
     if (dataView.metadata.segment) {
@@ -151,7 +153,7 @@ export class Visual implements IVisual {
       return false;
     }
 
-    let selection: IPowerBIElems = this.deriveSelection(elems, dataView.categorical!);
+    let selection: IPowerBIElems | undefined = this.deriveSelection(elems, dataView.categorical!);
     if (!selection && !areDummyValues && this.interactive) {
       selection = this.fromSelection(elems);
     }
@@ -181,15 +183,13 @@ export class Visual implements IVisual {
   }
 
   private verifyLicense(numSets: number, numAttributes: number) {
-    const state = this.settings.license.updateLicenseState(this.host);
-    if (state === 'valid' || !usesProFeatures(numSets, numAttributes, this.settings)) {
-      return;
-    }
-    this.target.style.background = createWatermarkUrl();
+    this.settings.license.updateLicenseState(this.target, this.host, () =>
+      usesProFeatures(numSets, numAttributes, this.settings)
+    );
   }
 
   private injectAttributes(data: powerbi.DataViewCategorical) {
-    const attrs = data.values.filter((d) => d.source.roles.attributes);
+    const attrs = data.values ? data.values.filter((d) => d.source?.roles?.attributes) : [];
 
     if (attrs.length === 0) {
       return;
@@ -223,10 +223,12 @@ export class Visual implements IVisual {
   }
 
   private deriveSelection(elems: IPowerBIElems, data: powerbi.DataViewCategorical) {
-    if (data.values.length === 0 || data.values[0].highlights == null) {
+    if (!data.values || data.values.length === 0 || data.values[0].highlights == null) {
       return undefined;
     }
-    return data.values[0].highlights.map((v, i) => (v === null ? null : elems[i])).filter((v) => v !== null);
+    return data.values[0].highlights
+      .map((v, i) => (v === null ? null : elems[i]))
+      .filter((v): v is IPowerBIElem => v !== null);
   }
 
   private fromSelection(elems: IPowerBIElems): IPowerBIElems | undefined {
@@ -269,9 +271,12 @@ export class Visual implements IVisual {
   }
 
   private extractElems(data: powerbi.DataViewCategorical): IPowerBIElems {
-    const attrs = data.values.filter((d) => d.source.roles.attributes);
+    const attrs = data.values ? data.values.filter((d) => d.source?.roles?.attributes) : [];
 
-    if (data.categories.length === 0) {
+    if (!data.categories || data.categories.length === 0) {
+      if (!data.values) {
+        return [];
+      }
       return data.values.map((_, i) => ({
         v: i,
         attrs: attrs.map((attr) => <number>attr.values[i]),
@@ -293,7 +298,7 @@ export class Visual implements IVisual {
 
   private extractSets(elems: IPowerBIElems, data: powerbi.DataViewCategorical): ReadonlyArray<IPowerBISet> {
     // just the sets
-    const sets = data.values.filter((d) => d.source.roles.sets);
+    const sets = data.values!.filter((d) => d.source?.roles?.sets);
     return asSets(
       sets
         .map((value) => {
@@ -301,15 +306,11 @@ export class Visual implements IVisual {
           return {
             value,
             name: value.source.displayName,
-            elems: vs.map((v, i) => (v ? elems[i] : null)).filter((v) => v != null),
+            elems: vs.map((v, i) => (v ? elems[i] : null)).filter((v): v is IPowerBIElem => v != null),
           };
         })
         .reverse()
     );
-  }
-
-  private static parseSettings(dataView: DataView): VisualSettings {
-    return VisualSettings.parse(dataView);
   }
 
   /**
@@ -317,9 +318,32 @@ export class Visual implements IVisual {
    * objects and properties you want to expose to the users in the property pane.
    *
    */
-  public enumerateObjectInstances(
+  enumerateObjectInstances(
     options: EnumerateVisualObjectInstancesOptions
   ): VisualObjectInstance[] | VisualObjectInstanceEnumerationObject {
     return VisualSettings.enumerateObjectInstances(this.settings, options);
   }
+}
+
+function usesProFeatures(numSets: number, numAttributes: number, settings: VisualSettings) {
+  if (numSets > 4 || numAttributes > 0) {
+    return true;
+  }
+
+  const theme = settings.theme;
+  if (theme.theme !== 'light') {
+    return true;
+  }
+
+  const combinations = settings.combinations;
+  if (<string>combinations.order !== 'cardinality,name') {
+    return true;
+  }
+
+  const style = settings.style;
+  if (style.numericScale !== defaults.numericScale) {
+    return true;
+  }
+
+  return false;
 }
