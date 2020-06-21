@@ -4,7 +4,7 @@
  *
  * Copyright (c) 2020 Samuel Gratzl <sam@sgratzl.com>
  */
-import { ISet, asSets, ISetCombinations, ISetCombination, ISetLike } from '@upsetjs/bundle';
+import { ISet, asSets, ISetCombinations, ISetCombination, ISetLike, isSetCombination } from '@upsetjs/bundle';
 import powerbi from 'powerbi-visuals-api';
 
 export declare type IPowerBIElem = {
@@ -196,4 +196,97 @@ export function injectSelectionId(
     c.s = builder.createSelectionId();
   });
   return combinations;
+}
+
+export function createContextMenuHandler(selectionManager: powerbi.extensibility.ISelectionManager) {
+  return (selection: ISetLike<IPowerBIElem> | null, evt: MouseEvent) => {
+    evt.preventDefault();
+    if (!selection) {
+      return;
+    }
+    const sel = isPowerBiSetLike(selection) ? selection : selection.elems[0];
+    const id = sel && sel.s != null ? sel.s : {};
+    selectionManager.showContextMenu(id, {
+      x: evt.clientX,
+      y: evt.clientY,
+    });
+  };
+}
+
+export function createSelectionHandler(
+  selectionManager: powerbi.extensibility.ISelectionManager,
+  selectImpl: (v: ISetLike<IPowerBIElem> | null) => void
+) {
+  return (selection: ISetLike<IPowerBIElem> | null) => {
+    if (!selection) {
+      selectionManager.clear().then(() => {
+        selectImpl(null);
+      });
+    } else {
+      const sel = isPowerBiSetLike(selection) ? selection.s : selection.elems.map((e) => e.s!);
+      selectionManager.select(sel).then(() => {
+        selectImpl(selection);
+      });
+    }
+  };
+}
+
+function toHeader(s: ISetLike<any>) {
+  switch (s.type) {
+    case 'composite':
+      return 'Set Composite';
+    case 'distinctIntersection':
+    case 'intersection':
+      return 'Set Intersection';
+    case 'union':
+      return 'Set Union';
+    default:
+      return 'Set';
+  }
+}
+
+export function createHoverMenuHandler(
+  target: HTMLElement,
+  host: powerbi.extensibility.visual.IVisualHost,
+  move = false
+) {
+  if (!host.tooltipService.enabled()) {
+    return undefined;
+  }
+  // disable tooltips and also set mouse move handler
+  return (selection: ISetLike<IPowerBIElem> | null, evt: MouseEvent) => {
+    if (!selection) {
+      if (!move) {
+        host.tooltipService.hide({
+          immediately: false,
+          isTouchEvent: false,
+        });
+      }
+      return;
+    }
+    const bb = target.getBoundingClientRect();
+    const coordinates = [evt.clientX - bb.left - target.clientLeft, evt.clientY - bb.top - target.clientTop];
+
+    const sel = isPowerBiSetLike(selection) ? selection.s : selection.elems.map((e) => e.s!);
+    const args: powerbi.extensibility.TooltipShowOptions = {
+      isTouchEvent: false,
+      coordinates,
+      dataItems: [
+        {
+          header: toHeader(selection),
+          displayName: selection.name,
+          value: selection.cardinality.toLocaleString(),
+        },
+        ...(isSetCombination(selection) && selection.degree > 1
+          ? Array.from(selection.sets).map((s) => ({ displayName: s.name, value: s.cardinality.toLocaleString() }))
+          : []),
+      ],
+      identities: [sel],
+    };
+    if (move) {
+      host.tooltipService.move(args);
+    } else {
+      host.tooltipService.show(args);
+    }
+  };
 }

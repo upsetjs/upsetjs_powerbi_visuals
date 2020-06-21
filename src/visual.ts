@@ -16,7 +16,9 @@ import {
   IPowerBIElem,
   injectSelectionId,
   resolveSelection,
-  isPowerBiSetLike,
+  createContextMenuHandler,
+  createSelectionHandler,
+  createHoverMenuHandler,
 } from './model';
 
 export class Visual implements powerbi.extensibility.visual.IVisual {
@@ -26,6 +28,9 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
   private readonly host: powerbi.extensibility.visual.IVisualHost;
 
   private props: UpSetProps<IPowerBIElem> = { sets: [], width: 100, height: 100 };
+  private readonly onContextMenu: (v: ISetLike<IPowerBIElem> | null, evt: MouseEvent) => void;
+  private readonly setSelection: (v: ISetLike<IPowerBIElem> | null) => void;
+  private readonly onHover: undefined | ((v: ISetLike<IPowerBIElem> | null, evt: MouseEvent) => void);
 
   // private readonly license = new LicenceManager();
 
@@ -34,35 +39,13 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
     this.selectionManager = options.host.createSelectionManager();
     this.host = options.host;
     this.renderPlaceholder();
-  }
-
-  private setSelection = (selection: ISetLike<IPowerBIElem> | null) => {
-    if (!selection) {
-      this.selectionManager.clear().then(() => {
-        this.props.selection = null;
-        this.render();
-      });
-    } else {
-      const sel = isPowerBiSetLike(selection) ? selection.s : selection.elems.map((e) => e.s!);
-      this.selectionManager.select(sel).then(() => {
-        this.props.selection = selection;
-        this.render();
-      });
-    }
-  };
-
-  private onContextMenu = (selection: ISetLike<IPowerBIElem> | null, evt: MouseEvent) => {
-    evt.preventDefault();
-    if (!selection) {
-      return;
-    }
-    const sel = isPowerBiSetLike(selection) ? selection : selection.elems[0];
-    const id = sel && sel.s != null ? sel.s : {};
-    this.selectionManager.showContextMenu(id, {
-      x: evt.clientX,
-      y: evt.clientY,
+    this.onHover = createHoverMenuHandler(this.target, this.host);
+    this.onContextMenu = createContextMenuHandler(this.selectionManager);
+    this.setSelection = createSelectionHandler(this.selectionManager, (s) => {
+      this.props.selection = s;
+      this.render();
     });
-  };
+  }
 
   private render() {
     render(this.target, this.props);
@@ -163,6 +146,7 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
     if (!areDummyValues && this.host.allowInteractions) {
       this.props.onClick = this.setSelection;
       this.props.onContextMenu = this.onContextMenu;
+      this.props.onHover = this.onHover;
     }
 
     this.render();
