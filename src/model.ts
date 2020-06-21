@@ -326,28 +326,33 @@ export function createTooltipHandler(
   let visible = false;
   let timeout = -1;
 
+  const onHover: OnHandler = (s, evt, addons) => {
+    if (timeout >= 0) {
+      clearTimeout(timeout);
+      timeout = -1;
+    }
+    if (!s) {
+      visible = false;
+      host.tooltipService.hide({
+        immediately: false,
+        isTouchEvent: false,
+      });
+      return;
+    }
+    timeout = self.setTimeout(() => {
+      const args = createArgs(s, evt, addons);
+      visible = true;
+      host.tooltipService.show(args);
+    }, TOOLTIP_DELAY);
+  };
+
   return [
+    onHover,
     (s, evt, addons) => {
-      if (timeout >= 0) {
-        clearTimeout(timeout);
-        timeout = -1;
+      if (!visible) {
+        return onHover(s, evt, addons);
       }
       if (!s) {
-        visible = false;
-        host.tooltipService.hide({
-          immediately: false,
-          isTouchEvent: false,
-        });
-        return;
-      }
-      timeout = self.setTimeout(() => {
-        const args = createArgs(s, evt, addons);
-        visible = true;
-        host.tooltipService.show(args);
-      }, TOOLTIP_DELAY);
-    },
-    (s, evt, addons) => {
-      if (!s || !visible) {
         return;
       }
       const args = createArgs(s, evt, addons);
