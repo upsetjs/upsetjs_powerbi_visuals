@@ -284,30 +284,28 @@ function renderAddon(addon: UpSetAddonHandlerInfo | null): powerbi.extensibility
   return [];
 }
 
+const TOOLTIP_DELAY = 250;
+
+export declare type OnHandler = (
+  selection: ISetLike<IPowerBIElem> | null,
+  evt: MouseEvent,
+  addons: UpSetAddonHandlerInfos
+) => void;
+
 export function createTooltipHandler(
   target: HTMLElement,
-  host: powerbi.extensibility.visual.IVisualHost,
-  move = false
-) {
+  host: powerbi.extensibility.visual.IVisualHost
+): [OnHandler | undefined, OnHandler | undefined] {
   if (!host.tooltipService.enabled()) {
-    return undefined;
+    return [undefined, undefined];
   }
-  // disable tooltips and also set mouse move handler
-  return (selection: ISetLike<IPowerBIElem> | null, evt: MouseEvent, addons: UpSetAddonHandlerInfos) => {
-    if (!selection) {
-      if (!move) {
-        host.tooltipService.hide({
-          immediately: false,
-          isTouchEvent: false,
-        });
-      }
-      return;
-    }
+
+  const createArgs = (selection: ISetLike<IPowerBIElem>, evt: MouseEvent, addons: UpSetAddonHandlerInfos) => {
     const bb = target.getBoundingClientRect();
     const coordinates = [evt.clientX - bb.left - target.clientLeft, evt.clientY - bb.top - target.clientTop];
 
     const sel = isPowerBiSetLike(selection) ? selection.s : selection.elems.map((e) => e.s!);
-    const args: powerbi.extensibility.TooltipShowOptions = {
+    return <powerbi.extensibility.TooltipShowOptions>{
       isTouchEvent: false,
       coordinates,
       dataItems: [
@@ -323,10 +321,37 @@ export function createTooltipHandler(
       ],
       identities: [sel],
     };
-    if (move) {
-      host.tooltipService.move(args);
-    } else {
-      host.tooltipService.show(args);
-    }
   };
+
+  let visible = false;
+  let timeout = -1;
+
+  return [
+    (s, evt, addons) => {
+      if (timeout >= 0) {
+        clearTimeout(timeout);
+        timeout = -1;
+      }
+      if (!s) {
+        visible = false;
+        host.tooltipService.hide({
+          immediately: false,
+          isTouchEvent: false,
+        });
+        return;
+      }
+      timeout = self.setTimeout(() => {
+        const args = createArgs(s, evt, addons);
+        visible = true;
+        host.tooltipService.show(args);
+      }, TOOLTIP_DELAY);
+    },
+    (s, evt, addons) => {
+      if (!s || !visible) {
+        return;
+      }
+      const args = createArgs(s, evt, addons);
+      host.tooltipService.move(args);
+    },
+  ];
 }

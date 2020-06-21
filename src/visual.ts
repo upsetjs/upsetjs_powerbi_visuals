@@ -11,11 +11,9 @@ import VisualSettings, { fixOrder, defaults } from './VisualSettings';
 import {
   render,
   UpSetProps,
-  ISetLike,
   generateCombinations,
   boxplotAddon,
   categoricalAddon,
-  UpSetAddonHandlerInfos,
   renderSkeleton,
 } from '@upsetjs/bundle';
 import {
@@ -27,6 +25,7 @@ import {
   createContextMenuHandler,
   createSelectionHandler,
   createTooltipHandler,
+  OnHandler,
 } from './model';
 
 export class Visual implements powerbi.extensibility.visual.IVisual {
@@ -36,14 +35,10 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
   private readonly host: powerbi.extensibility.visual.IVisualHost;
 
   private props: UpSetProps<IPowerBIElem> = { sets: [], width: 100, height: 100 };
-  private readonly onContextMenu: (v: ISetLike<IPowerBIElem> | null, evt: MouseEvent) => void;
-  private readonly setSelection: (v: ISetLike<IPowerBIElem> | null) => void;
-  private readonly onHover:
-    | undefined
-    | ((v: ISetLike<IPowerBIElem> | null, evt: MouseEvent, addons: UpSetAddonHandlerInfos) => void);
-  private readonly onMouseMove:
-    | undefined
-    | ((v: ISetLike<IPowerBIElem> | null, evt: MouseEvent, addons: UpSetAddonHandlerInfos) => void);
+  private readonly onContextMenu: OnHandler;
+  private readonly setSelection: OnHandler;
+  private readonly onHover: undefined | OnHandler;
+  private readonly onMouseMove: undefined | OnHandler;
 
   // private readonly license = new LicenceManager();
 
@@ -52,8 +47,7 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
     this.selectionManager = options.host.createSelectionManager();
     this.host = options.host;
     this.renderPlaceholder();
-    this.onHover = createTooltipHandler(this.target, this.host);
-    this.onMouseMove = createTooltipHandler(this.target, this.host, true);
+    [this.onHover, this.onMouseMove] = createTooltipHandler(this.target, this.host);
     this.onContextMenu = createContextMenuHandler(this.selectionManager);
     this.setSelection = createSelectionHandler(this.selectionManager, (s) => {
       this.props.selection = s;
