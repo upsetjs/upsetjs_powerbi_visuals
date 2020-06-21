@@ -23,7 +23,9 @@ export const defaults = fillDefaults({ sets: [], width: 100, height: 100 });
 export class UpSetThemeSettings {
   theme = 'light';
   color = defaults.color;
+  opacity = defaults.opacity;
   hasSelectionColor = defaults.hasSelectionColor;
+  hasSelectionOpacity = defaults.hasSelectionOpacity;
   textColor = defaults.textColor;
   selectionColor = defaults.selectionColor;
   alternatingBackgroundColor = defaults.alternatingBackgroundColor;
@@ -34,7 +36,9 @@ export class UpSetThemeSettings {
     const keys: (keyof UpSetThemeSettings)[] = [
       'theme',
       'color',
+      'opacity',
       'hasSelectionColor',
+      'hasSelectionOpacity',
       'alternatingBackgroundColor',
       'hoverHintColor',
       'notMemberColor',
@@ -66,7 +70,8 @@ export function generatePowerBITheme(colorPalette: powerbi.extensibility.ISandbo
     color: c,
     textColor: colorPalette.foregroundButton.value,
     selectionColor: colorPalette.foregroundSelected.value,
-    hasSelectionColor: c.startsWith('#') ? `${c}66` : c.replace('rgb(', 'rgba(').replace(')', ',0.4)'),
+    opacity: 1,
+    hasSelectionOpacity: 0.4,
   };
 }
 
@@ -82,7 +87,8 @@ export function generateAutoPowerBITheme(
     color: c,
     textColor: colorPalette.foregroundButton.value,
     selectionColor: c,
-    hasSelectionColor: c.startsWith('#') ? `${c}66` : c.replace('rgb(', 'rgba(').replace(')', ',0.4)'),
+    opacity: 1,
+    hasSelectionOpacity: 0.4,
   };
 }
 
