@@ -8,12 +8,13 @@
 import powerbi from 'powerbi-visuals-api';
 import { dataViewObjectsParser } from 'powerbi-visuals-utils-dataviewutils';
 import DataViewObjectsParser = dataViewObjectsParser.DataViewObjectsParser;
-import { fillDefaults, GenerateSetCombinationsOptions } from '@upsetjs/bundle';
+import { fillDefaults, GenerateSetCombinationsOptions, UpSetFontSizes } from '@upsetjs/bundle';
 import { LicenseManager } from './LicenseManager';
 
 export default class VisualSettings extends DataViewObjectsParser {
   readonly license = new LicenseManager('UVWXYZ01234tuvwxyzABCDEFGHIJKLMhijklmnopqrsNOPQRST56789+/=abcdefg');
   readonly theme = new UpSetThemeSettings();
+  readonly fonts = new UpSetFontSizeSettings();
   readonly combinations = new UpSetCombinationSettings();
   readonly style = new UpSetStyleSettings();
 }
@@ -33,7 +34,7 @@ export class UpSetThemeSettings {
   notMemberColor = defaults.notMemberColor;
 
   generate(colorPalette: powerbi.extensibility.ISandboxExtendedColorPalette, data: powerbi.DataViewCategorical) {
-    const keys: (keyof UpSetThemeSettings)[] = [
+    const keys: (keyof Omit<UpSetThemeSettings, 'generate'>)[] = [
       'theme',
       'color',
       'opacity',
@@ -61,6 +62,21 @@ export class UpSetThemeSettings {
       }
     });
     return r;
+  }
+}
+
+export class UpSetFontSizeSettings {
+  fontFamily = 'DIN';
+  barLabel = 7; // pt
+  chartLabel = 12; // pt
+  setLabel = 12; // pt
+
+  generate(): UpSetFontSizes {
+    return {
+      barLabel: `${this.barLabel}pt`,
+      chartLabel: `${this.chartLabel}pt`,
+      setLabel: `${this.setLabel}pt`,
+    };
   }
 }
 

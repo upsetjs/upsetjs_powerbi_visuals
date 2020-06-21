@@ -147,6 +147,8 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
         combinations,
         selection,
         exportButtons: false,
+        fontFamily: this.settings.fonts.fontFamily,
+        fontSizes: this.settings.fonts.generate(),
       },
       this.settings.theme.generate(this.host.colorPalette, dataView.categorical!),
       this.settings.style

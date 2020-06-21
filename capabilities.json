@@ -58,7 +58,7 @@
           "for": { "in": "elements" },
           "dataReductionAlgorithm": {
             "window": {
-              "count": 1000
+              "count": 10000
             }
           }
         },
@@ -208,14 +208,26 @@
             }
           }
         },
+        "opacity": {
+          "displayName": "Opacity",
+          "type": {
+            "numeric": true
+          }
+        },
         "hasSelectionColor": {
-          "displayName": "Color When Selection is Present",
+          "displayName": "Color when selection is present",
           "type": {
             "fill": {
               "solid": {
                 "color": true
               }
             }
+          }
+        },
+        "hasSelectionOpacity": {
+          "displayName": "Opacity when selection is present",
+          "type": {
+            "numeric": true
           }
         },
         "textColor": {
@@ -294,6 +306,43 @@
           "displayName": "Combination Axis Offset",
           "type": {
             "numeric": true
+          }
+        }
+      }
+    },
+    "fonts": {
+      "displayName": "Fonts",
+      "properties": {
+        "fontFamily": {
+          "displayName": "Font Family",
+          "type": {
+            "formatting": {
+              "fontFamily": true
+            }
+          }
+        },
+        "chartLabel": {
+          "displayName": "Chart Label",
+          "type": {
+            "formatting": {
+              "fontSize": true
+            }
+          }
+        },
+        "setLabel": {
+          "displayName": "Set Label",
+          "type": {
+            "formatting": {
+              "fontSize": true
+            }
+          }
+        },
+        "barLabel": {
+          "displayName": "Bar Label",
+          "type": {
+            "formatting": {
+              "fontSize": true
+            }
           }
         }
       }
