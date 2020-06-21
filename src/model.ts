@@ -4,7 +4,18 @@
  *
  * Copyright (c) 2020 Samuel Gratzl <sam@sgratzl.com>
  */
-import { ISet, asSets, ISetCombinations, ISetCombination, ISetLike, isSetCombination } from '@upsetjs/bundle';
+import {
+  ISet,
+  asSets,
+  ISetCombinations,
+  ISetCombination,
+  ISetLike,
+  isSetCombination,
+  UpSetAddonHandlerInfos,
+  UpSetAddonHandlerInfo,
+  ICategoryBins,
+  IBoxPlot,
+} from '@upsetjs/bundle';
 import powerbi from 'powerbi-visuals-api';
 
 export declare type IPowerBIElem = {
@@ -245,6 +256,34 @@ function toHeader(s: ISetLike<any>) {
   }
 }
 
+function renderAddon(addon: UpSetAddonHandlerInfo | null): powerbi.extensibility.VisualTooltipDataItem[] {
+  if (!addon) {
+    return [];
+  }
+  if (addon.id === 'categorical') {
+    // should be fixed in 1.4.1
+    const bins = <ICategoryBins>Object.keys(addon.value)
+      .filter((v) => v !== 'toString')
+      .map((k) => (<any>addon.value)[k]);
+    return [{ displayName: 'Attribute', value: addon.name }].concat(
+      bins.map((bin) => ({
+        displayName: bin.label,
+        color: bin.color,
+        value: `${bin.count.toLocaleString()} (${Math.round(100 * bin.percentage)}%)`,
+      }))
+    );
+  }
+  if (addon.id === 'boxplot') {
+    const b = <IBoxPlot>addon.value;
+    const labels = ['Minimum', '25% Quantile', 'Median', '75% Quantile', 'Maximum'];
+    const values = [b.min, b.q1, b.median, b.q3, b.max];
+    return [{ displayName: 'Attribute', value: addon.name }].concat(
+      labels.map((l, i) => ({ displayName: l, value: values[i].toFixed(2) }))
+    );
+  }
+  return [];
+}
+
 export function createTooltipHandler(
   target: HTMLElement,
   host: powerbi.extensibility.visual.IVisualHost,
@@ -254,7 +293,7 @@ export function createTooltipHandler(
     return undefined;
   }
   // disable tooltips and also set mouse move handler
-  return (selection: ISetLike<IPowerBIElem> | null, evt: MouseEvent) => {
+  return (selection: ISetLike<IPowerBIElem> | null, evt: MouseEvent, addons: UpSetAddonHandlerInfos) => {
     if (!selection) {
       if (!move) {
         host.tooltipService.hide({
@@ -280,6 +319,7 @@ export function createTooltipHandler(
         ...(isSetCombination(selection) && selection.degree > 1
           ? Array.from(selection.sets).map((s) => ({ displayName: s.name, value: s.cardinality.toLocaleString() }))
           : []),
+        ...(<powerbi.extensibility.VisualTooltipDataItem[]>[]).concat(...addons.map(renderAddon)),
       ],
       identities: [sel],
     };
