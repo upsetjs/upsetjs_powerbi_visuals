@@ -8,7 +8,7 @@
 import powerbi from 'powerbi-visuals-api';
 import { dataViewObjectsParser } from 'powerbi-visuals-utils-dataviewutils';
 import DataViewObjectsParser = dataViewObjectsParser.DataViewObjectsParser;
-import { fillDefaults, GenerateSetCombinationsOptions, UpSetFontSizes } from '@upsetjs/bundle';
+import { fillDefaults, GenerateSetCombinationsOptions } from '@upsetjs/bundle';
 import { LicenseManager } from './LicenseManager';
 
 export default class VisualSettings extends DataViewObjectsParser {
@@ -79,11 +79,14 @@ export class UpSetFontSizeSettings {
   chartLabel = 12; // pt
   setLabel = 12; // pt
 
-  generate(): UpSetFontSizes {
+  generate() {
     return {
-      barLabel: `${this.barLabel}pt`,
-      chartLabel: `${this.chartLabel}pt`,
-      setLabel: `${this.setLabel}pt`,
+      fontFamily: this.fontFamily,
+      fontSizes: {
+        barLabel: `${this.barLabel}pt`,
+        chartLabel: `${this.chartLabel}pt`,
+        setLabel: `${this.setLabel}pt`,
+      },
     };
   }
 }

@@ -165,7 +165,6 @@ export function extractSets(
 ): ReadonlyArray<IPowerBISet> {
   // just the sets
   const sets = data.values ? data.values.filter((d) => d.source?.roles?.sets) : [];
-  console.log(sets);
   return asSets(
     sets
       .map((value) => {
@@ -195,6 +194,23 @@ export function extractSets(
       })
       .reverse()
   );
+}
+
+export function setToObjectInstance(set: IPowerBISet, objectName: string) {
+  return {
+    objectName,
+    displayName: set.name,
+    selector: {
+      metadata: set.value.source.queryName,
+    },
+    properties: {
+      fill: {
+        solid: {
+          color: set.color,
+        },
+      },
+    },
+  };
 }
 
 export function injectSelectionId(

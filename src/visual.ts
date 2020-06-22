@@ -30,6 +30,7 @@ import {
   UpSetNumericAttribute,
   isNumeric,
   IPowerBISets,
+  setToObjectInstance,
 } from './model';
 
 const EMPTY_ARRAY: any[] = [];
@@ -161,9 +162,8 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
         combinations,
         selection,
         exportButtons: false,
-        fontFamily: this.settings.fonts.fontFamily,
-        fontSizes: this.settings.fonts.generate(),
       },
+      this.settings.fonts.generate(),
       this.settings.theme.generate(this.host.colorPalette, dataView.categorical!),
       this.settings.style
     );
@@ -225,20 +225,9 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
       this.settings.theme.supportIndividualColors()
     ) {
       return {
-        instances: (<IPowerBISets>this.props.sets).map((set) => ({
-          objectName: UpSetThemeSettings.SET_COLORS_OBJECT_NAME,
-          displayName: set.name,
-          selector: {
-            metadata: set.value.source.queryName,
-          },
-          properties: {
-            fill: {
-              solid: {
-                color: set.color,
-              },
-            },
-          },
-        })),
+        instances: (<IPowerBISets>this.props.sets).map((set) =>
+          setToObjectInstance(set, UpSetThemeSettings.SET_COLORS_OBJECT_NAME)
+        ),
       };
     }
     if (options.objectName === UpSetCategoricalAttribute.OBJECT_NAME) {
