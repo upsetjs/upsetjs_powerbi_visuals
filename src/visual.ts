@@ -15,21 +15,11 @@ import {
 } from '@upsetjs/bundle';
 import 'core-js/stable';
 import powerbi from 'powerbi-visuals-api';
-import {
-  createContextMenuHandler,
-  createSelectionHandler,
-  createTooltipHandler,
-  extractElems,
-  extractSets,
-  injectSelectionId,
-  IPowerBIElem,
-  isNumeric,
-  OnHandler,
-  resolveSelection,
-  UpSetCategoricalAttribute,
-  UpSetNumericAttribute,
-} from './model';
+import { extractElems, injectSelectionId, resolveSelection, extractSets } from './utils/model';
+import { OnHandler, createTooltipHandler, createContextMenuHandler, createSelectionHandler } from './utils/handler';
+import { UpSetCategoricalAttribute, UpSetNumericAttribute, isNumeric } from './utils/attributes';
 import VisualSettings, { UpSetThemeSettings } from './VisualSettings';
+import { IPowerBIElem } from './utils/interfaces';
 
 const EMPTY_ARRAY: any[] = [];
 

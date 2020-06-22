@@ -8,5 +8,5 @@
     "strictPropertyInitialization": true,
     "strictFunctionTypes": true
   },
-  "include": ["*.ts"]
+  "include": ["*.ts", "utils/settings.ts", "utils/model.ts", "utils/handler.ts", "utils/attributes.ts"]
 }

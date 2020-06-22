@@ -7,7 +7,7 @@
 
 import { dataViewObjectsParser } from 'powerbi-visuals-utils-dataviewutils';
 import { LicenseManager } from './LicenseManager';
-import { defaults, UpSetBaseThemeSettings, UpSetCombinationSettings, UpSetFontSizeSettings } from './settings';
+import { defaults, UpSetBaseThemeSettings, UpSetCombinationSettings, UpSetFontSizeSettings } from './utils/settings';
 import secrets from './secrets.json';
 
 export default class VisualSettings extends dataViewObjectsParser.DataViewObjectsParser {
