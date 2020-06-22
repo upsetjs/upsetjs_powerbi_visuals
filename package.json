@@ -36,12 +36,10 @@
     "package": "npm run build"
   },
   "dependencies": {
-    "@babel/runtime": "^7.10.3",
     "@babel/runtime-corejs3": "^7.10.3",
     "@upsetjs/bundle": "~1.4.0",
     "core-js": "^3.6.5",
     "powerbi-visuals-api": "^3.2.0",
-    "powerbi-visuals-utils-colorutils": "^2.2.1",
     "powerbi-visuals-utils-dataviewutils": "^2.2.1"
   },
   "devDependencies": {

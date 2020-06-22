@@ -13,7 +13,6 @@ import {
   renderSkeleton,
   UpSetProps,
 } from '@upsetjs/bundle';
-import 'core-js/stable';
 import powerbi from 'powerbi-visuals-api';
 import { extractElems, injectSelectionId, resolveSelection, extractSets } from './utils/model';
 import { OnHandler, createTooltipHandler, createContextMenuHandler, createSelectionHandler } from './utils/handler';
