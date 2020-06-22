@@ -22,6 +22,10 @@ export default class VisualSettings extends DataViewObjectsParser {
 export const defaults = fillDefaults({ sets: [], width: 100, height: 100 });
 
 export class UpSetThemeSettings {
+  static readonly SET_COLORS_OBJECT_NAME = 'setColors';
+  static readonly POWERBI_THEME = 'powerbi';
+  static readonly POWERBI_AUTO_THEME = 'auto';
+
   theme = 'light';
   color = defaults.color;
   opacity = defaults.opacity;
@@ -47,9 +51,9 @@ export class UpSetThemeSettings {
       'textColor',
     ];
     const r: any = {};
-    if (this.theme === 'powerbi') {
+    if (this.theme === UpSetThemeSettings.POWERBI_THEME) {
       Object.assign(r, generatePowerBITheme(colorPalette));
-    } else if (this.theme === 'auto') {
+    } else if (this.theme === UpSetThemeSettings.POWERBI_AUTO_THEME) {
       Object.assign(r, generateAutoPowerBITheme(colorPalette, data));
     } else {
       r.theme = this.theme;
@@ -62,6 +66,10 @@ export class UpSetThemeSettings {
       }
     });
     return r;
+  }
+
+  supportIndividualColors() {
+    return this.theme === UpSetThemeSettings.POWERBI_THEME;
   }
 }
 
@@ -85,7 +93,7 @@ export function generatePowerBITheme(colorPalette: powerbi.extensibility.ISandbo
   return {
     color: c,
     textColor: colorPalette.foregroundButton.value,
-    selectionColor: colorPalette.foregroundSelected.value,
+    selectionColor: '',
     opacity: 1,
     hasSelectionOpacity: 0.4,
   };
@@ -98,7 +106,8 @@ export function generateAutoPowerBITheme(
   if (!data.categories || data.categories.length === 0) {
     return {};
   }
-  const c = colorPalette.getColor(data.categories[0].source.displayName).value;
+  const source = data.categories[0].source;
+  const c = colorPalette.getColor(source.queryName || source.displayName).value;
   return {
     color: c,
     textColor: colorPalette.foregroundButton.value,

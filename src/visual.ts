@@ -7,7 +7,7 @@
 
 import 'core-js/stable';
 import powerbi from 'powerbi-visuals-api';
-import VisualSettings, { fixOrder, defaults } from './VisualSettings';
+import VisualSettings, { fixOrder, defaults, UpSetThemeSettings } from './VisualSettings';
 import {
   render,
   UpSetProps,
@@ -29,6 +29,7 @@ import {
   UpSetCategoricalAttribute,
   UpSetNumericAttribute,
   isNumeric,
+  IPowerBISets,
 } from './model';
 
 const EMPTY_ARRAY: any[] = [];
@@ -105,7 +106,15 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
     const elems = extractElems(dataView.categorical!, this.host);
 
     this.attributes = this.generateAttributes(dataView);
-    const sets = elems.length === 0 ? [] : extractSets(elems, dataView.categorical!, this.host);
+    const sets =
+      elems.length === 0
+        ? []
+        : extractSets(
+            elems,
+            dataView.categorical!,
+            this.host,
+            this.settings.theme.supportIndividualColors() ? UpSetThemeSettings.SET_COLORS_OBJECT_NAME : undefined
+          );
 
     if (sets.length === 0 || !dataView.categorical!.values) {
       return false;
@@ -211,9 +220,25 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
   enumerateObjectInstances(
     options: powerbi.EnumerateVisualObjectInstancesOptions
   ): powerbi.VisualObjectInstance[] | powerbi.VisualObjectInstanceEnumerationObject {
-    if (options.objectName === 'setColors') {
+    if (
+      options.objectName === UpSetThemeSettings.SET_COLORS_OBJECT_NAME &&
+      this.settings.theme.supportIndividualColors()
+    ) {
       return {
-        instances: [],
+        instances: (<IPowerBISets>this.props.sets).map((set) => ({
+          objectName: UpSetThemeSettings.SET_COLORS_OBJECT_NAME,
+          displayName: set.name,
+          selector: {
+            metadata: set.value.source.queryName,
+          },
+          properties: {
+            fill: {
+              solid: {
+                color: set.color,
+              },
+            },
+          },
+        })),
       };
     }
     if (options.objectName === UpSetCategoricalAttribute.OBJECT_NAME) {
@@ -223,7 +248,6 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
       const instances = (<powerbi.VisualObjectInstance[]>[]).concat(
         ...categoricalAttributes.map((cat) => cat.asPropertyInstance())
       );
-      console.log(instances);
       return {
         instances,
       };

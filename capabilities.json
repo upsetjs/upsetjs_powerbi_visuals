@@ -156,39 +156,6 @@
         }
       }
     },
-    "setColors": {
-      "displayName": "Set Colors",
-      "objectCategory": 1,
-      "properties": {
-        "fill": {
-          "displayName": "Color",
-          "type": {
-            "fill": {
-              "solid": {
-                "color": true
-              }
-            }
-          }
-        }
-      }
-    },
-    "attributeColors": {
-      "displayName": "Attribute Colors",
-      "objectCategory": 1,
-      "description": "customize the colors of categorical attributes",
-      "properties": {
-        "fill": {
-          "displayName": "Color",
-          "type": {
-            "fill": {
-              "solid": {
-                "color": true
-              }
-            }
-          }
-        }
-      }
-    },
     "theme": {
       "displayName": "Theme",
       "objectCategory": 1,
@@ -294,6 +261,39 @@
         },
         "alternatingBackgroundColor": {
           "displayName": "Alternating Background Color",
+          "type": {
+            "fill": {
+              "solid": {
+                "color": true
+              }
+            }
+          }
+        }
+      }
+    },
+    "setColors": {
+      "displayName": "Set Colors",
+      "objectCategory": 1,
+      "properties": {
+        "fill": {
+          "displayName": "Color",
+          "type": {
+            "fill": {
+              "solid": {
+                "color": true
+              }
+            }
+          }
+        }
+      }
+    },
+    "attributeColors": {
+      "displayName": "Attribute Colors",
+      "objectCategory": 1,
+      "description": "customize the colors of categorical attributes",
+      "properties": {
+        "fill": {
+          "displayName": "Color",
           "type": {
             "fill": {
               "solid": {

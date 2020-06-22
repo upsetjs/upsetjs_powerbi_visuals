@@ -160,10 +160,12 @@ export function extractElems(
 export function extractSets(
   elems: IPowerBIElems,
   data: powerbi.DataViewCategorical,
-  host: powerbi.extensibility.visual.IVisualHost
+  host: powerbi.extensibility.visual.IVisualHost,
+  setColorObjectName?: string
 ): ReadonlyArray<IPowerBISet> {
   // just the sets
   const sets = data.values ? data.values.filter((d) => d.source?.roles?.sets) : [];
+  console.log(sets);
   return asSets(
     sets
       .map((value) => {
@@ -185,6 +187,10 @@ export function extractSets(
           name: value.source.displayName,
           s: builder ? builder.createSelectionId() : undefined,
           elems: setElems,
+          color:
+            setColorObjectName && value.source.objects && value.source.objects[setColorObjectName]
+              ? (<powerbi.Fill>value.source.objects[setColorObjectName].fill).solid!.color
+              : undefined,
         };
       })
       .reverse()
