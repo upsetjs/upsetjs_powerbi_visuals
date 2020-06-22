@@ -66,7 +66,7 @@ export class UpSetThemeSettings {
 }
 
 export class UpSetFontSizeSettings {
-  fontFamily = 'DIN';
+  fontFamily = 'Segoe UI';
   barLabel = 7; // pt
   chartLabel = 12; // pt
   setLabel = 12; // pt
