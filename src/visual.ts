@@ -5,33 +5,31 @@
  * Copyright (c) 2020 Samuel Gratzl <sam@sgratzl.com>
  */
 
-import 'core-js/stable';
-import powerbi from 'powerbi-visuals-api';
-import VisualSettings, { fixOrder, defaults, UpSetThemeSettings } from './VisualSettings';
 import {
-  render,
-  UpSetProps,
-  generateCombinations,
   boxplotAddon,
   categoricalAddon,
+  generateCombinations,
+  render,
   renderSkeleton,
+  UpSetProps,
 } from '@upsetjs/bundle';
+import 'core-js/stable';
+import powerbi from 'powerbi-visuals-api';
 import {
-  extractSets,
-  extractElems,
-  IPowerBIElem,
-  injectSelectionId,
-  resolveSelection,
   createContextMenuHandler,
   createSelectionHandler,
   createTooltipHandler,
+  extractElems,
+  extractSets,
+  injectSelectionId,
+  IPowerBIElem,
+  isNumeric,
   OnHandler,
+  resolveSelection,
   UpSetCategoricalAttribute,
   UpSetNumericAttribute,
-  isNumeric,
-  IPowerBISets,
-  setToObjectInstance,
 } from './model';
+import VisualSettings, { UpSetThemeSettings } from './VisualSettings';
 
 const EMPTY_ARRAY: any[] = [];
 
@@ -132,13 +130,7 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
     }
 
     const combinations = injectSelectionId(
-      generateCombinations(
-        sets,
-        Object.assign({}, this.settings.combinations, {
-          order: fixOrder(this.settings.combinations.order),
-          elems,
-        })
-      ),
+      generateCombinations(sets, this.settings.combinations.generate(elems)),
       this.host
     );
     if (combinations.length === 0) {
@@ -220,15 +212,8 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
   enumerateObjectInstances(
     options: powerbi.EnumerateVisualObjectInstancesOptions
   ): powerbi.VisualObjectInstance[] | powerbi.VisualObjectInstanceEnumerationObject {
-    if (
-      options.objectName === UpSetThemeSettings.SET_COLORS_OBJECT_NAME &&
-      this.settings.theme.supportIndividualColors()
-    ) {
-      return {
-        instances: (<IPowerBISets>this.props.sets).map((set) =>
-          setToObjectInstance(set, UpSetThemeSettings.SET_COLORS_OBJECT_NAME)
-        ),
-      };
+    if (options.objectName === UpSetThemeSettings.SET_COLORS_OBJECT_NAME) {
+      return this.settings.theme.enumerateSetColors(this.props.sets);
     }
     if (options.objectName === UpSetCategoricalAttribute.OBJECT_NAME) {
       const categoricalAttributes = this.attributes.filter(
@@ -261,7 +246,7 @@ function usesProFeatures(numSets: number, numAttributes: number, settings: Visua
   }
 
   const style = settings.style;
-  if (style.numericScale !== defaults.numericScale) {
+  if (style.numericScale !== 'linear') {
     return true;
   }
 

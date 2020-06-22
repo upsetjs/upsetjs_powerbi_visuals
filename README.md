@@ -32,6 +32,7 @@ see also https://docs.microsoft.com/en-us/power-bi/developer/visuals/custom-visu
 
 ```sh
 npm i
+cp src/secrets.example.json src/secrets.json
 npm run pbiviz -- --install-cert
 ```
 

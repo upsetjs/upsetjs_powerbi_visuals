@@ -19,5 +19,6 @@ jobs:
             ${{ runner.OS }}-node-
             ${{ runner.OS }}-
       - run: npm ci
+      - run: cp src/secrets.example.json src/secrets.json
       - run: npm run build --if-present
       - run: npm test

@@ -7,6 +7,8 @@
 
 import powerbi from 'powerbi-visuals-api';
 
+console.log(process.env.PATH ?? 'TEST');
+
 function utf8Decode(e: string) {
   let t = '';
   let n = 0;

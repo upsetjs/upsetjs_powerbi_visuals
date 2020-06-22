@@ -196,23 +196,6 @@ export function extractSets(
   );
 }
 
-export function setToObjectInstance(set: IPowerBISet, objectName: string) {
-  return {
-    objectName,
-    displayName: set.name,
-    selector: {
-      metadata: set.value.source.queryName,
-    },
-    properties: {
-      fill: {
-        solid: {
-          color: set.color,
-        },
-      },
-    },
-  };
-}
-
 export function injectSelectionId(
   combinations: readonly IPowerBISetCombination[],
   host: powerbi.extensibility.visual.IVisualHost
