@@ -26,7 +26,12 @@ import {
   createSelectionHandler,
   createTooltipHandler,
   OnHandler,
+  UpSetCategoricalAttribute,
+  UpSetNumericAttribute,
+  isNumeric,
 } from './model';
+
+const EMPTY_ARRAY: any[] = [];
 
 export class Visual implements powerbi.extensibility.visual.IVisual {
   private readonly target: HTMLElement;
@@ -34,13 +39,13 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
   private readonly selectionManager: powerbi.extensibility.ISelectionManager;
   private readonly host: powerbi.extensibility.visual.IVisualHost;
 
-  private props: UpSetProps<IPowerBIElem> = { sets: [], width: 100, height: 100 };
   private readonly onContextMenu: OnHandler;
   private readonly setSelection: OnHandler;
   private readonly onHover: undefined | OnHandler;
   private readonly onMouseMove: undefined | OnHandler;
 
-  // private readonly license = new LicenceManager();
+  private attributes: (UpSetCategoricalAttribute | UpSetNumericAttribute)[] = [];
+  private props: UpSetProps<IPowerBIElem> = { sets: [], width: 100, height: 100 };
 
   constructor(options: powerbi.extensibility.visual.VisualConstructorOptions) {
     this.target = options.element;
@@ -98,9 +103,9 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
 
     // handle window
     const elems = extractElems(dataView.categorical!, this.host);
-    const sets = elems.length === 0 ? [] : extractSets(elems, dataView.categorical!, this.host);
 
-    dataView.categorical.values?.grouped();
+    this.attributes = this.generateAttributes(dataView);
+    const sets = elems.length === 0 ? [] : extractSets(elems, dataView.categorical!, this.host);
 
     if (sets.length === 0 || !dataView.categorical!.values) {
       return false;
@@ -154,7 +159,13 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
       this.settings.style
     );
 
-    this.injectAttributes(dataView.categorical!);
+    if (this.attributes.length === 0) {
+      this.props.setAddons = EMPTY_ARRAY;
+      this.props.combinationAddons = EMPTY_ARRAY;
+    } else {
+      this.props.setAddons = this.attributes.map((attr, i) => asAddon(attr, i, false));
+      this.props.combinationAddons = this.attributes.map((attr, i) => asAddon(attr, i, true));
+    }
 
     if (!areDummyValues && this.host.allowInteractions) {
       this.props.onClick = this.setSelection;
@@ -168,48 +179,28 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
     return true;
   }
 
+  private generateAttributes(dataView: powerbi.DataView) {
+    const cat = dataView.categorical!.categories![0];
+    // we need some offset since individual categories cannot be directly selected just categories rows
+    let enumerationOffset = 0;
+    return dataView.categorical!.values
+      ? dataView
+          .categorical!.values.filter((d) => d.source?.roles?.attributes)
+          .map((attr) => {
+            if (isNumeric(attr)) {
+              return new UpSetNumericAttribute(attr);
+            }
+            const c = new UpSetCategoricalAttribute(attr, cat, this.host, enumerationOffset);
+            enumerationOffset += c.categories.length;
+            return c;
+          })
+      : [];
+  }
+
   private verifyLicense(numSets: number, numAttributes: number) {
     this.settings.license.updateLicenseState(this.target, this.host, () =>
       usesProFeatures(numSets, numAttributes, this.settings)
     );
-  }
-
-  private injectAttributes(data: powerbi.DataViewCategorical) {
-    const attrs = data.values ? data.values.filter((d) => d.source?.roles?.attributes) : [];
-
-    if (attrs.length === 0) {
-      return;
-    }
-
-    function asAddon(attr: powerbi.DataViewValueColumn, i: number, vertical: boolean) {
-      if (attr.source.type && (attr.source.type.integer || attr.source.type.numeric || attr.source.type.duration)) {
-        return boxplotAddon(
-          (v: IPowerBIElem) => <number>v.attrs[i],
-          {
-            min: <number>attr.minLocal,
-            max: <number>attr.maxLocal,
-          },
-          {
-            name: attr.source.displayName,
-            orient: vertical ? 'vertical' : 'horizontal',
-          }
-        );
-      }
-      return categoricalAddon(
-        (v: IPowerBIElem) => String(v.attrs[i]),
-        {
-          categories: Array.from(new Set(attr.values.map((v) => v.toString()))).sort(),
-        },
-        {
-          name: attr.source.displayName,
-          orient: vertical ? 'vertical' : 'horizontal',
-        }
-      );
-      // return null;
-    }
-
-    this.props.setAddons = attrs.map((attr, i) => asAddon(attr, i, false)).filter((v) => v != null);
-    this.props.combinationAddons = attrs.map((attr, i) => asAddon(attr, i, true)).filter((v) => v != null);
   }
 
   /**
@@ -220,6 +211,23 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
   enumerateObjectInstances(
     options: powerbi.EnumerateVisualObjectInstancesOptions
   ): powerbi.VisualObjectInstance[] | powerbi.VisualObjectInstanceEnumerationObject {
+    if (options.objectName === 'setColors') {
+      return {
+        instances: [],
+      };
+    }
+    if (options.objectName === UpSetCategoricalAttribute.OBJECT_NAME) {
+      const categoricalAttributes = this.attributes.filter(
+        (d): d is UpSetCategoricalAttribute => d instanceof UpSetCategoricalAttribute
+      );
+      const instances = (<powerbi.VisualObjectInstance[]>[]).concat(
+        ...categoricalAttributes.map((cat) => cat.asPropertyInstance())
+      );
+      console.log(instances);
+      return {
+        instances,
+      };
+    }
     return VisualSettings.enumerateObjectInstances(this.settings, options);
   }
 }
@@ -245,4 +253,30 @@ function usesProFeatures(numSets: number, numAttributes: number, settings: Visua
   }
 
   return false;
+}
+
+function asAddon(attr: UpSetNumericAttribute | UpSetCategoricalAttribute, i: number, vertical: boolean) {
+  if (attr instanceof UpSetNumericAttribute) {
+    return boxplotAddon(
+      (v: IPowerBIElem) => <number>v.attrs[i],
+      {
+        min: <number>attr.data.minLocal,
+        max: <number>attr.data.maxLocal,
+      },
+      {
+        name: attr.displayName,
+        orient: vertical ? 'vertical' : 'horizontal',
+      }
+    );
+  }
+  return categoricalAddon(
+    (v: IPowerBIElem) => String(v.attrs[i]),
+    {
+      categories: attr.categories,
+    },
+    {
+      name: attr.displayName,
+      orient: vertical ? 'vertical' : 'horizontal',
+    }
+  );
 }
