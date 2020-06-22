@@ -8,10 +8,10 @@
 import { dataViewObjectsParser } from 'powerbi-visuals-utils-dataviewutils';
 import { LicenseManager } from './internal/LicenseManager';
 import { defaults, UpSetBaseThemeSettings, UpSetCombinationSettings, UpSetFontSizeSettings } from './utils/settings';
-import secrets from './secrets.json';
+import secretsJson from './secrets.json';
 
 export default class VisualSettings extends dataViewObjectsParser.DataViewObjectsParser {
-  readonly license = new LicenseManager(secrets.key);
+  readonly license = new LicenseManager(secretsJson.key);
   readonly theme = new UpSetThemeSettings();
   readonly fonts = new UpSetFontSizeSettings();
   readonly combinations = new UpSetCombinationSettings();
