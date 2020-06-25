@@ -8,9 +8,11 @@ This package is part of the UpSet.js ecosystem located at the main [Github Monor
 
 ![UpSet.js Report](https://user-images.githubusercontent.com/4129778/80864985-9b771380-8c86-11ea-809c-a4473b32ed3b.png)
 
+see also [Sample PBIX file](https://upset.js.org/integrations/powerbi/got.pbix)
+
 ## Installation
 
-Download the latest package from [https://github.com/upsetjs/upsetjs_powerbi_visuals/releases/latest/download/upsetjs.pbiviz](https://github.com/upsetjs/upsetjs_powerbi_visuals/releases/latest/download/upsetjs.pbiviz) and install into your PowerBI environment.
+Download the latest package from [https://upset.js.org/integrations/powerbi/upsetjs.pbiviz](https://upset.js.org/integrations/powerbi/upsetjs.pbiviz) and install into your PowerBI environment.
 
 ## Data Roles
 
@@ -25,6 +27,10 @@ In addition, the visual supports various styling options including the customiza
 ## Interaction
 
 The UpSet.js visual reacts to selections from other widgets by highlighting the elements in its chart. Moreover, when the user **clicks** on an element in the chart, the corresponding set (combination) will be selected.
+
+## Venn Diagram
+
+TODO
 
 ## Dev Environment
 
