@@ -18,7 +18,43 @@ jobs:
           restore-keys: |
             ${{ runner.OS }}-node-
             ${{ runner.OS }}-
+      - name: create secret
+        run: echo ${{ LICENSE_KEY }} > src/secrets.json
       - run: npm ci
-      - run: cp src/secrets.example.json src/secrets.json
       - run: npm run build --if-present
       - run: npm test
+      - run: npm run lint
+      - run: |
+          mkdir -p public/integrations/powerbi
+          cp dist/upsetjs.pbiviz public/integrations/powerbi/
+          cp README.md public/integrations/powerbi/
+          cp submission/sample.pbix public/integrations/powerbi/
+
+      - name: Deploy Master
+        if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+        uses: upsetjs/actions-gh-pages@sgratzl
+        with:
+          deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
+          external_repository: upsetjs/upsetjs.github.io
+          publish_branch: master
+          publish_dir: ./public
+          enable_jekyll: true
+          remove_path_spec: 'integrations/powerbi/'
+
+      - if: github.ref == 'refs/heads/develop'
+        # move to next directory
+        run: |
+          mv public public2
+          mkdir -p public
+          mv public2 public/next
+
+      - name: Deploy Develop
+        if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
+        uses: upsetjs/actions-gh-pages@sgratzl
+        with:
+          deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
+          external_repository: upsetjs/upsetjs.github.io
+          publish_branch: master
+          publish_dir: ./public
+          enable_jekyll: true
+          remove_path_spec: 'next/integrations/powerbi/'
