@@ -48,20 +48,6 @@ export function createSelectionHandler(
   };
 }
 
-function toHeader(s: ISetLike<any>) {
-  switch (s.type) {
-    case 'composite':
-      return 'Set Composite';
-    case 'distinctIntersection':
-    case 'intersection':
-      return 'Set Intersection';
-    case 'union':
-      return 'Set Union';
-    default:
-      return 'Set';
-  }
-}
-
 function renderAddon(addon: UpSetAddonHandlerInfo | null): powerbi.extensibility.VisualTooltipDataItem[] {
   if (!addon) {
     return [];
@@ -116,8 +102,8 @@ export function createTooltipHandler(
       coordinates,
       dataItems: [
         {
-          header: toHeader(selection),
-          displayName: selection.name,
+          header: selection.name,
+          displayName: 'Size',
           value: selection.cardinality.toLocaleString(),
         },
         ...(isSetCombination(selection) && selection.degree > 1
@@ -136,6 +122,9 @@ export function createTooltipHandler(
     if (timeout >= 0) {
       clearTimeout(timeout);
       timeout = -1;
+    }
+    if (!host.tooltipService.enabled()) {
+      return;
     }
     if (!s) {
       visible = false;
@@ -157,6 +146,9 @@ export function createTooltipHandler(
     (s, evt, addons) => {
       if (!visible) {
         return onHover(s, evt, addons);
+      }
+      if (!host.tooltipService.enabled()) {
+        return;
       }
       if (!s) {
         return;
