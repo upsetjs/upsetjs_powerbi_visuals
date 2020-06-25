@@ -30,9 +30,7 @@
     "eslint": "eslint src --ext .ts,.tsx",
     "eslint:fix": "npm run eslint -- --fix",
     "posttest": "npm run lint",
-    "release:major": "release-it --disable-metrics major",
-    "release:minor": "release-it --disable-metrics minor",
-    "release:patch": "release-it --disable-metrics patch",
+    "release": "release-it --disable-metrics",
     "package": "npm run build"
   },
   "dependencies": {
@@ -43,10 +41,10 @@
     "powerbi-visuals-utils-dataviewutils": "^2.2.1"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^3.3.0",
-    "@typescript-eslint/eslint-plugin-tslint": "^3.3.0",
-    "@typescript-eslint/parser": "^3.3.0",
-    "eslint": "^7.3.0",
+    "@typescript-eslint/eslint-plugin": "^3.4.0",
+    "@typescript-eslint/eslint-plugin-tslint": "^3.4.0",
+    "@typescript-eslint/parser": "^3.4.0",
+    "eslint": "^7.3.1",
     "eslint-config-prettier": "^6.11.0",
     "eslint-plugin-prettier": "^3.1.4",
     "powerbi-visuals-tools": "^3.1.14",
