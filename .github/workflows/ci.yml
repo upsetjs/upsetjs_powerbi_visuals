@@ -19,7 +19,7 @@ jobs:
             ${{ runner.OS }}-node-
             ${{ runner.OS }}-
       - name: create secret
-        run: echo ${{ secrets.LICENSE_KEY }} > src/secrets.json
+        run: echo "${{ secrets.LICENSE_KEY }}" > src/secrets.json
       - run: npm ci
       - run: npm run build --if-present
       - run: npm test

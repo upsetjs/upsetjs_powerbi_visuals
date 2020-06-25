@@ -42,21 +42,13 @@ npm run pbiviz -- --install-cert
 npm start
 ```
 
-### Building
+### Commands
 
 ```sh
 npm run lint
+npm run fix
 npm run build
-```
-
-### Release
-
-via release-it
-
-```sh
-npm run release:major
-npm run release:minor
-npm run release:patch
+npm run release
 ```
 
 ## Privacy Policy
