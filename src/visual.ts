@@ -14,7 +14,7 @@ import {
   UpSetProps,
 } from '@upsetjs/bundle';
 import powerbi from 'powerbi-visuals-api';
-import { extractElems, injectSelectionId, resolveSelection, extractSets } from './utils/model';
+import { extractElems, resolveSelection, extractSets } from './utils/model';
 import { OnHandler, createTooltipHandler, createContextMenuHandler, createSelectionHandler } from './utils/handler';
 import { UpSetCategoricalAttribute, UpSetNumericAttribute, isNumeric } from './utils/attributes';
 import VisualSettings, { UpSetThemeSettings } from './VisualSettings';
@@ -100,7 +100,6 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
         : extractSets(
             elems,
             dataView.categorical!,
-            this.host,
             this.settings.theme.supportIndividualColors() ? UpSetThemeSettings.SET_COLORS_OBJECT_NAME : undefined
           );
 
@@ -118,10 +117,7 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
       requestAnimationFrame(() => this.host.fetchMoreData());
     }
 
-    const combinations = injectSelectionId(
-      generateCombinations(sets, this.settings.combinations.generate(elems)),
-      this.host
-    );
+    const combinations = generateCombinations(sets, this.settings.combinations.generate(elems));
     if (combinations.length === 0) {
       return false;
     }

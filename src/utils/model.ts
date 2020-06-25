@@ -6,14 +6,7 @@
  */
 import { asSets, ISetCombinations } from '@upsetjs/bundle';
 import powerbi from 'powerbi-visuals-api';
-import {
-  IPowerBIElem,
-  IPowerBIElems,
-  IPowerBISet,
-  IPowerBISetCombination,
-  IPowerBISetCombinations,
-  IPowerBISets,
-} from './interfaces';
+import { IPowerBIElem, IPowerBIElems, IPowerBISet, IPowerBISetCombinations, IPowerBISets } from './interfaces';
 
 export function isSelection(s: powerbi.extensibility.ISelectionId): s is powerbi.visuals.ISelectionId {
   return s != null && typeof (<powerbi.visuals.ISelectionId>s).includes === 'function';
@@ -77,18 +70,6 @@ export function resolveSelection(
   if (sel.length === 0) {
     return null;
   }
-  if (sel.length === 1) {
-    // could be a set or a combination elem
-    const s = sets.find((s) => s.s === sel[0]);
-    if (s) {
-      return s;
-    }
-    const c = combinations.find((s) => s.s === sel[0]);
-    if (c) {
-      return c;
-    }
-  }
-
   // resolve to the elements that are included
   return elems.filter((elem) => sel.some((s) => elem === s || (elem.s && isSelection(s) && s.includes(elem.s))));
 }
@@ -129,7 +110,6 @@ export function extractElems(
 export function extractSets(
   elems: IPowerBIElems,
   data: powerbi.DataViewCategorical,
-  host: powerbi.extensibility.visual.IVisualHost,
   setColorObjectName?: string
 ): ReadonlyArray<IPowerBISet> {
   // just the sets
@@ -137,7 +117,6 @@ export function extractSets(
   return asSets(
     sets
       .map((value) => {
-        const builder = host.allowInteractions ? host.createSelectionIdBuilder() : null;
         const setElems: IPowerBIElem[] = [];
         value.values.forEach((v, i) => {
           if (!v) {
@@ -146,14 +125,10 @@ export function extractSets(
           // trueish
           const elem = elems[i];
           setElems.push(elem);
-          if (builder && elem.cat) {
-            builder.withCategory(elem.cat, elem.i);
-          }
         });
         return {
           value,
           name: value.source.displayName,
-          s: builder ? builder.createSelectionId() : undefined,
           elems: setElems,
           color:
             setColorObjectName && value.source.objects && value.source.objects[setColorObjectName]
@@ -163,23 +138,4 @@ export function extractSets(
       })
       .reverse()
   );
-}
-
-export function injectSelectionId(
-  combinations: readonly IPowerBISetCombination[],
-  host: powerbi.extensibility.visual.IVisualHost
-): ReadonlyArray<IPowerBISetCombination> {
-  if (!host.allowInteractions) {
-    return combinations;
-  }
-  combinations.forEach((c) => {
-    const builder = host.createSelectionIdBuilder();
-    c.elems.forEach((elem) => {
-      if (elem.cat) {
-        builder.withCategory(elem.cat, elem.i);
-      }
-    });
-    c.s = builder.createSelectionId();
-  });
-  return combinations;
 }

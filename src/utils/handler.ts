@@ -13,7 +13,7 @@ import {
   isSetCombination,
 } from '@upsetjs/bundle';
 import powerbi from 'powerbi-visuals-api';
-import { IPowerBIElem, isPowerBiSetLike } from './interfaces';
+import { IPowerBIElem } from './interfaces';
 
 export function createContextMenuHandler(selectionManager: powerbi.extensibility.ISelectionManager) {
   return (selection: ISetLike<IPowerBIElem> | null, evt: MouseEvent) => {
@@ -21,7 +21,7 @@ export function createContextMenuHandler(selectionManager: powerbi.extensibility
     if (!selection) {
       return;
     }
-    const sel = isPowerBiSetLike(selection) ? selection : selection.elems[0];
+    const sel = selection.elems[0];
     const id = sel && sel.s != null ? sel.s : {};
     selectionManager.showContextMenu(id, {
       x: evt.clientX,
@@ -40,7 +40,7 @@ export function createSelectionHandler(
         selectImpl(null);
       });
     } else {
-      const sel = isPowerBiSetLike(selection) ? selection.s : selection.elems.map((e) => e.s!);
+      const sel = selection.elems.map((e) => e.s!);
       selectionManager.select(sel).then(() => {
         selectImpl(selection);
       });
@@ -110,7 +110,7 @@ export function createTooltipHandler(
     const bb = target.getBoundingClientRect();
     const coordinates = [evt.clientX - bb.left - target.clientLeft, evt.clientY - bb.top - target.clientTop];
 
-    const sel = isPowerBiSetLike(selection) ? selection.s : selection.elems.map((e) => e.s!);
+    const sel = selection.elems.map((e) => e.s!);
     return <powerbi.extensibility.TooltipShowOptions>{
       isTouchEvent: false,
       coordinates,
