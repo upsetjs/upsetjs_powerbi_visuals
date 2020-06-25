@@ -30,7 +30,24 @@ The UpSet.js visual reacts to selections from other widgets by highlighting the 
 
 ## Venn Diagram
 
-TODO
+In addition, there is a sibling extension for rendering Venn and Euler Diagrams:
+
+![Venn Report](https://user-images.githubusercontent.com/4129778/85765896-d6417900-b716-11ea-8b89-8ae01f6456a0.png)
+
+see also [Sample PBIX file](https://upset.js.org/integrations/powerbi/got_venn.pbix)
+
+### Installation
+
+Download the latest package from [https://upset.js.org/integrations/powerbi/upsetjs_venn.pbiviz](https://upset.js.org/integrations/powerbi/upsetjs_venn.pbiviz) and install into your PowerBI environment.
+
+### Data Roles
+
+The UpSet.js visual has two data roles:
+
+- `Elements` exactly one grouping with a unique identifier for each row (e.g., a name)
+- `Sets` one or more measures or groupings which represent the sets. When it's value at row `i` results in a trueish value (e.g., 1, true, ...) UpSet.js will interpret it that the element at row `i` is part of this set
+
+In addition, the visual supports various styling options including the customization of whether a Venn or an Euler diagram should be generated.
 
 ## Dev Environment
 
