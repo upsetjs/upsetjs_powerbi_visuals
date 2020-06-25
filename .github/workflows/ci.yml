@@ -28,7 +28,7 @@ jobs:
           mkdir -p public/integrations/powerbi
           cp dist/upsetjs.pbiviz public/integrations/powerbi/
           cp README.md public/integrations/powerbi/
-          cp examples/got.pbix public/integrations/powerbi/
+          cp samples/got.pbix public/integrations/powerbi/
 
       - name: Deploy Master
         if: github.ref == 'refs/heads/master' && github.event_name == 'push'
