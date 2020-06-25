@@ -31,7 +31,7 @@
     {
       "name": "attributes",
       "displayName": "Attributes",
-      "description": "zero or more numerical measures which are used to render boxplots",
+      "description": "zero or more numerical/text measures which are used to render boxplots or mosaic plots",
       "kind": "Measure",
       "preferredTypes": [
         {
@@ -39,6 +39,9 @@
         },
         {
           "integer": true
+        },
+        {
+          "text": true
         }
       ]
     }
@@ -52,7 +55,12 @@
       ],
       "categorical": {
         "categories": {
-          "for": { "in": "elements" }
+          "for": { "in": "elements" },
+          "dataReductionAlgorithm": {
+            "window": {
+              "count": 10000
+            }
+          }
         },
         "values": {
           "select": [{ "bind": { "to": "sets" } }, { "bind": { "to": "attributes" } }]
@@ -62,10 +70,38 @@
   ],
   "suppressDefaultTitle": true,
   "objects": {
-    "combinations": {
-      "displayName": "Set Combinations",
+    "license": {
+      "displayName": "License",
       "objectCategory": 1,
       "properties": {
+        "code": {
+          "displayName": "Code",
+          "type": { "text": true }
+        },
+        "info": {
+          "displayName": "Info",
+          "type": { "text": true }
+        },
+        "contact": {
+          "displayName": "Contact",
+          "type": { "text": true }
+        }
+      }
+    },
+    "combinations": {
+      "displayName": "Set Combinations",
+      "objectCategory": 2,
+      "properties": {
+        "show": {
+          "type": {
+            "bool": true
+          }
+        },
+        "displayName": {
+          "type": {
+            "text": true
+          }
+        },
         "type": {
           "displayName": "Generation Mode",
           "type": {
@@ -77,6 +113,10 @@
               {
                 "displayName": "Set Unions",
                 "value": "union"
+              },
+              {
+                "displayName": "Distinct Set Intersections",
+                "value": "distinctIntersection"
               }
             ]
           }
@@ -135,28 +175,30 @@
           "type": {
             "enumeration": [
               {
+                "displayName": "Light",
+                "value": "light"
+              },
+              {
+                "displayName": "PowerBI",
+                "value": "powerbi"
+              },
+              {
+                "displayName": "PowerBI Auto",
+                "value": "auto"
+              },
+              {
                 "displayName": "Dark",
                 "value": "dark"
               },
               {
-                "displayName": "Light",
-                "value": "light"
+                "displayName": "Vega",
+                "value": "vega"
               }
             ]
           }
         },
         "selectionColor": {
           "displayName": "Selection Color",
-          "type": {
-            "fill": {
-              "solid": {
-                "color": true
-              }
-            }
-          }
-        },
-        "alternatingBackgroundColor": {
-          "displayName": "Alternating Background Color",
           "type": {
             "fill": {
               "solid": {
@@ -173,6 +215,28 @@
                 "color": true
               }
             }
+          }
+        },
+        "opacity": {
+          "displayName": "Opacity",
+          "type": {
+            "numeric": true
+          }
+        },
+        "hasSelectionColor": {
+          "displayName": "Color when selection is present",
+          "type": {
+            "fill": {
+              "solid": {
+                "color": true
+              }
+            }
+          }
+        },
+        "hasSelectionOpacity": {
+          "displayName": "Opacity when selection is present",
+          "type": {
+            "numeric": true
           }
         },
         "textColor": {
@@ -197,6 +261,49 @@
         },
         "notMemberColor": {
           "displayName": "Not Member Color",
+          "type": {
+            "fill": {
+              "solid": {
+                "color": true
+              }
+            }
+          }
+        },
+        "alternatingBackgroundColor": {
+          "displayName": "Alternating Background Color",
+          "type": {
+            "fill": {
+              "solid": {
+                "color": true
+              }
+            }
+          }
+        }
+      }
+    },
+    "setColors": {
+      "displayName": "Set Colors",
+      "objectCategory": 1,
+      "properties": {
+        "fill": {
+          "displayName": "Color",
+          "type": {
+            "fill": {
+              "solid": {
+                "color": true
+              }
+            }
+          }
+        }
+      }
+    },
+    "attributeColors": {
+      "displayName": "Attribute Colors",
+      "objectCategory": 1,
+      "description": "customize the colors of categorical attributes",
+      "properties": {
+        "fill": {
+          "displayName": "Color",
           "type": {
             "fill": {
               "solid": {
@@ -244,7 +351,51 @@
           }
         }
       }
+    },
+    "fonts": {
+      "displayName": "Fonts",
+      "properties": {
+        "fontFamily": {
+          "displayName": "Font Family",
+          "type": {
+            "formatting": {
+              "fontFamily": true
+            }
+          }
+        },
+        "chartLabel": {
+          "displayName": "Chart Label",
+          "type": {
+            "formatting": {
+              "fontSize": true
+            }
+          }
+        },
+        "setLabel": {
+          "displayName": "Set Label",
+          "type": {
+            "formatting": {
+              "fontSize": true
+            }
+          }
+        },
+        "barLabel": {
+          "displayName": "Bar Label",
+          "type": {
+            "formatting": {
+              "fontSize": true
+            }
+          }
+        }
+      }
     }
   },
-  "supportsHighlight": true
+  "supportsHighlight": true,
+  "tooltips": {
+    "supportedTypes": {
+      "default": true,
+      "canvas": true
+    },
+    "roles": ["tooltips"]
+  }
 }

@@ -9,6 +9,7 @@
     "moduleResolution": "node",
     "declaration": true,
     "lib": ["es2015", "dom"],
+    "resolveJsonModule": true,
     "baseUrl": "./",
     "paths": {
       "@": ["./"],

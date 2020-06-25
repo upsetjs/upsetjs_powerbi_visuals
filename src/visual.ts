@@ -5,87 +5,60 @@
  * Copyright (c) 2020 Samuel Gratzl <sam@sgratzl.com>
  */
 
-import 'core-js/stable';
-import powerbi from 'powerbi-visuals-api';
-import VisualConstructorOptions = powerbi.extensibility.visual.VisualConstructorOptions;
-import VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
-import IVisual = powerbi.extensibility.visual.IVisual;
-import EnumerateVisualObjectInstancesOptions = powerbi.EnumerateVisualObjectInstancesOptions;
-import VisualObjectInstance = powerbi.VisualObjectInstance;
-import DataView = powerbi.DataView;
-import VisualObjectInstanceEnumerationObject = powerbi.VisualObjectInstanceEnumerationObject;
-
-import VisualSettings, { fixOrder } from './VisualSettings';
 import {
-  render,
-  asSets,
-  ISet,
-  UpSetProps,
-  ISetLike,
-  generateCombinations,
-  ISetCombinations,
   boxplotAddon,
+  categoricalAddon,
+  generateCombinations,
+  render,
+  renderSkeleton,
+  UpSetProps,
 } from '@upsetjs/bundle';
+import powerbi from 'powerbi-visuals-api';
+import { extractElems, resolveSelection, extractSets, resolveElementsFromSelection } from './utils/model';
+import { OnHandler, createTooltipHandler, createContextMenuHandler, createSelectionHandler } from './utils/handler';
+import { UpSetCategoricalAttribute, UpSetNumericAttribute, isNumeric } from './utils/attributes';
+import VisualSettings, { UpSetThemeSettings } from './VisualSettings';
+import { IPowerBIElem, IPowerBIElems } from './utils/interfaces';
 
-declare type IPowerBIElem = {
-  s?: powerbi.visuals.ISelectionId;
-  v: powerbi.PrimitiveValue;
-  attrs: number[];
-};
-declare type IPowerBIElems = ReadonlyArray<IPowerBIElem>;
+const EMPTY_ARRAY: any[] = [];
 
-interface IPowerBISet extends ISet<IPowerBIElem> {
-  value: powerbi.DataViewValueColumn;
-}
-
-function isSelection(s: powerbi.extensibility.ISelectionId): s is powerbi.visuals.ISelectionId {
-  return s != null && typeof (<powerbi.visuals.ISelectionId>s).includes === 'function';
-}
-
-export class Visual implements IVisual {
+export class Visual implements powerbi.extensibility.visual.IVisual {
   private readonly target: HTMLElement;
-  private readonly interactive: boolean;
   private settings: VisualSettings = <VisualSettings>VisualSettings.getDefault();
   private readonly selectionManager: powerbi.extensibility.ISelectionManager;
   private readonly host: powerbi.extensibility.visual.IVisualHost;
 
+  private readonly onContextMenu: OnHandler;
+  private readonly setSelection: OnHandler;
+  private readonly onHover: undefined | OnHandler;
+  private readonly onMouseMove: undefined | OnHandler;
+
+  private attributes: (UpSetCategoricalAttribute | UpSetNumericAttribute)[] = [];
+  private elems: IPowerBIElems = [];
   private props: UpSetProps<IPowerBIElem> = { sets: [], width: 100, height: 100 };
 
-  constructor(options: VisualConstructorOptions) {
+  constructor(options: powerbi.extensibility.visual.VisualConstructorOptions) {
     this.target = options.element;
-    this.interactive = options.host.allowInteractions;
     this.selectionManager = options.host.createSelectionManager();
     this.host = options.host;
     this.renderPlaceholder();
-  }
-
-  private setSelection = (selection: ISetLike<IPowerBIElem> | null) => {
-    if (!selection) {
-      this.selectionManager.clear().then(() => {
-        this.props.selection = null;
-        this.render();
-      });
-    } else {
-      this.selectionManager.select(selection.elems.map((e) => e.s!)).then(() => {
-        this.props.selection = selection;
-        this.render();
-      });
-    }
-  };
-
-  private onContextMenu = (selection: ISetLike<IPowerBIElem> | null, evt: MouseEvent) => {
-    this.selectionManager.showContextMenu(selection && selection.elems.length > 0 ? selection.elems[0].s : {}, {
-      x: evt.clientX,
-      y: evt.clientY,
+    [this.onHover, this.onMouseMove] = createTooltipHandler(this.target, this.host);
+    this.onContextMenu = createContextMenuHandler(this.selectionManager);
+    this.setSelection = createSelectionHandler(this.selectionManager, (s) => {
+      this.props.selection = s;
+      this.render();
     });
-    evt.preventDefault();
-  };
+    this.selectionManager.registerOnSelectCallback((ids) => {
+      this.props.selection = resolveElementsFromSelection(ids, this.elems);
+      this.render();
+    });
+  }
 
   private render() {
     render(this.target, this.props);
   }
 
-  update(options: VisualUpdateOptions) {
+  update(options: powerbi.extensibility.visual.VisualUpdateOptions) {
     try {
       this.host.eventService.renderingStarted(options);
       const success = this.renderImpl(options);
@@ -100,98 +73,68 @@ export class Visual implements IVisual {
 
   private renderPlaceholder() {
     this.target.textContent = '';
-    // eslint-disable-next-line @typescript-eslint/tslint/config
-    const ns = 'http://www.w3.org/2000/svg';
-    const doc = this.target.ownerDocument;
-    const svg = doc.createElementNS(ns, 'svg');
-    svg.setAttribute('viewBox', '0 0 300 200');
-    svg.style.width = '100%';
-    svg.style.height = '100%';
     this.target.style.position = 'relative';
-    this.target.appendChild(svg);
-
-    const rect = (x: number, y: number, w: number, h: number, bg: string = '#A6A8AB') => {
-      const rect = doc.createElementNS(ns, 'rect');
-      rect.setAttribute('x', x.toString());
-      rect.setAttribute('y', y.toString());
-      rect.setAttribute('width', w.toString());
-      rect.setAttribute('height', h.toString());
-      rect.setAttribute('fill', bg);
-      return rect;
-    };
-    const circle = (x: number, y: number, d: number, filled: boolean) => {
-      const circle = doc.createElementNS(ns, 'circle');
-      circle.setAttribute('cx', (x + d / 2).toString());
-      circle.setAttribute('cy', (y + d / 2).toString());
-      circle.setAttribute('r', (d / 2).toString());
-      circle.setAttribute('fill', filled ? '#A6A8AB' : '#E1E2E3');
-      return circle;
-    };
-    svg.appendChild(rect(0, 0, 300, 200, '#F4F4F4'));
-    const wi = 20;
-    const padding = 10;
-
-    const sWidth = 75;
-    const sY = 110;
-
-    const cHeight = 100;
-    const csX = 85;
-
-    const cOffsets = [10, 20, 35, 60, 65, 80, 90];
-    const sOffsets = [50, 30, 15];
-    cOffsets.forEach((offset, i) => {
-      svg.appendChild(rect(csX + i * (wi + padding), offset, wi, cHeight - offset));
+    renderSkeleton(this.target, {
+      width: '100%',
+      height: '100%',
     });
-
-    sOffsets.forEach((offset, j) => {
-      svg.appendChild(rect(offset, sY + j * (wi + padding), sWidth - offset, wi));
-    });
-
-    cOffsets.forEach((_, i) => {
-      sOffsets.forEach((_, j) => {
-        const filled = j === 2 - i || (i == 3 && j > 0) || (i === 4 && j !== 1) || (i === 5 && j < 2) || i === 6;
-        svg.appendChild(circle(csX + i * (wi + padding), sY + j * (wi + padding), wi, filled));
-      });
-    });
-    const lw = 6;
-    svg.appendChild(rect(csX + (wi - lw) / 2 + 3 * (wi + padding), sY + 10 + 1 * (wi + padding), lw, 30));
-    svg.appendChild(rect(csX + (wi - lw) / 2 + 4 * (wi + padding), sY + 10, lw, 60));
-    svg.appendChild(rect(csX + (wi - lw) / 2 + 5 * (wi + padding), sY + 10, lw, 30));
-    svg.appendChild(rect(csX + (wi - lw) / 2 + 6 * (wi + padding), sY + 10, lw, 60));
   }
 
-  private renderImpl(options: VisualUpdateOptions) {
+  private renderImpl(options: powerbi.extensibility.visual.VisualUpdateOptions) {
+    // reset watermark
+    this.settings.license.resetWatermark(this.target);
+
     if (options.dataViews.length === 0) {
       return false;
     }
     const dataView = options.dataViews[0];
-    this.settings = Visual.parseSettings(dataView);
+    this.settings = VisualSettings.parse(dataView);
+    if (!dataView.categorical || !dataView.categorical.categories) {
+      return false;
+    }
 
     const areDummyValues = dataView.categorical!.categories.length === 0;
 
-    const elems = this.extractElems(dataView.categorical!);
-    if (elems.length === 0) {
+    // handle window
+    this.elems = extractElems(dataView.categorical!, this.host);
+
+    this.attributes = this.generateAttributes(dataView);
+    const sets =
+      this.elems.length === 0
+        ? []
+        : extractSets(
+            this.elems,
+            dataView.categorical!,
+            this.settings.theme.supportIndividualColors() ? UpSetThemeSettings.SET_COLORS_OBJECT_NAME : undefined
+          );
+
+    if (sets.length === 0 || !dataView.categorical!.values) {
       return false;
     }
-    const sets = this.extractSets(elems, dataView.categorical!);
-    if (sets.length === 0) {
-      return false;
-    }
-    const combinations = generateCombinations(
-      sets,
-      Object.assign({}, this.settings.combinations, {
-        order: fixOrder(this.settings.combinations.order),
-        elems,
-      })
+
+    this.verifyLicense(
+      sets.length,
+      dataView.categorical!.values.reduce((acc, d) => acc + (d.source?.roles?.attributes ? 1 : 0), 0)
     );
+
+    if (dataView.metadata.segment) {
+      // load more chunks
+      requestAnimationFrame(() => this.host.fetchMoreData());
+    }
+
+    const combinations = generateCombinations(sets, this.settings.combinations.generate(this.elems));
     if (combinations.length === 0) {
       return false;
     }
 
-    let selection: IPowerBIElems = this.deriveSelection(elems, dataView.categorical!);
-    if (!selection && !areDummyValues && this.interactive) {
-      selection = this.fromSelection(elems);
-    }
+    const selection = resolveSelection(
+      this.elems,
+      sets,
+      combinations,
+      dataView.categorical!,
+      this.selectionManager,
+      !areDummyValues && this.host.allowInteractions
+    );
 
     this.props = Object.assign(
       {
@@ -199,146 +142,56 @@ export class Visual implements IVisual {
         width: options.viewport.width,
         height: options.viewport.height,
         combinations,
-        selection: this.findSet(selection, sets, combinations),
+        selection,
         exportButtons: false,
       },
-      this.settings.theme.dropDefaults(),
+      this.settings.fonts.generate(),
+      this.settings.theme.generate(this.host.colorPalette, dataView.categorical!),
       this.settings.style
     );
 
-    this.injectAttributes(dataView.categorical!);
+    if (this.attributes.length === 0) {
+      this.props.setAddons = EMPTY_ARRAY;
+      this.props.combinationAddons = EMPTY_ARRAY;
+    } else {
+      this.props.setAddons = this.attributes.map((attr, i) => asAddon(attr, i, false));
+      this.props.combinationAddons = this.attributes.map((attr, i) => asAddon(attr, i, true));
+    }
 
-    if (!areDummyValues && this.interactive) {
+    if (!areDummyValues && this.host.allowInteractions) {
       this.props.onClick = this.setSelection;
       this.props.onContextMenu = this.onContextMenu;
+      this.props.onHover = this.onHover;
+      this.props.onMouseMove = this.onMouseMove;
+      this.props.tooltips = false;
     }
 
     this.render();
     return true;
   }
 
-  private injectAttributes(data: powerbi.DataViewCategorical) {
-    const attrs = data.values.filter((d) => d.source.roles.attributes);
+  private generateAttributes(dataView: powerbi.DataView) {
+    const cat = dataView.categorical!.categories![0];
+    // we need some offset since individual categories cannot be directly selected just categories rows
+    let enumerationOffset = 0;
+    return dataView.categorical!.values
+      ? dataView
+          .categorical!.values.filter((d) => d.source?.roles?.attributes)
+          .map((attr) => {
+            if (isNumeric(attr)) {
+              return new UpSetNumericAttribute(attr);
+            }
+            const c = new UpSetCategoricalAttribute(attr, cat, this.host, enumerationOffset);
+            enumerationOffset += c.categories.length;
+            return c;
+          })
+      : [];
+  }
 
-    if (attrs.length === 0) {
-      return;
-    }
-
-    this.props.setAddons = attrs.map((attr, i) =>
-      boxplotAddon(
-        (v) => v.attrs[i],
-        {
-          min: <number>attr.minLocal,
-          max: <number>attr.maxLocal,
-        },
-        {
-          name: attr.source.displayName,
-        }
-      )
+  private verifyLicense(numSets: number, numAttributes: number) {
+    this.settings.license.updateLicenseState(this.target, this.host, () =>
+      usesProFeatures(numSets, numAttributes, this.settings)
     );
-    this.props.combinationAddons = attrs.map((attr, i) =>
-      boxplotAddon(
-        (v) => v.attrs[i],
-        {
-          min: <number>attr.minLocal,
-          max: <number>attr.maxLocal,
-        },
-        {
-          name: attr.source.displayName,
-          orient: 'vertical',
-        }
-      )
-    );
-  }
-
-  private deriveSelection(elems: IPowerBIElems, data: powerbi.DataViewCategorical) {
-    if (data.values.length === 0 || data.values[0].highlights == null) {
-      return undefined;
-    }
-    return data.values[0].highlights.map((v, i) => (v === null ? null : elems[i])).filter((v) => v !== null);
-  }
-
-  private fromSelection(elems: IPowerBIElems): IPowerBIElems | undefined {
-    const sel = this.selectionManager.getSelectionIds();
-
-    if (sel.length === 0) {
-      return undefined;
-    }
-    return elems.filter((elem) => sel.some((s) => elem === s || (elem.s && isSelection(s) && s.includes(elem.s))));
-  }
-
-  private findSet(
-    selection: IPowerBIElems | undefined,
-    sets: ReadonlyArray<IPowerBISet>,
-    combinations: ISetCombinations<IPowerBIElem>
-  ) {
-    if (!selection || selection.length === 0) {
-      return undefined;
-    }
-    const toFind = new Set(selection);
-    const set = sets.find((s) => {
-      if (s.cardinality !== selection.length) {
-        return false;
-      }
-      return s.elems.every((e) => toFind.has(e));
-    });
-    if (set) {
-      return set;
-    }
-    const c = combinations.find((s) => {
-      if (s.cardinality !== selection.length) {
-        return false;
-      }
-      return s.elems.every((e) => toFind.has(e));
-    });
-    if (c) {
-      return c;
-    }
-    return selection;
-  }
-
-  private extractElems(data: powerbi.DataViewCategorical): IPowerBIElems {
-    const attrs = data.values.filter((d) => d.source.roles.attributes);
-
-    if (data.categories.length === 0) {
-      return data.values.map((_, i) => ({
-        v: i,
-        attrs: attrs.map((attr) => <number>attr.values[i]),
-      }));
-    }
-    const cat = data.categories[0]!;
-    if (!this.interactive) {
-      return cat.values.map((v, i) => ({
-        v,
-        attrs: attrs.map((attr) => <number>attr.values[i]),
-      }));
-    }
-    return cat.values.map((v, i) => ({
-      s: this.host.createSelectionIdBuilder().withCategory(cat, i).createSelectionId(),
-      v,
-      attrs: attrs.map((attr) => <number>attr.values[i]),
-    }));
-  }
-
-  private extractSets(elems: IPowerBIElems, data: powerbi.DataViewCategorical): ReadonlyArray<IPowerBISet> {
-    // just the sets
-    const sets = data.values.filter((d) => d.source.roles.sets);
-    return asSets(
-      sets
-        .map((value) => {
-          const vs = value.values;
-          return {
-            value,
-            name: value.source.displayName,
-            elems: vs.map((v, i) => (v ? elems[i] : null)).filter((v) => v != null),
-          };
-        })
-        .reverse()
-    );
-  }
-
-  private static parseSettings(dataView: DataView): VisualSettings {
-    return VisualSettings.parse(dataView);
   }
 
   /**
@@ -346,9 +199,72 @@ export class Visual implements IVisual {
    * objects and properties you want to expose to the users in the property pane.
    *
    */
-  public enumerateObjectInstances(
-    options: EnumerateVisualObjectInstancesOptions
-  ): VisualObjectInstance[] | VisualObjectInstanceEnumerationObject {
+  enumerateObjectInstances(
+    options: powerbi.EnumerateVisualObjectInstancesOptions
+  ): powerbi.VisualObjectInstance[] | powerbi.VisualObjectInstanceEnumerationObject {
+    if (options.objectName === UpSetThemeSettings.SET_COLORS_OBJECT_NAME) {
+      return this.settings.theme.enumerateSetColors(this.props.sets);
+    }
+    if (options.objectName === UpSetCategoricalAttribute.OBJECT_NAME) {
+      const categoricalAttributes = this.attributes.filter(
+        (d): d is UpSetCategoricalAttribute => d instanceof UpSetCategoricalAttribute
+      );
+      const instances = (<powerbi.VisualObjectInstance[]>[]).concat(
+        ...categoricalAttributes.map((cat) => cat.asPropertyInstance())
+      );
+      return {
+        instances,
+      };
+    }
     return VisualSettings.enumerateObjectInstances(this.settings, options);
   }
+}
+
+function usesProFeatures(numSets: number, numAttributes: number, settings: VisualSettings) {
+  if (numSets > 4 || numAttributes > 0) {
+    return true;
+  }
+
+  const theme = settings.theme;
+  if (theme.theme !== 'light') {
+    return true;
+  }
+
+  const combinations = settings.combinations;
+  if (<string>combinations.order !== 'cardinality,name') {
+    return true;
+  }
+
+  const style = settings.style;
+  if (style.numericScale !== 'linear') {
+    return true;
+  }
+
+  return false;
+}
+
+function asAddon(attr: UpSetNumericAttribute | UpSetCategoricalAttribute, i: number, vertical: boolean) {
+  if (attr instanceof UpSetNumericAttribute) {
+    return boxplotAddon(
+      (v: IPowerBIElem) => <number>v.attrs[i],
+      {
+        min: <number>attr.data.minLocal,
+        max: <number>attr.data.maxLocal,
+      },
+      {
+        name: attr.displayName,
+        orient: vertical ? 'vertical' : 'horizontal',
+      }
+    );
+  }
+  return categoricalAddon(
+    (v: IPowerBIElem) => String(v.attrs[i]),
+    {
+      categories: attr.categories,
+    },
+    {
+      name: attr.displayName,
+      orient: vertical ? 'vertical' : 'horizontal',
+    }
+  );
 }
