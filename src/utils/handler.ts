@@ -33,7 +33,7 @@ export function createContextMenuHandler(selectionManager: powerbi.extensibility
 export function createSelectionHandler(
   selectionManager: powerbi.extensibility.ISelectionManager,
   selectImpl: (v: ISetLike<IPowerBIElem> | null) => void
-) {
+): OnHandler {
   return (selection: ISetLike<IPowerBIElem> | null) => {
     if (!selection) {
       selectionManager.clear().then(() => {

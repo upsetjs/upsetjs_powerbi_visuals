@@ -51,6 +51,14 @@ function deriveHighlight(elems: IPowerBIElems, data: powerbi.DataViewCategorical
     .filter((v): v is IPowerBIElem => v !== null);
 }
 
+export function resolveElementsFromSelection(sel: readonly powerbi.extensibility.ISelectionId[], elems: IPowerBIElems) {
+  if (sel.length === 0) {
+    return null;
+  }
+  // resolve to the elements that are included
+  return elems.filter((elem) => sel.some((s) => elem === s || (elem.s && isSelection(s) && s.includes(elem.s))));
+}
+
 export function resolveSelection(
   elems: IPowerBIElems,
   sets: IPowerBISets,
@@ -66,12 +74,7 @@ export function resolveSelection(
   if (!interactive) {
     return null;
   }
-  const sel = selectionManager.getSelectionIds();
-  if (sel.length === 0) {
-    return null;
-  }
-  // resolve to the elements that are included
-  return elems.filter((elem) => sel.some((s) => elem === s || (elem.s && isSelection(s) && s.includes(elem.s))));
+  return resolveElementsFromSelection(selectionManager.getSelectionIds(), elems);
 }
 
 export function extractElems(
