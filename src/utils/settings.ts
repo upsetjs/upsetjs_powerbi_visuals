@@ -129,6 +129,8 @@ function generateAutoPowerBITheme(
 }
 
 export class UpSetCombinationSettings implements GenerateSetCombinationsOptions {
+  show = true;
+  displayName = 'Intersections';
   type: 'intersection' | 'union' = 'intersection';
   min = 0;
   max = 6;
@@ -137,10 +139,15 @@ export class UpSetCombinationSettings implements GenerateSetCombinationsOptions 
   limit = 100;
 
   generate(elems: IPowerBIElems): GenerateSetCombinationsOptions {
-    return Object.assign({}, this, {
-      order: fixOrder(this.order),
+    return {
+      type: this.type,
+      min: this.min,
+      max: this.max,
+      empty: this.empty,
+      limit: this.limit,
+      order: <'cardinality'>fixOrder(this.order),
       elems,
-    });
+    };
   }
 }
 

@@ -90,8 +90,18 @@
     },
     "combinations": {
       "displayName": "Set Combinations",
-      "objectCategory": 1,
+      "objectCategory": 2,
       "properties": {
+        "show": {
+          "type": {
+            "bool": true
+          }
+        },
+        "displayName": {
+          "type": {
+            "text": true
+          }
+        },
         "type": {
           "displayName": "Generation Mode",
           "type": {
