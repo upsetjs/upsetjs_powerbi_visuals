@@ -86,6 +86,7 @@ export class UpSetFontSizeSettings {
   barLabel = 7; // pt
   chartLabel = 12; // pt
   setLabel = 12; // pt
+  valueLabel = 10; // pt
 
   generate() {
     return {
@@ -94,6 +95,7 @@ export class UpSetFontSizeSettings {
         barLabel: `${this.barLabel}pt`,
         chartLabel: `${this.chartLabel}pt`,
         setLabel: `${this.setLabel}pt`,
+        valueLabel: `${this.valueLabel}pt`,
       },
     };
   }
@@ -107,6 +109,7 @@ function generatePowerBITheme(colorPalette: powerbi.extensibility.ISandboxExtend
     selectionColor: '',
     opacity: 1,
     hasSelectionOpacity: 0.4,
+    filled: true,
   };
 }
 
@@ -125,6 +128,7 @@ function generateAutoPowerBITheme(
     selectionColor: c,
     opacity: 1,
     hasSelectionOpacity: 0.4,
+    filled: true,
   };
 }
 

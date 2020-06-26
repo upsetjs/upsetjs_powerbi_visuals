@@ -30,6 +30,13 @@ export function createContextMenuHandler(selectionManager: powerbi.extensibility
   };
 }
 
+function areEqual<T>(a: readonly T[], b: readonly T[]) {
+  if (a.length !== b.length) {
+    return false;
+  }
+  return a.every((ai, i) => ai === b[i]);
+}
+
 export function createSelectionHandler(
   selectionManager: powerbi.extensibility.ISelectionManager,
   selectImpl: (v: ISetLike<IPowerBIElem> | null) => void
@@ -41,9 +48,16 @@ export function createSelectionHandler(
       });
     } else {
       const sel = selection.elems.map((e) => e.s!);
-      selectionManager.select(sel).then(() => {
-        selectImpl(selection);
-      });
+      const old = selectionManager.getSelectionIds();
+      if (areEqual(sel, old)) {
+        selectionManager.clear().then(() => {
+          selectImpl(null);
+        });
+      } else {
+        selectionManager.select(sel).then(() => {
+          selectImpl(selection);
+        });
+      }
     }
   };
 }
