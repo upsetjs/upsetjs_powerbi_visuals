@@ -39,7 +39,7 @@ jobs:
           publish_branch: master
           publish_dir: ./public
           enable_jekyll: true
-          remove_path_spec: 'integrations/powerbi/'
+          keep_files: true
 
       - if: github.ref == 'refs/heads/develop'
         # move to next directory
@@ -57,4 +57,4 @@ jobs:
           publish_branch: master
           publish_dir: ./public
           enable_jekyll: true
-          remove_path_spec: 'next/integrations/powerbi/'
+          keep_files: true
