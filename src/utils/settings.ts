@@ -135,7 +135,7 @@ function generateAutoPowerBITheme(colorPalette: UniqueColorPalette, data: powerb
 export class UpSetCombinationSettings implements GenerateSetCombinationsOptions {
   show = true;
   displayName = 'Intersections';
-  type: 'intersection' | 'union' = 'intersection';
+  mode: 'intersection' | 'union' | 'distinctIntersection' = 'intersection';
   min = 0;
   max = 6;
   empty = false;
@@ -144,7 +144,7 @@ export class UpSetCombinationSettings implements GenerateSetCombinationsOptions 
 
   generate(elems: IPowerBIElems): GenerateSetCombinationsOptions {
     return {
-      type: this.type,
+      type: this.mode,
       min: this.min,
       max: this.max,
       empty: this.empty,
