@@ -102,7 +102,7 @@
             "text": true
           }
         },
-        "type": {
+        "mode": {
           "displayName": "Generation Mode",
           "type": {
             "enumeration": [
