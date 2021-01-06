@@ -2,7 +2,7 @@
  * @upsetjs/powerbi_visuals
  * https://github.com/upsetjs/upsetjs_powerbi_visuals
  *
- * Copyright (c) 2020 Samuel Gratzl <sam@sgratzl.com>
+ * Copyright (c) 2021 Samuel Gratzl <sam@sgratzl.com>
  */
 
 import {
@@ -109,11 +109,11 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
       this.elems.length === 0
         ? []
         : extractSets(
-            this.elems,
-            dataView.categorical!,
-            this.colorPalette,
-            this.settings.theme.supportIndividualColors() ? UpSetThemeSettings.SET_COLORS_OBJECT_NAME : undefined
-          );
+          this.elems,
+          dataView.categorical!,
+          this.colorPalette,
+          this.settings.theme.supportIndividualColors() ? UpSetThemeSettings.SET_COLORS_OBJECT_NAME : undefined
+        );
 
     if (sets.length === 0 || !dataView.categorical!.values) {
       this.colorPalette.clear();
@@ -184,15 +184,15 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
     let enumerationOffset = 0;
     return dataView.categorical!.values
       ? dataView
-          .categorical!.values.filter((d) => d.source?.roles?.attributes)
-          .map((attr) => {
-            if (isNumeric(attr)) {
-              return new UpSetNumericAttribute(attr);
-            }
-            const c = new UpSetCategoricalAttribute(attr, cat, this.host, enumerationOffset);
-            enumerationOffset += c.categories.length;
-            return c;
-          })
+        .categorical!.values.filter((d) => d.source?.roles?.attributes)
+        .map((attr) => {
+          if (isNumeric(attr)) {
+            return new UpSetNumericAttribute(attr);
+          }
+          const c = new UpSetCategoricalAttribute(attr, cat, this.host, enumerationOffset);
+          enumerationOffset += c.categories.length;
+          return c;
+        })
       : [];
   }
 
