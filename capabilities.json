@@ -90,6 +90,39 @@
         }
       }
     },
+    "sets": {
+      "displayName": "Sets",
+      "objectCategory": 2,
+      "properties": {
+        "show": {
+          "type": {
+            "bool": true
+          }
+        },
+        "displayName": {
+          "type": {
+            "text": true
+          }
+        },
+        "order": {
+          "displayName": "Order Sets By",
+          "type": {
+            "enumeration": [
+              { "value": "inherit", "displayName": "Inherit Order" },
+              { "value": "name", "displayName": "Name" },
+              { "value": "cardinality", "displayName": "Cardinality" },
+              { "value": "cardinality:desc", "displayName": "Cardinality (decreasing)" }
+            ]
+          }
+        },
+        "limit": {
+          "displayName": "Limit to Top N Sets",
+          "type": {
+            "numeric": true
+          }
+        }
+      }
+    },
     "combinations": {
       "displayName": "Set Combinations",
       "objectCategory": 2,

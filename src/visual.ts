@@ -121,6 +121,7 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
         : extractSets(
             this.elems,
             dataView.categorical!,
+            this.settings.sets,
             this.colorPalette,
             this.settings.theme.supportIndividualColors() ? UpSetThemeSettings.SET_COLORS_OBJECT_NAME : undefined
           );
@@ -135,7 +136,8 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
       dataView.categorical!.values.reduce((acc, d) => acc + (d.source?.roles?.attributes ? 1 : 0), 0)
     );
 
-    if (dataView.metadata.segment) {
+    const hasMore = Boolean(dataView.metadata.segment);
+    if (hasMore) {
       // load more chunks
       requestAnimationFrame(() => this.host.fetchMoreData());
     }

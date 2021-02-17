@@ -22,6 +22,7 @@ export default class VisualSettings extends dataViewObjectsParser.DataViewObject
   readonly theme = new UpSetThemeSettings();
   readonly fonts = new UpSetFontSizeSettings();
   readonly combinations = new UpSetCombinationSettings();
+  readonly sets = new UpSetSetSettings();
   readonly style = new UpSetStyleSettings();
 }
 
@@ -40,4 +41,11 @@ export class UpSetStyleSettings {
   setMaxScale = defaults.setMaxScale;
   combinationNameAxisOffset = defaults.combinationNameAxisOffset;
   combinationMaxScale = defaults.combinationMaxScale;
+}
+
+export class UpSetSetSettings {
+  show = true;
+  displayName = 'Sets';
+  order = 'inherit';
+  limit = 10;
 }

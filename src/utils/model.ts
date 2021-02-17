@@ -4,8 +4,9 @@
  *
  * Copyright (c) 2021 Samuel Gratzl <sam@sgratzl.com>
  */
-import { asSets, ISetCombinations } from '@upsetjs/bundle';
+import { asSets, ISet, ISetCombinations } from '@upsetjs/bundle';
 import powerbi from 'powerbi-visuals-api';
+import { UpSetSetSettings } from 'VisualSettings';
 import { IPowerBIElem, IPowerBIElems, IPowerBISet, IPowerBISetCombinations, IPowerBISets } from './interfaces';
 import { UniqueColorPalette } from './UniqueColorPalette';
 
@@ -114,6 +115,7 @@ export function extractElems(
 export function extractSets(
   elems: IPowerBIElems,
   data: powerbi.DataViewCategorical,
+  options: UpSetSetSettings,
   colorPalette: UniqueColorPalette,
   setColorObjectName?: string
 ): ReadonlyArray<IPowerBISet> {
@@ -131,25 +133,51 @@ export function extractSets(
     }
     return base;
   };
-  return asSets(
-    sets
-      .map((value) => {
-        const setElems: IPowerBIElem[] = [];
-        value.values.forEach((v, i) => {
-          if (!v) {
-            return;
-          }
-          // trueish
-          const elem = elems[i];
-          setElems.push(elem);
-        });
-        return {
-          value,
-          name: value.source.displayName,
-          elems: setElems,
-          color: resolveColor(value),
-        };
-      })
-      .reverse()
+  const setObjects = asSets(
+    sets.map((value) => {
+      const setElems: IPowerBIElem[] = [];
+      value.values.forEach((v, i) => {
+        if (!v) {
+          return;
+        }
+        // trueish
+        const elem = elems[i];
+        setElems.push(elem);
+      });
+      return {
+        value,
+        name: value.source.displayName,
+        elems: setElems,
+        color: resolveColor(value),
+      };
+    })
   );
+
+  const byName = (a: ISet<IPowerBIElem>, b: ISet<IPowerBIElem>) => a.name.localeCompare(b.name);
+  if (options.order === 'cardinality:desc') {
+    setObjects.sort((a, b) => {
+      if (a.cardinality === b.cardinality) {
+        return byName(a, b);
+      }
+      return b.cardinality - a.cardinality;
+    });
+  } else if (options.order === 'cardinality') {
+    setObjects.sort((a, b) => {
+      if (a.cardinality === b.cardinality) {
+        return byName(a, b);
+      }
+      return a.cardinality - b.cardinality;
+    });
+  } else if (options.order === 'name') {
+    setObjects.sort(byName);
+  }
+
+  if (setObjects.length > options.limit) {
+    setObjects.splice(options.limit, setObjects.length - options.limit);
+  }
+
+  // for visual order
+  setObjects.reverse();
+
+  return setObjects;
 }
