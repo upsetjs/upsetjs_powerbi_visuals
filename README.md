@@ -51,7 +51,7 @@ In addition, the visual supports various styling options including the customiza
 
 ## Dev Environment
 
-see also https://docs.microsoft.com/en-us/power-bi/developer/visuals/custom-visual-develop-tutorial
+see also https://docs.microsoft.com/en-us/power-bi/developer/visuals/environment-setup
 
 ```sh
 npm i

@@ -76,10 +76,12 @@
       "properties": {
         "code": {
           "displayName": "Code",
+          "description": "license Code",
           "type": { "text": true }
         },
         "info": {
           "displayName": "Info",
+          "description": "will print whether the license could be verified",
           "type": { "text": true }
         },
         "contact": {
@@ -104,6 +106,7 @@
         },
         "mode": {
           "displayName": "Generation Mode",
+          "description": "specify the set combination generation mode",
           "type": {
             "enumeration": [
               {
@@ -123,12 +126,14 @@
         },
         "min": {
           "displayName": "Minimum Degree",
+          "description": "minimum number of sets in a set combination",
           "type": {
             "numeric": true
           }
         },
         "max": {
           "displayName": "Maximum Degree",
+          "description": "maximum number of sets in a set combination",
           "type": {
             "numeric": true
           }
@@ -332,6 +337,16 @@
             "text": true
           }
         },
+        "setLabelAlignment": {
+          "displayName": "Set Label Alignment",
+          "type": {
+            "enumeration": [
+              { "displayName": "Left", "value": "left" },
+              { "displayName": "Center", "value": "center" },
+              { "displayName": "Right", "value": "right" }
+            ]
+          }
+        },
         "combinationName": {
           "displayName": "Combination Axis Name",
           "type": {
@@ -346,6 +361,18 @@
         },
         "combinationNameAxisOffset": {
           "displayName": "Combination Axis Offset",
+          "type": {
+            "numeric": true
+          }
+        },
+        "setMaxScale": {
+          "displayName": "Set Scale Maximum",
+          "type": {
+            "numeric": true
+          }
+        },
+        "combinationScaleMax": {
+          "displayName": "Combination Scale Maximum",
           "type": {
             "numeric": true
           }

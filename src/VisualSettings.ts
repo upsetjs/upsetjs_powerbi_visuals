@@ -33,8 +33,11 @@ export class UpSetThemeSettings extends UpSetBaseThemeSettings {
 
 export class UpSetStyleSettings {
   setName = defaults.setName;
+  setLabelAlignment = defaults.setLabelAlignment;
   combinationName = defaults.combinationName;
   numericScale = defaults.numericScale;
   setNameAxisOffset = defaults.setNameAxisOffset;
+  setMaxScale = defaults.setMaxScale;
   combinationNameAxisOffset = defaults.combinationNameAxisOffset;
+  combinationMaxScale = defaults.combinationMaxScale;
 }
