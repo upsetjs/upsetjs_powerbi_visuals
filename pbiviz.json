@@ -10,7 +10,7 @@
     "supportUrl": "https://www.sgratzl.com",
     "gitHubUrl": "https://github.com/upsetjs/upsetjs_powerbi_visuals"
   },
-  "apiVersion": "3.2.0",
+  "apiVersion": "3.5.1",
   "author": {
     "name": "Samuel Gratzl",
     "email": "sam@sgratzl.com"
