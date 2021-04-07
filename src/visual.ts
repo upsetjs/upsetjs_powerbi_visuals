@@ -142,7 +142,11 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
       requestAnimationFrame(() => this.host.fetchMoreData());
     }
 
-    const combinations = generateCombinations(sets, this.settings.combinations.generate(this.elems));
+    const genOptions = this.settings.combinations.generate(this.elems);
+    if (!this.settings.theme.deriveCombinationColor) {
+      genOptions.mergeColors = () => undefined;
+    }
+    const combinations = generateCombinations(sets, genOptions);
     if (combinations.length === 0) {
       return false;
     }

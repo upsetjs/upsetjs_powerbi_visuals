@@ -221,6 +221,10 @@
                 "value": "powerbi"
               },
               {
+                "displayName": "Set Colors",
+                "value": "powerbi-set"
+              },
+              {
                 "displayName": "Single Color",
                 "value": "auto"
               },

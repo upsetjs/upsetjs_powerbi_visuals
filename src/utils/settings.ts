@@ -15,6 +15,7 @@ export const defaults = fillDefaults({ sets: [], width: 100, height: 100 });
 export class UpSetBaseThemeSettings {
   static readonly SET_COLORS_OBJECT_NAME = 'setColors';
   static readonly POWERBI_THEME = 'powerbi';
+  static readonly POWERBI_SET_COLORS_THEME = 'powerbi-set';
   static readonly POWERBI_AUTO_THEME = 'auto';
 
   theme = 'light';
@@ -30,7 +31,7 @@ export class UpSetBaseThemeSettings {
       (d) => typeof this[d] === 'string' || typeof this[d] === 'number'
     );
     const r: any = {};
-    if (this.theme === UpSetBaseThemeSettings.POWERBI_THEME) {
+    if (this.supportIndividualColors()) {
       Object.assign(r, generatePowerBITheme(colorPalette));
     } else if (this.theme === UpSetBaseThemeSettings.POWERBI_AUTO_THEME) {
       Object.assign(r, generateAutoPowerBITheme(colorPalette, data));
@@ -48,7 +49,14 @@ export class UpSetBaseThemeSettings {
   }
 
   supportIndividualColors() {
-    return this.theme === UpSetBaseThemeSettings.POWERBI_THEME;
+    return (
+      this.theme === UpSetBaseThemeSettings.POWERBI_THEME ||
+      this.theme === UpSetBaseThemeSettings.POWERBI_SET_COLORS_THEME
+    );
+  }
+
+  get deriveCombinationColor() {
+    return this.theme !== UpSetBaseThemeSettings.POWERBI_SET_COLORS_THEME;
   }
 
   enumerateSetColors(sets: ISets<IPowerBIElem>): powerbi.VisualObjectInstanceEnumerationObject {
