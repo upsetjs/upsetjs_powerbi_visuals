@@ -1,7 +1,7 @@
 {
   "name": "@upsetjs/powerbi_visuals",
   "description": "UpSet.js is a re-implementation of UpSetR to create interactive set visualizations for more than three sets",
-  "version": "1.9.0",
+  "version": "1.9.1",
   "license": "SEE LICENSE IN LICENSE.md",
   "author": {
     "name": "Samuel Gratzl",
@@ -20,7 +20,8 @@
     "pbiviz": "pbiviz",
     "start": "pbiviz start",
     "test": "echo no tests",
-    "build": "npx shx rm -rf dist && pbiviz package && npx shx cp dist/upSetJS* dist/upsetjs.pbiviz",
+    "build:preview": "npx shx mv pbiviz.json pbiviz.bak.json && npx shx cp pbiviz_preview.json pbiviz.json && pbiviz package && npx shx mv dist/upSetJS* dist/upsetjs_preview.pbiviz && npx shx rm pbiviz.json && npx shx mv pbiviz.bak.json pbiviz.json",
+    "build": "npx shx rm -rf dist && npm run build:preview && pbiviz package && npx shx cp dist/upSetJS* dist/upsetjs.pbiviz",
     "lint": "npm run eslint && npm run prettier",
     "fix": "npm run eslint:fix && npm run prettier:write",
     "prettier:impl": "prettier \"*.{md,json,yml}\" .eslintrc.js .prettierrc.js \"{src,scripts,.github}/**\"",
@@ -36,7 +37,7 @@
     "@babel/runtime-corejs3": "^7.13.10",
     "@upsetjs/bundle": "~1.9.1",
     "core-js": "^3.10.0",
-    "powerbi-visuals-api": "^3.6.0",
+    "powerbi-visuals-api": "^3.5.1",
     "powerbi-visuals-utils-dataviewutils": "^2.4.1"
   },
   "devDependencies": {
