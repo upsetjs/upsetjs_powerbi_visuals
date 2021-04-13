@@ -37,7 +37,7 @@ jobs:
           cp README.md public/integrations/powerbi/
           cp samples/got.pbix public/integrations/powerbi/
 
-      - name: Deploy Master
+      - name: Deploy Main
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         uses: upsetjs/actions-gh-pages@sgratzl
         env:
@@ -45,7 +45,7 @@ jobs:
         with:
           deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
           external_repository: upsetjs/upsetjs.github.io
-          publish_branch: master
+          publish_branch: main
           publish_dir: ./public
           enable_jekyll: true
           keep_files: true
@@ -65,7 +65,7 @@ jobs:
         with:
           deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
           external_repository: upsetjs/upsetjs.github.io
-          publish_branch: master
+          publish_branch: main
           publish_dir: ./public
           enable_jekyll: true
           keep_files: true
