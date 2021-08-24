@@ -150,7 +150,7 @@ export class UpSetCombinationSettings implements GenerateSetCombinationsOptions 
   order = <'cardinality'>'cardinality,name';
   limit = 100;
 
-  generate(elems: IPowerBIElems): GenerateSetCombinationsOptions {
+  generate(): GenerateSetCombinationsOptions<IPowerBIElem> {
     return {
       type: this.mode,
       min: this.min,
@@ -158,7 +158,6 @@ export class UpSetCombinationSettings implements GenerateSetCombinationsOptions 
       empty: this.empty,
       limit: this.limit,
       order: <'cardinality'>fixOrder(this.order),
-      elems,
     };
   }
 }

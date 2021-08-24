@@ -13,6 +13,7 @@ export declare type IPowerBIElem = {
   cat?: powerbi.DataViewCategoryColumn;
   i: number;
   attrs: (number | string)[];
+  count: number;
 };
 
 export declare type IPowerBIElems = readonly IPowerBIElem[];

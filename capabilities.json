@@ -44,6 +44,20 @@
           "text": true
         }
       ]
+    },
+    {
+      "name": "counts",
+      "displayName": "Cardinality Measure",
+      "description": "numerical measure defining the number of elements in the set, if not given, it will be assumed to be 1",
+      "kind": "Measure",
+      "preferredTypes": [
+        {
+          "numeric": true
+        },
+        {
+          "integer": true
+        }
+      ]
     }
   ],
   "dataViewMappings": [
@@ -51,6 +65,9 @@
       "conditions": [
         {
           "elements": { "max": 1 }
+        },
+        {
+          "counts": { "max": 1 }
         }
       ],
       "categorical": {
@@ -63,7 +80,7 @@
           }
         },
         "values": {
-          "select": [{ "bind": { "to": "sets" } }, { "bind": { "to": "attributes" } }]
+          "select": [{ "bind": { "to": "sets" } }, { "bind": { "to": "attributes" } }, { "bind": { "to": "counts" } }]
         }
       }
     }

@@ -83,7 +83,8 @@ export function extractElems(
   data: powerbi.DataViewCategorical,
   host: powerbi.extensibility.visual.IVisualHost
 ): IPowerBIElems {
-  const attrs = data.values ? data.values.filter((d) => d.source?.roles?.attributes) : [];
+  const attrs = data.values?.filter((d) => d.source?.roles?.attributes) ?? [];
+  const countColumn = data.values?.find((d) => d.source?.roles?.counts);
 
   if (!data.categories || data.categories.length === 0) {
     if (!data.values) {
@@ -93,6 +94,7 @@ export function extractElems(
       v: i,
       i,
       attrs: attrs.map((attr) => <number>attr.values[i]),
+      count: countColumn ? <number>countColumn.values[i] : 1,
     }));
   }
   const cat = data.categories[0]!;
@@ -101,6 +103,7 @@ export function extractElems(
       v,
       i,
       attrs: attrs.map((attr) => <number>attr.values[i]),
+      count: countColumn ? <number>countColumn.values[i] : 1,
     }));
   }
   return cat.values.map((v, i) => ({
@@ -109,20 +112,12 @@ export function extractElems(
     cat,
     i,
     attrs: attrs.map((attr) => <number>attr.values[i]),
+    count: countColumn ? <number>countColumn.values[i] : 1,
   }));
 }
 
-export function extractSets(
-  elems: IPowerBIElems,
-  data: powerbi.DataViewCategorical,
-  options: UpSetSetSettings,
-  colorPalette: UniqueColorPalette,
-  setColorObjectName?: string
-): ReadonlyArray<IPowerBISet> {
-  // just the sets
-  const sets = data.values ? data.values.filter((d) => d.source?.roles?.sets) : [];
-
-  const resolveColor = (value: powerbi.DataViewValueColumn) => {
+export function createColorResolver(colorPalette: UniqueColorPalette, setColorObjectName?: string) {
+  return (value: powerbi.DataViewValueColumn) => {
     if (!setColorObjectName) {
       return undefined;
     }
@@ -133,11 +128,22 @@ export function extractSets(
     }
     return base;
   };
+}
+
+export function extractSets(
+  elems: IPowerBIElems,
+  data: powerbi.DataViewCategorical,
+  options: UpSetSetSettings,
+  colorResolver: (value: powerbi.DataViewValueColumn) => string | undefined
+): readonly IPowerBISet[] {
+  // just the sets
+  const sets = data.values ? data.values.filter((d) => d.source?.roles?.sets) : [];
+
   const setObjects = asSets(
     sets.map((value) => {
       const setElems: IPowerBIElem[] = [];
       value.values.forEach((v, i) => {
-        if (!v) {
+        if (!v || String(v).toLowerCase().startsWith('f')) {
           return;
         }
         // trueish
@@ -148,11 +154,15 @@ export function extractSets(
         value,
         name: value.source.displayName,
         elems: setElems,
-        color: resolveColor(value),
+        color: colorResolver(value),
       };
     })
   );
 
+  return postProcessSets(options, setObjects);
+}
+
+function postProcessSets(options: UpSetSetSettings, setObjects: IPowerBISet[]): readonly IPowerBISet[] {
   const byName = (a: ISet<IPowerBIElem>, b: ISet<IPowerBIElem>) => a.name.localeCompare(b.name);
   if (options.order === 'cardinality:desc') {
     setObjects.sort((a, b) => {
