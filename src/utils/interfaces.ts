@@ -20,6 +20,7 @@ export declare type IPowerBIElems = readonly IPowerBIElem[];
 
 export interface IPowerBISet extends ISet<IPowerBIElem> {
   value: powerbi.DataViewValueColumn;
+  index: number;
 }
 
 export declare type IPowerBISetCombination = ISetCombination<IPowerBIElem>;

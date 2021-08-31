@@ -5,21 +5,14 @@
  * Copyright (c) 2021 Samuel Gratzl <sam@sgratzl.com>
  */
 
-import {
-  boxplotAddon,
-  categoricalAddon,
-  generateCombinations,
-  render,
-  renderSkeleton,
-  UpSetProps,
-} from '@upsetjs/bundle';
+import { boxplotAddon, categoricalAddon, render, renderSkeleton, UpSetProps } from '@upsetjs/bundle';
 import powerbi from 'powerbi-visuals-api';
 import {
   extractElems,
   resolveSelection,
-  extractSets,
   resolveElementsFromSelection,
   createColorResolver,
+  extractSetsAndCombinations,
 } from './utils/model';
 import { OnHandler, createTooltipHandler, createContextMenuHandler, createSelectionHandler } from './utils/handler';
 import { UpSetCategoricalAttribute, UpSetNumericAttribute, isNumeric } from './utils/attributes';
@@ -189,7 +182,6 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
   }
 
   private generateSetsAndCombinations(dataView: powerbi.DataView) {
-    const hasCountColumn = dataView.categorical!.values?.find((d) => d.source?.roles?.counts) != null;
     const { rows, settings } = this;
 
     if (rows.length === 0) {
@@ -201,13 +193,13 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
       settings.theme.supportIndividualColors() ? UpSetThemeSettings.SET_COLORS_OBJECT_NAME : undefined
     );
 
-    const sets = extractSets(rows, dataView.categorical!, settings.sets, colorResolver);
-    if (sets.length === 0) {
-      return { sets, combinations: [] };
-    }
-    const genOptions = this.deriveOptions();
-    const combinations = generateCombinations(sets, genOptions);
-    return { sets, combinations };
+    return extractSetsAndCombinations(
+      rows,
+      dataView.categorical!,
+      this.settings.sets,
+      colorResolver,
+      this.deriveOptions()
+    );
   }
 
   private deriveOptions() {

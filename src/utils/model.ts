@@ -4,7 +4,15 @@
  *
  * Copyright (c) 2021 Samuel Gratzl <sam@sgratzl.com>
  */
-import { asSets, ISet, ISetCombinations } from '@upsetjs/bundle';
+import {
+  asSets,
+  extractFromExpression,
+  ExtractFromExpressionOptions,
+  generateCombinations,
+  GenerateSetCombinationsOptions,
+  ISet,
+  ISetCombinations,
+} from '@upsetjs/bundle';
 import powerbi from 'powerbi-visuals-api';
 import { UpSetSetSettings } from 'VisualSettings';
 import { IPowerBIElem, IPowerBIElems, IPowerBISet, IPowerBISetCombinations, IPowerBISets } from './interfaces';
@@ -130,31 +138,39 @@ export function createColorResolver(colorPalette: UniqueColorPalette, setColorOb
   };
 }
 
-export function extractSets(
-  elems: IPowerBIElems,
+function isPartOfSet(v: powerbi.PrimitiveValue) {
+  return !(!v || String(v).toLowerCase().startsWith('f'));
+}
+
+function extractBaseSets(
   data: powerbi.DataViewCategorical,
-  options: UpSetSetSettings,
   colorResolver: (value: powerbi.DataViewValueColumn) => string | undefined
-): readonly IPowerBISet[] {
+) {
   // just the sets
   const sets = data.values ? data.values.filter((d) => d.source?.roles?.sets) : [];
+  return sets.map((value, i) => {
+    return {
+      value,
+      index: i,
+      values: value.values,
+      name: value.source.displayName,
+      color: colorResolver(value),
+    };
+  });
+}
 
+function extractSets(
+  elems: IPowerBIElems,
+  baseSets: ReturnType<typeof extractBaseSets>,
+  options: UpSetSetSettings
+): readonly IPowerBISet[] {
   const setObjects = asSets(
-    sets.map((value) => {
-      const setElems: IPowerBIElem[] = [];
-      value.values.forEach((v, i) => {
-        if (!v || String(v).toLowerCase().startsWith('f')) {
-          return;
-        }
-        // trueish
-        const elem = elems[i];
-        setElems.push(elem);
-      });
+    baseSets.map((s) => {
+      const setElems = elems.filter((_, i) => isPartOfSet(s.values[i]));
       return {
-        value,
-        name: value.source.displayName,
+        ...s,
         elems: setElems,
-        color: colorResolver(value),
+        cardinality: setElems.reduce((acc, elem) => acc + elem.count, 0),
       };
     })
   );
@@ -180,8 +196,9 @@ function postProcessSets(options: UpSetSetSettings, setObjects: IPowerBISet[]): 
     });
   } else if (options.order === 'name') {
     setObjects.sort(byName);
+  } else if (options.order === 'inherit') {
+    setObjects.sort((a, b) => a.index - b.index);
   }
-
   if (setObjects.length > options.limit) {
     setObjects.splice(options.limit, setObjects.length - options.limit);
   }
@@ -190,4 +207,80 @@ function postProcessSets(options: UpSetSetSettings, setObjects: IPowerBISet[]): 
   setObjects.reverse();
 
   return setObjects;
+}
+
+function extractExpressionInput(
+  elems: IPowerBIElems,
+  baseSets: ReturnType<typeof extractBaseSets>,
+  options: UpSetSetSettings,
+  genOptions: GenerateSetCombinationsOptions<IPowerBIElem>
+): {
+  sets: IPowerBISets;
+  combinations: IPowerBISetCombinations;
+} {
+  const type = genOptions.type ?? 'distinctIntersection';
+  const { sets, combinations } = extractFromExpression(
+    elems.map((elem, i) => {
+      return {
+        index: i,
+        elems: [elem],
+        cardinality: elem.count,
+      };
+    }),
+    (e) => baseSets.filter((d) => isPartOfSet(d.values[e.index])).map((d) => d.name),
+    {
+      setOrder: <ExtractFromExpressionOptions['setOrder']>options.order,
+      combinationOrder: genOptions.order,
+      type,
+    }
+  );
+  const byName = new Map(baseSets.map((s) => [s.name, s]));
+  const typedCombinations = <IPowerBISetCombinations>combinations;
+  const typedSets: IPowerBISets = postProcessSets(
+    options,
+    sets.map((s) => {
+      const base = byName.get(s.name);
+      if (base) {
+        Object.assign(s, base);
+      }
+      if (type === 'distinctIntersection') {
+        // combine all elements into it
+        Object.assign(s, {
+          elems: combinations
+            .filter((d) => d.sets.has(s))
+            .reduce((acc, d) => {
+              acc.push(...(<IPowerBIElem[]>d.elems));
+              return acc;
+            }, <IPowerBIElem[]>[]),
+        });
+      }
+      return <IPowerBISet>s;
+    })
+  );
+  return { sets: typedSets, combinations: typedCombinations };
+}
+
+export function extractSetsAndCombinations(
+  elems: IPowerBIElems,
+  data: powerbi.DataViewCategorical,
+  options: UpSetSetSettings,
+  colorResolver: (value: powerbi.DataViewValueColumn) => string | undefined,
+  genOptions: GenerateSetCombinationsOptions<IPowerBIElem>
+): {
+  sets: IPowerBISets;
+  combinations: IPowerBISetCombinations;
+} {
+  const baseSets = extractBaseSets(data, colorResolver);
+  const hasCountColumn = data.values?.find((d) => d.source?.roles?.counts) != null;
+
+  if (!hasCountColumn) {
+    const sets = extractSets(elems, baseSets, options);
+    if (sets.length === 0) {
+      return { sets, combinations: [] };
+    }
+    const combinations = generateCombinations(sets, genOptions);
+    return { sets, combinations };
+  }
+
+  return extractExpressionInput(elems, baseSets, options, genOptions);
 }

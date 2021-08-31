@@ -47,8 +47,8 @@
     },
     {
       "name": "counts",
-      "displayName": "Cardinality Measure",
-      "description": "numerical measure defining the number of elements in the set, if not given, it will be assumed to be 1",
+      "displayName": "Cardinality Expression Measure",
+      "description": "numerical measure defining the number of elements in the set, see also expression input",
       "kind": "Measure",
       "preferredTypes": [
         {

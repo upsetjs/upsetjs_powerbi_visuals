@@ -7,7 +7,7 @@
 
 import powerbi from 'powerbi-visuals-api';
 import { fillDefaults, ISets, GenerateSetCombinationsOptions } from '@upsetjs/bundle';
-import { IPowerBISet, IPowerBISets, IPowerBIElem, IPowerBIElems } from './interfaces';
+import { IPowerBISet, IPowerBISets, IPowerBIElem } from './interfaces';
 import { UniqueColorPalette } from './UniqueColorPalette';
 
 export const defaults = fillDefaults({ sets: [], width: 100, height: 100 });
