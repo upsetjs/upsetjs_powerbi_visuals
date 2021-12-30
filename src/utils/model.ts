@@ -13,10 +13,10 @@ import {
   ISet,
   ISetCombinations,
 } from '@upsetjs/bundle';
-import powerbi from 'powerbi-visuals-api';
-import { UpSetSetSettings } from 'VisualSettings';
-import { IPowerBIElem, IPowerBIElems, IPowerBISet, IPowerBISetCombinations, IPowerBISets } from './interfaces';
-import { UniqueColorPalette } from './UniqueColorPalette';
+import type powerbi from 'powerbi-visuals-api';
+import type { UpSetSetSettings } from '../VisualSettings';
+import type { IPowerBIElem, IPowerBIElems, IPowerBISet, IPowerBISetCombinations, IPowerBISets } from './interfaces';
+import type { UniqueColorPalette } from './UniqueColorPalette';
 
 export function isSelection(s: powerbi.extensibility.ISelectionId): s is powerbi.visuals.ISelectionId {
   return s != null && typeof (<powerbi.visuals.ISelectionId>s).includes === 'function';

@@ -4,8 +4,8 @@
  *
  * Copyright (c) 2021 Samuel Gratzl <sam@sgratzl.com>
  */
-import { ISet, ISetCombination, ISetLike } from '@upsetjs/bundle';
-import powerbi from 'powerbi-visuals-api';
+import type { ISet, ISetCombination, ISetLike } from '@upsetjs/bundle';
+import type powerbi from 'powerbi-visuals-api';
 
 export declare type IPowerBIElem = {
   s?: powerbi.visuals.ISelectionId;

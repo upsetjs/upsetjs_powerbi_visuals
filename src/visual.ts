@@ -6,7 +6,7 @@
  */
 
 import { boxplotAddon, categoricalAddon, render, renderSkeleton, UpSetProps } from '@upsetjs/bundle';
-import powerbi from 'powerbi-visuals-api';
+import type powerbi from 'powerbi-visuals-api';
 import {
   extractElems,
   resolveSelection,
@@ -17,7 +17,7 @@ import {
 import { OnHandler, createTooltipHandler, createContextMenuHandler, createSelectionHandler } from './utils/handler';
 import { UpSetCategoricalAttribute, UpSetNumericAttribute, isNumeric } from './utils/attributes';
 import VisualSettings, { UpSetThemeSettings } from './VisualSettings';
-import { IPowerBIElem, IPowerBIElems } from './utils/interfaces';
+import type { IPowerBIElem, IPowerBIElems } from './utils/interfaces';
 import { UniqueColorPalette } from './utils/UniqueColorPalette';
 
 const EMPTY_ARRAY: any[] = [];

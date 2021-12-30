@@ -5,10 +5,10 @@
  * Copyright (c) 2021 Samuel Gratzl <sam@sgratzl.com>
  */
 
-import powerbi from 'powerbi-visuals-api';
+import type powerbi from 'powerbi-visuals-api';
 import { fillDefaults, ISets, GenerateSetCombinationsOptions } from '@upsetjs/bundle';
-import { IPowerBISet, IPowerBISets, IPowerBIElem } from './interfaces';
-import { UniqueColorPalette } from './UniqueColorPalette';
+import type { IPowerBISet, IPowerBISets, IPowerBIElem } from './interfaces';
+import type { UniqueColorPalette } from './UniqueColorPalette';
 
 export const defaults = fillDefaults({ sets: [], width: 100, height: 100 });
 

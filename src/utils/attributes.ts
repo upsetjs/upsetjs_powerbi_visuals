@@ -4,8 +4,8 @@
  *
  * Copyright (c) 2021 Samuel Gratzl <sam@sgratzl.com>
  */
-import powerbi from 'powerbi-visuals-api';
-import { ICategory } from '@upsetjs/bundle';
+import type powerbi from 'powerbi-visuals-api';
+import type { ICategory } from '@upsetjs/bundle';
 
 export function isNumeric(data: powerbi.DataViewValueColumn): boolean {
   const source = data.source;
