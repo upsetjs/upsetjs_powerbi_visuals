@@ -144,7 +144,7 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
       combinations,
       dataView.categorical!,
       this.selectionManager,
-      !areDummyValues && this.host.allowInteractions
+      !areDummyValues && this.host.hostCapabilities.allowInteractions === true
     );
 
     this.props = Object.assign(
@@ -169,7 +169,7 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
       this.props.combinationAddons = this.attributes.map((attr, i) => asAddon(attr, i, true));
     }
 
-    if (!areDummyValues && this.host.allowInteractions) {
+    if (!areDummyValues && this.host.hostCapabilities.allowInteractions) {
       this.props.onClick = this.setSelection;
       this.props.onContextMenu = this.onContextMenu;
       this.props.onHover = this.onHover;

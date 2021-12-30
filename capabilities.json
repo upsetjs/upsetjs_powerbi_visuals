@@ -472,6 +472,7 @@
     }
   },
   "supportsHighlight": true,
+  "supportsLandingPage": true,
   "tooltips": {
     "supportedTypes": {
       "default": true,
