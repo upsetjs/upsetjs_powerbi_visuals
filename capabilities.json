@@ -473,7 +473,9 @@
   },
   "supportsHighlight": true,
   "supportsLandingPage": true,
+  "supportsEmptyDataView": true,
   "tooltips": {
+    "supportEnhancedTooltips": true,
     "supportedTypes": {
       "default": true,
       "canvas": true
