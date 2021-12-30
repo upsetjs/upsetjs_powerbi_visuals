@@ -36,6 +36,7 @@ jobs:
           cp dist/upsetjs_preview.pbiviz public/integrations/powerbi/
           cp README.md public/integrations/powerbi/
           cp samples/got.pbix public/integrations/powerbi/
+          cp samples/sample.pbix public/integrations/powerbi/
 
       - name: Deploy Main
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
