@@ -5,20 +5,19 @@
  * Copyright (c) 2021 Samuel Gratzl <sam@sgratzl.com>
  */
 
+import { boxplotAddon, categoricalAddon, render, renderSkeleton, UpSetProps } from '@upsetjs/bundle';
+import type powerbi from 'powerbi-visuals-api';
 import {
-  boxplotAddon,
-  categoricalAddon,
-  generateCombinations,
-  render,
-  renderSkeleton,
-  UpSetProps,
-} from '@upsetjs/bundle';
-import powerbi from 'powerbi-visuals-api';
-import { extractElems, resolveSelection, extractSets, resolveElementsFromSelection } from './utils/model';
+  extractElems,
+  resolveSelection,
+  resolveElementsFromSelection,
+  createColorResolver,
+  extractSetsAndCombinations,
+} from './utils/model';
 import { OnHandler, createTooltipHandler, createContextMenuHandler, createSelectionHandler } from './utils/handler';
 import { UpSetCategoricalAttribute, UpSetNumericAttribute, isNumeric } from './utils/attributes';
 import VisualSettings, { UpSetThemeSettings } from './VisualSettings';
-import { IPowerBIElem, IPowerBIElems } from './utils/interfaces';
+import type { IPowerBIElem, IPowerBIElems } from './utils/interfaces';
 import { UniqueColorPalette } from './utils/UniqueColorPalette';
 
 const EMPTY_ARRAY: any[] = [];
@@ -36,7 +35,7 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
   private readonly colorPalette: UniqueColorPalette;
 
   private attributes: (UpSetCategoricalAttribute | UpSetNumericAttribute)[] = [];
-  private elems: IPowerBIElems = [];
+  private rows: IPowerBIElems = [];
   private props: UpSetProps<IPowerBIElem> = { sets: [], width: 100, height: 100 };
 
   constructor(options: powerbi.extensibility.visual.VisualConstructorOptions) {
@@ -63,7 +62,7 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
       this.render();
     });
     this.selectionManager.registerOnSelectCallback((ids) => {
-      this.props.selection = resolveElementsFromSelection(ids, this.elems);
+      this.props.selection = resolveElementsFromSelection(ids, this.rows);
       this.render();
     });
   }
@@ -98,7 +97,7 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
     // reset watermark
     this.settings.license.resetWatermark(this.target);
 
-    if (options.dataViews.length === 0) {
+    if (!options.dataViews || options.dataViews.length === 0) {
       this.colorPalette.clear();
       return false;
     }
@@ -112,29 +111,14 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
     const areDummyValues = dataView.categorical!.categories.length === 0;
 
     // handle window
-    this.elems = extractElems(dataView.categorical!, this.host);
+    this.rows = extractElems(dataView.categorical!, this.host);
 
     this.attributes = this.generateAttributes(dataView);
-    const sets =
-      this.elems.length === 0
-        ? []
-        : extractSets(
-            this.elems,
-            dataView.categorical!,
-            this.settings.sets,
-            this.colorPalette,
-            this.settings.theme.supportIndividualColors() ? UpSetThemeSettings.SET_COLORS_OBJECT_NAME : undefined
-          );
 
-    if (sets.length === 0 || !dataView.categorical!.values) {
+    if (!dataView.categorical!.values) {
       this.colorPalette.clear();
       return false;
     }
-
-    this.verifyLicense(
-      sets.length,
-      dataView.categorical!.values.reduce((acc, d) => acc + (d.source?.roles?.attributes ? 1 : 0), 0)
-    );
 
     const hasMore = Boolean(dataView.metadata.segment);
     if (hasMore) {
@@ -142,22 +126,25 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
       requestAnimationFrame(() => this.host.fetchMoreData());
     }
 
-    const genOptions = this.settings.combinations.generate(this.elems);
-    if (!this.settings.theme.deriveCombinationColor) {
-      genOptions.mergeColors = () => undefined;
-    }
-    const combinations = generateCombinations(sets, genOptions);
-    if (combinations.length === 0) {
+    const { sets, combinations } = this.generateSetsAndCombinations(dataView);
+
+    this.verifyLicense(
+      sets.length,
+      dataView.categorical!.values.reduce((acc, d) => acc + (d.source?.roles?.attributes ? 1 : 0), 0)
+    );
+
+    if (sets.length === 0 || combinations.length === 0) {
+      this.colorPalette.clear();
       return false;
     }
 
     const selection = resolveSelection(
-      this.elems,
+      this.rows,
       sets,
       combinations,
       dataView.categorical!,
       this.selectionManager,
-      !areDummyValues && this.host.allowInteractions
+      !areDummyValues && this.host.hostCapabilities.allowInteractions === true
     );
 
     this.props = Object.assign(
@@ -182,7 +169,7 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
       this.props.combinationAddons = this.attributes.map((attr, i) => asAddon(attr, i, true));
     }
 
-    if (!areDummyValues && this.host.allowInteractions) {
+    if (!areDummyValues && this.host.hostCapabilities.allowInteractions) {
       this.props.onClick = this.setSelection;
       this.props.onContextMenu = this.onContextMenu;
       this.props.onHover = this.onHover;
@@ -192,6 +179,36 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
 
     this.render();
     return true;
+  }
+
+  private generateSetsAndCombinations(dataView: powerbi.DataView) {
+    const { rows, settings } = this;
+
+    if (rows.length === 0) {
+      return { sets: [], combinations: [] };
+    }
+
+    const colorResolver = createColorResolver(
+      this.colorPalette,
+      settings.theme.supportIndividualColors() ? UpSetThemeSettings.SET_COLORS_OBJECT_NAME : undefined
+    );
+
+    return extractSetsAndCombinations(
+      rows,
+      dataView.categorical!,
+      this.settings.sets,
+      colorResolver,
+      this.deriveOptions()
+    );
+  }
+
+  private deriveOptions() {
+    const genOptions = this.settings.combinations.generate();
+    genOptions.elems = this.rows;
+    if (!this.settings.theme.deriveCombinationColor) {
+      genOptions.mergeColors = () => undefined;
+    }
+    return genOptions;
   }
 
   private generateAttributes(dataView: powerbi.DataView) {

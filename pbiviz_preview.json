@@ -4,13 +4,13 @@
     "displayName": "Ultimate UpSet Plot (Preview)",
     "guid": "upSetJS61F43BDFCA024B13B6AC5BA73C9427B2_preview",
     "visualClassName": "Visual",
-    "version": "1.9.1",
+    "version": "1.10.10",
     "icon": "assets/icon_preview.png",
     "description": "UpSet plots are a scalable alternative to venn diagrams for showing set intersections for more than three sets",
     "supportUrl": "https://www.sgratzl.com",
     "gitHubUrl": "https://github.com/upsetjs/upsetjs_powerbi_visuals"
   },
-  "apiVersion": "3.5.1",
+  "apiVersion": "4.0.0",
   "author": {
     "name": "Samuel Gratzl",
     "email": "sam@sgratzl.com"
