@@ -27,7 +27,7 @@ jobs:
         run: |
           echo '${{ env.LICENSE_INFO }}' > src/secrets.ts
       - run: npm ci
-      - run: npm run build --if-present
+      - run: npm start
       - run: npm test
       - run: npm run lint
       - run: |
