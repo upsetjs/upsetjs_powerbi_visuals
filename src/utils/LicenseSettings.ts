@@ -5,6 +5,7 @@
  * Copyright (c) 2021 Samuel Gratzl <sam@sgratzl.com>
  */
 import type powerbi from 'powerbi-visuals-api';
+import { ServicePlanState } from 'powerbi-visuals-api';
 
 function isValidDate(decoded: string) {
   if (!/^(\d\d)\.(\d\d)\.(\d\d\d\d)$/gm.test(decoded)) {
@@ -17,6 +18,8 @@ function isValidDate(decoded: string) {
 
   return new Date(year, month - 1, day);
 }
+
+const KNOWN_LICENSES = ['test', 'test2'];
 
 export default class LicenseSettings {
   code = '';
@@ -49,10 +52,29 @@ export default class LicenseSettings {
     });
   }
 
+  private hasLicense(info: powerbi.extensibility.visual.LicenseInfoResult): boolean {
+    if (!info.isLicenseInfoAvailable || info.isLicenseUnsupportedEnv || !info.plans) {
+      return false;
+    }
+    return (
+      info.plans.find((d) => {
+        if (d.state == ServicePlanState.Active || d.state == ServicePlanState.Warning) {
+          return KNOWN_LICENSES.includes(d.spIdentifier);
+        }
+        return false;
+      }) != null
+    );
+  }
+
   private deriveLicenseState(
     decoded: string | null,
-    host: powerbi.extensibility.visual.IVisualHost
+    host: powerbi.extensibility.visual.IVisualHost,
+    licensePlans: powerbi.extensibility.visual.LicenseInfoResult
   ): 'no-license' | 'invalid' | 'valid' | 'expired' {
+    if (this.hasLicense(licensePlans)) {
+      this.updateInfo(host, `managed license detected`);
+      return 'valid';
+    }
     if (!decoded || decoded.trim().length === 0) {
       this.updateInfo(host, '');
       return 'no-license';
@@ -80,10 +102,11 @@ export default class LicenseSettings {
   updateLicenseState(
     target: HTMLElement,
     host: powerbi.extensibility.visual.IVisualHost,
+    licensePlans: powerbi.IPromise<powerbi.extensibility.visual.LicenseInfoResult>,
     usesProFeatures: () => boolean
   ) {
-    return this._decoder(this.code).then((decoded) => {
-      const state = this.deriveLicenseState(decoded, host);
+    return Promise.all([this._decoder(this.code), licensePlans]).then(([decoded, plans]) => {
+      const state = this.deriveLicenseState(decoded, host, plans);
       if (state === 'valid' || !usesProFeatures()) {
         this.resetWatermark(target);
       } else {

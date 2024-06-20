@@ -248,10 +248,13 @@ function extractExpressionInput(
         Object.assign(s, {
           elems: combinations
             .filter((d) => d.sets.has(s))
-            .reduce((acc, d) => {
-              acc.push(...(<IPowerBIElem[]>d.elems));
-              return acc;
-            }, <IPowerBIElem[]>[]),
+            .reduce(
+              (acc, d) => {
+                acc.push(...(<IPowerBIElem[]>d.elems));
+                return acc;
+              },
+              <IPowerBIElem[]>[]
+            ),
         });
       }
       return <IPowerBISet>s;

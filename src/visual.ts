@@ -27,6 +27,7 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
   private settings: VisualSettings = <VisualSettings>VisualSettings.getDefault();
   private readonly selectionManager: powerbi.extensibility.ISelectionManager;
   private readonly host: powerbi.extensibility.visual.IVisualHost;
+  private readonly licensePlans: powerbi.IPromise<powerbi.extensibility.visual.LicenseInfoResult>;
 
   private readonly onContextMenu: OnHandler;
   private readonly setSelection: OnHandler;
@@ -39,6 +40,7 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
   private props: UpSetProps<IPowerBIElem> = { sets: [], width: 100, height: 100 };
 
   constructor(options: powerbi.extensibility.visual.VisualConstructorOptions) {
+    this.licensePlans = options.host.licenseManager.getAvailableServicePlans();
     this.target = options.element;
     this.selectionManager = options.host.createSelectionManager();
     this.colorPalette = new UniqueColorPalette(options.host.colorPalette);
@@ -230,7 +232,7 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
   }
 
   private verifyLicense(numSets: number, numAttributes: number) {
-    this.settings.license.updateLicenseState(this.target, this.host, () =>
+    this.settings.license.updateLicenseState(this.target, this.host, this.licensePlans, () =>
       usesProFeatures(numSets, numAttributes, this.settings)
     );
   }

@@ -17,7 +17,7 @@
     },
     "module": "esnext",
     "importHelpers": true,
-    "importsNotUsedAsValues": "remove",
+    "verbatimModuleSyntax": true,
     "forceConsistentCasingInFileNames": true,
     "strictBindCallApply": true,
     "noImplicitAny": false,
