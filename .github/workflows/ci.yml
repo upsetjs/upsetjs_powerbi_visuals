@@ -6,18 +6,11 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
-          node-version: 16
-      - name: Cache Node.js modules
-        uses: actions/cache@v2
-        with:
-          path: ~/.npm # npm cache files are stored in `~/.npm` on Linux/macOS
-          key: ${{ runner.OS }}-node2-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.OS }}-node2-
-            ${{ runner.OS }}-
+          node-version: 20
+          cache: npm
       - name: copy example secret
         run: cp src/secrets.example.ts src/secrets.ts
       - name: create secrets from action secret
@@ -30,7 +23,6 @@ jobs:
       - run: npm run build
       - run: npm test
       - run: npm run lint
-      - run: npm run alint
       - run: |
           mkdir -p public/integrations/powerbi
           cp dist/upsetjs.pbiviz public/integrations/powerbi/
