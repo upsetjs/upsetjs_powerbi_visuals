@@ -6,7 +6,8 @@
  */
 
 import type powerbi from 'powerbi-visuals-api';
-import { fillDefaults, ISets, GenerateSetCombinationsOptions } from '@upsetjs/bundle';
+import type { ISets, GenerateSetCombinationsOptions } from '@upsetjs/bundle';
+import { fillDefaults } from '@upsetjs/bundle';
 import type { IPowerBISet, IPowerBISets, IPowerBIElem } from './interfaces';
 import type { UniqueColorPalette } from './UniqueColorPalette';
 

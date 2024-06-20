@@ -5,7 +5,8 @@
  * Copyright (c) 2021 Samuel Gratzl <sam@sgratzl.com>
  */
 
-import { boxplotAddon, categoricalAddon, render, renderSkeleton, UpSetProps } from '@upsetjs/bundle';
+import type { UpSetProps } from '@upsetjs/bundle';
+import { boxplotAddon, categoricalAddon, render, renderSkeleton } from '@upsetjs/bundle';
 import type powerbi from 'powerbi-visuals-api';
 import {
   extractElems,
@@ -14,7 +15,8 @@ import {
   createColorResolver,
   extractSetsAndCombinations,
 } from './utils/model';
-import { OnHandler, createTooltipHandler, createContextMenuHandler, createSelectionHandler } from './utils/handler';
+import type { OnHandler } from './utils/handler';
+import { createTooltipHandler, createContextMenuHandler, createSelectionHandler } from './utils/handler';
 import { UpSetCategoricalAttribute, UpSetNumericAttribute, isNumeric } from './utils/attributes';
 import VisualSettings, { UpSetThemeSettings } from './VisualSettings';
 import type { IPowerBIElem, IPowerBIElems } from './utils/interfaces';

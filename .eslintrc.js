@@ -23,6 +23,8 @@ module.exports = {
     'no-octal-escape': 'error',
     'no-regex-spaces': 'error',
     'no-restricted-syntax': ['error', 'ForInStatement'],
+    '@typescript-eslint/consistent-type-exports': 'error',
+    '@typescript-eslint/consistent-type-imports': 'error',
   },
   settings: {},
 };

@@ -4,15 +4,13 @@
  *
  * Copyright (c) 2021 Samuel Gratzl <sam@sgratzl.com>
  */
-import {
-  asSets,
-  extractFromExpression,
+import type {
   ExtractFromExpressionOptions,
-  generateCombinations,
   GenerateSetCombinationsOptions,
   ISet,
   ISetCombinations,
 } from '@upsetjs/bundle';
+import { asSets, extractFromExpression, generateCombinations } from '@upsetjs/bundle';
 import type powerbi from 'powerbi-visuals-api';
 import type { UpSetSetSettings } from '../VisualSettings';
 import type { IPowerBIElem, IPowerBIElems, IPowerBISet, IPowerBISetCombinations, IPowerBISets } from './interfaces';

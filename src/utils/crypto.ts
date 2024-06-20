@@ -42,7 +42,7 @@ export function decodeAndVerifySignature(
         keyPromise
           .then((key) => self.crypto.subtle.verify(verifyAlgorithm, key, sig, encoded))
           .then((verified) => (verified ? payload : null))
-      ).catch((_error) => {
+      ).catch(() => {
         return null;
       });
     } catch {
@@ -83,7 +83,7 @@ export function signAndEncode(
         keyPromise
           .then((key) => self.crypto.subtle.sign(signAlgorithm, key, encoded))
           .then((sig) => `${btoa(payload)}$${btoa(String.fromCharCode(...new Uint8Array(sig)))}`)
-      ).catch((_error) => {
+      ).catch(() => {
         return null;
       });
     } catch {

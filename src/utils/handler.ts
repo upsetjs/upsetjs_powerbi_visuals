@@ -4,14 +4,8 @@
  *
  * Copyright (c) 2021 Samuel Gratzl <sam@sgratzl.com>
  */
-import {
-  ISetLike,
-  UpSetAddonHandlerInfo,
-  ICategoryBins,
-  IBoxPlot,
-  UpSetAddonHandlerInfos,
-  isSetCombination,
-} from '@upsetjs/bundle';
+import type { ISetLike, UpSetAddonHandlerInfo, ICategoryBins, IBoxPlot, UpSetAddonHandlerInfos } from '@upsetjs/bundle';
+import { isSetCombination } from '@upsetjs/bundle';
 import type powerbi from 'powerbi-visuals-api';
 import type { IPowerBIElem } from './interfaces';
 
