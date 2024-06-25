@@ -2,10 +2,9 @@
  * @upsetjs/powerbi_visuals
  * https://github.com/upsetjs/upsetjs_powerbi_visuals
  *
- * Copyright (c) 2021 Samuel Gratzl <sam@sgratzl.com>
+ * Copyright (c) 2024 Samuel Gratzl <sam@sgratzl.com>
  */
-import type powerbi from 'powerbi-visuals-api';
-import { ServicePlanState } from 'powerbi-visuals-api';
+import powerbi from 'powerbi-visuals-api';
 
 function isValidDate(decoded: string) {
   if (!/^(\d\d)\.(\d\d)\.(\d\d\d\d)$/gm.test(decoded)) {
@@ -58,7 +57,7 @@ export default class LicenseSettings {
     }
     return (
       info.plans.find((d) => {
-        if (d.state == ServicePlanState.Active || d.state == ServicePlanState.Warning) {
+        if (d.state == powerbi.ServicePlanState.Active || d.state == powerbi.ServicePlanState.Warning) {
           return KNOWN_LICENSES.includes(d.spIdentifier);
         }
         return false;

@@ -5,7 +5,6 @@
     "alwaysStrict": true,
     "strictNullChecks": true,
     "stripInternal": true,
-    "importsNotUsedAsValues": "error",
     "strictPropertyInitialization": true,
     "strictFunctionTypes": true,
     "noImplicitAny": true

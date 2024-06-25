@@ -89,26 +89,33 @@
   "objects": {
     "license": {
       "displayName": "License",
+      "displayNameKey": "license",
       "objectCategory": 1,
       "properties": {
         "code": {
           "displayName": "Code",
+          "displayNameKey": "license.code",
           "description": "license Code",
+          "descriptionKey": "license.code.description",
           "type": { "text": true }
         },
         "info": {
           "displayName": "Info",
+          "displayNameKey": "license.info",
           "description": "will print whether the license could be verified",
+          "descriptionKey": "license.info.description",
           "type": { "text": true }
         },
         "contact": {
           "displayName": "Contact",
+          "displayNameKey": "license.contact",
           "type": { "text": true }
         }
       }
     },
     "sets": {
       "displayName": "Sets",
+      "displayNameKey": "sets",
       "objectCategory": 2,
       "properties": {
         "show": {
@@ -123,17 +130,23 @@
         },
         "order": {
           "displayName": "Order Sets By",
+          "displayNameKey": "sets.order",
           "type": {
             "enumeration": [
-              { "value": "inherit", "displayName": "Inherit Order" },
-              { "value": "name", "displayName": "Name" },
-              { "value": "cardinality", "displayName": "Cardinality" },
-              { "value": "cardinality:desc", "displayName": "Cardinality (decreasing)" }
+              { "value": "inherit", "displayName": "Inherit Order", "displayNameKey": "sets.order.inherit" },
+              { "value": "name", "displayName": "Name", "displayNameKey": "sets.order.name" },
+              { "value": "cardinality", "displayName": "Cardinality", "displayNameKey": "sets.order.cardinality" },
+              {
+                "value": "cardinality:desc",
+                "displayName": "Cardinality (decreasing)",
+                "displayNameKey": "sets.order.cardinalityDesc"
+              }
             ]
           }
         },
         "limit": {
           "displayName": "Limit to Top N Sets",
+          "displayNameKey": "sets.limit",
           "type": {
             "numeric": true
           }
@@ -142,6 +155,7 @@
     },
     "combinations": {
       "displayName": "Set Combinations",
+      "displayNameKey": "combinations",
       "objectCategory": 2,
       "properties": {
         "show": {
@@ -156,19 +170,23 @@
         },
         "mode": {
           "displayName": "Generation Mode",
+          "displayNameKey": "combinations.mode",
           "description": "specify the set combination generation mode",
           "type": {
             "enumeration": [
               {
                 "displayName": "Set Intersections",
+                "displayNameKey": "combinations.mode.intersection",
                 "value": "intersection"
               },
               {
                 "displayName": "Set Unions",
+                "displayNameKey": "combinations.mode.union",
                 "value": "union"
               },
               {
                 "displayName": "Distinct Set Intersections",
+                "displayNameKey": "combinations.mode.distinct",
                 "value": "distinctIntersection"
               }
             ]
@@ -176,45 +194,81 @@
         },
         "min": {
           "displayName": "Minimum Degree",
+          "displayNameKey": "combinations.min",
           "description": "minimum number of sets in a set combination",
+          "descriptionKey": "combinations.min.description",
           "type": {
             "numeric": true
           }
         },
         "max": {
           "displayName": "Maximum Degree",
+          "displayNameKey": "combinations.max",
           "description": "maximum number of sets in a set combination",
+          "descriptionKey": "combinations.max.description",
           "type": {
             "numeric": true
           }
         },
         "empty": {
           "displayName": "Show Empty Combinations",
+          "displayNameKey": "combinations.empty",
           "type": {
             "bool": true
           }
         },
         "limit": {
           "displayName": "Limit to Top N Combinations",
+          "displayNameKey": "combinations.limit",
           "type": {
             "numeric": true
           }
         },
         "order": {
           "displayName": "Order Combinations By",
+          "displayNameKey": "combinations.order",
           "type": {
             "enumeration": [
               { "value": "name", "displayName": "1. Name" },
-              { "value": "cardinality,name", "displayName": "1. Cardinality 2. Name" },
-              { "value": "cardinality,degree,name", "displayName": "1. Cardinality 2. Degree 3. Name" },
-              { "value": "degree,name", "displayName": "1. Degree 2. Name" },
-              { "value": "degree,cardinality,name", "displayName": "1. Degree 2. Cardinality 3. Name" },
-              { "value": "group,name", "displayName": "1. Set Group 2. Name" },
-              { "value": "group,cardinality,name", "displayName": "1. Set Group 2. Cardinality 3. Name" },
-              { "value": "group,degree,name", "displayName": "1. Set Group 2. Degree 3. Name" },
+              {
+                "value": "cardinality,name",
+                "displayName": "1. Cardinality 2. Name",
+                "displayNameKey": "combinations.order.cn"
+              },
+              {
+                "value": "cardinality,degree,name",
+                "displayName": "1. Cardinality 2. Degree 3. Name",
+                "displayNameKey": "combinations.order.cdn"
+              },
+              {
+                "value": "degree,name",
+                "displayName": "1. Degree 2. Name",
+                "displayNameKey": "combinations.order.dn"
+              },
+              {
+                "value": "degree,cardinality,name",
+                "displayName": "1. Degree 2. Cardinality 3. Name",
+                "displayNameKey": "combinations.order.dcn"
+              },
+              {
+                "value": "group,name",
+                "displayName": "1. Set Group 2. Name",
+                "displayNameKey": "combinations.order.gn"
+              },
+              {
+                "value": "group,cardinality,name",
+                "displayName": "1. Set Group 2. Cardinality 3. Name",
+                "displayNameKey": "combinations.order.gcn"
+              },
+              {
+                "value": "group,degree,name",
+                "displayName": "1. Set Group 2. Degree 3. Name",
+                "displayNameKey": "combinations.order.gdn"
+              },
               {
                 "value": "group,degree,cardinality,name",
-                "displayName": "1. Set Group 2. Degree 3. Cardinality 4. Name"
+                "displayName": "1. Set Group 2. Degree 3. Cardinality 4. Name",
+                "displayNameKey": "combinations.order.gdcn"
               }
             ]
           }
@@ -223,34 +277,42 @@
     },
     "theme": {
       "displayName": "Theme",
+      "displayNameKey": "theme",
       "objectCategory": 1,
       "properties": {
         "theme": {
           "displayName": "Theme",
+          "displayNameKey": "theme.theme",
           "type": {
             "enumeration": [
               {
                 "displayName": "Light",
+                "displayNameKey": "theme.theme.light",
                 "value": "light"
               },
               {
                 "displayName": "Individual Colors",
+                "displayNameKey": "theme.theme.individualColors",
                 "value": "powerbi"
               },
               {
                 "displayName": "Colored Sets",
+                "displayNameKey": "theme.theme.coloredSets",
                 "value": "powerbi-set"
               },
               {
                 "displayName": "Single Color",
+                "displayNameKey": "theme.theme.singleColor",
                 "value": "auto"
               },
               {
                 "displayName": "Dark",
+                "displayNameKey": "theme.theme.dark",
                 "value": "dark"
               },
               {
                 "displayName": "Vega",
+                "displayNameKey": "theme.theme.vega",
                 "value": "vega"
               }
             ]
@@ -258,6 +320,7 @@
         },
         "selectionColor": {
           "displayName": "Selection Color",
+          "displayNameKey": "theme.selectionColor",
           "type": {
             "fill": {
               "solid": {
@@ -268,6 +331,7 @@
         },
         "color": {
           "displayName": "Color",
+          "displayNameKey": "theme.color",
           "type": {
             "fill": {
               "solid": {
@@ -278,12 +342,14 @@
         },
         "opacity": {
           "displayName": "Opacity",
+          "displayNameKey": "theme.opacity",
           "type": {
             "numeric": true
           }
         },
         "hasSelectionColor": {
           "displayName": "Color when selection is present",
+          "displayNameKey": "theme.hasSelectionColor",
           "type": {
             "fill": {
               "solid": {
@@ -294,12 +360,14 @@
         },
         "hasSelectionOpacity": {
           "displayName": "Opacity when selection is present",
+          "displayNameKey": "theme.hasSelectionOpacity",
           "type": {
             "numeric": true
           }
         },
         "textColor": {
           "displayName": "Text Color",
+          "displayNameKey": "theme.textColor",
           "type": {
             "fill": {
               "solid": {
@@ -310,6 +378,7 @@
         },
         "hoverHintColor": {
           "displayName": "Hover Hint Color",
+          "displayNameKey": "theme.hoverHintColor",
           "type": {
             "fill": {
               "solid": {
@@ -320,6 +389,7 @@
         },
         "notMemberColor": {
           "displayName": "Not Member Color",
+          "displayNameKey": "theme.notMemberColor",
           "type": {
             "fill": {
               "solid": {
@@ -330,6 +400,7 @@
         },
         "alternatingBackgroundColor": {
           "displayName": "Alternating Background Color",
+          "displayNameKey": "theme.alternatingBackgroundColor",
           "type": {
             "fill": {
               "solid": {
@@ -342,10 +413,12 @@
     },
     "setColors": {
       "displayName": "Set Colors",
+      "displayNameKey": "theme.setColors",
       "objectCategory": 1,
       "properties": {
         "fill": {
           "displayName": "Color",
+          "displayNameKey": "theme.setColors.fill",
           "type": {
             "fill": {
               "solid": {
@@ -358,11 +431,14 @@
     },
     "attributeColors": {
       "displayName": "Attribute Colors",
+      "displayNameKey": "attributeColors",
       "objectCategory": 1,
       "description": "customize the colors of categorical attributes",
+      "descriptionKey": "attributeColors.description",
       "properties": {
         "fill": {
           "displayName": "Color",
+          "displayNameKey": "attributeColors.fill",
           "type": {
             "fill": {
               "solid": {
@@ -375,58 +451,67 @@
     },
     "style": {
       "displayName": "Style",
+      "displayNameKey": "style",
       "properties": {
         "numericScale": {
           "displayName": "Scale",
+          "displayNameKey": "style.scale",
           "type": {
             "enumeration": [
-              { "displayName": "Linear Scale", "value": "linear" },
-              { "displayName": "Log Scale", "value": "log" }
+              { "displayName": "Linear Scale", "value": "linear", "displayNameKey": "style.scale.linear" },
+              { "displayName": "Log Scale", "value": "log", "displayNameKey": "style.scale.log" }
             ]
           }
         },
         "setName": {
           "displayName": "Set Axis Name",
+          "displayNameKey": "style.setName",
           "type": {
             "text": true
           }
         },
         "setLabelAlignment": {
           "displayName": "Set Label Alignment",
+          "displayNameKey": "style.setLabelAlignment",
           "type": {
             "enumeration": [
-              { "displayName": "Left", "value": "left" },
-              { "displayName": "Center", "value": "center" },
-              { "displayName": "Right", "value": "right" }
+              { "displayName": "Left", "value": "left", "displayNameKey": "style.setLabelAlignment.left" },
+              { "displayName": "Center", "value": "center", "displayNameKey": "style.setLabelAlignment.center" },
+              { "displayName": "Right", "value": "right", "displayNameKey": "style.setLabelAlignment.right" }
             ]
           }
         },
         "combinationName": {
           "displayName": "Combination Axis Name",
+          "displayNameKey": "style.combinationName",
           "type": {
             "text": true
           }
         },
         "setNameAxisOffset": {
           "displayName": "Set Axis Offset",
+          "displayNameKey": "style.setNameAxisOffset",
           "type": {
             "numeric": true
           }
         },
         "combinationNameAxisOffset": {
           "displayName": "Combination Axis Offset",
+          "displayNameKey": "style.combinationNameAxisOffset",
           "type": {
             "numeric": true
           }
         },
         "setMaxScale": {
           "displayName": "Set Scale Maximum",
+          "displayNameKey": "style.setMaxScale",
           "type": {
             "numeric": true
           }
         },
         "combinationScaleMax": {
           "displayName": "Combination Scale Maximum",
+          "displayNameKey": "style.combinationScaleMax",
           "type": {
             "numeric": true
           }
@@ -435,9 +520,11 @@
     },
     "fonts": {
       "displayName": "Fonts",
+      "displayNameKey": "fonts",
       "properties": {
         "fontFamily": {
           "displayName": "Font Family",
+          "displayNameKey": "fonts.fontFamily",
           "type": {
             "formatting": {
               "fontFamily": true
@@ -446,6 +533,7 @@
         },
         "chartLabel": {
           "displayName": "Chart Label",
+          "displayNameKey": "fonts.chartLabel",
           "type": {
             "formatting": {
               "fontSize": true
@@ -454,6 +542,7 @@
         },
         "setLabel": {
           "displayName": "Set Label",
+          "displayNameKey": "fonts.setLabel",
           "type": {
             "formatting": {
               "fontSize": true
@@ -462,6 +551,7 @@
         },
         "barLabel": {
           "displayName": "Bar Label",
+          "displayNameKey": "fonts.barLabel",
           "type": {
             "formatting": {
               "fontSize": true
@@ -474,6 +564,7 @@
   "supportsHighlight": true,
   "supportsLandingPage": true,
   "supportsEmptyDataView": true,
+  "supportsMultiVisualSelection": true,
   "tooltips": {
     "supportEnhancedTooltips": true,
     "supportedTypes": {

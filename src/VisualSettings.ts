@@ -2,25 +2,28 @@
  * @upsetjs/powerbi_visuals
  * https://github.com/upsetjs/upsetjs_powerbi_visuals
  *
- * Copyright (c) 2021 Samuel Gratzl <sam@sgratzl.com>
+ * Copyright (c) 2024 Samuel Gratzl <sam@sgratzl.com>
  */
 
-import { dataViewObjectsParser } from 'powerbi-visuals-utils-dataviewutils';
 import LicenseSettings from './utils/LicenseSettings';
 import { compositeDecoder, decodeAndVerifyECDSASignature } from './utils/crypto';
 import base64Decoder from './internal/base64Decoder';
 import { defaults, UpSetBaseThemeSettings, UpSetCombinationSettings, UpSetFontSizeSettings } from './utils/settings';
 import secrets from './secrets';
+import { formattingSettings } from 'powerbi-visuals-utils-formattingmodel';
 
 const decoder = compositeDecoder([base64Decoder(secrets.key), decodeAndVerifyECDSASignature(secrets.ecdsa.public)]);
 
-export default class VisualSettings extends dataViewObjectsParser.DataViewObjectsParser {
-  readonly license = new LicenseSettings(decoder, 'https://www.sgratzl.com');
-  readonly theme = new UpSetThemeSettings();
-  readonly fonts = new UpSetFontSizeSettings();
-  readonly combinations = new UpSetCombinationSettings();
-  readonly sets = new UpSetSetSettings();
-  readonly style = new UpSetStyleSettings();
+export default class VisualSettings extends formattingSettings.Model {
+  readonly license = new LicenseSettings(decoder, 'https://www.sgratzl.com') satisfies formattingSettings.CompositeCard;
+  readonly theme = new UpSetThemeSettings() satisfies formattingSettings.CompositeCard;
+  readonly fonts = new UpSetFontSizeSettings() satisfies formattingSettings.CompositeCard;
+  readonly combinations = new UpSetCombinationSettings() satisfies formattingSettings.CompositeCard;
+  readonly sets = new UpSetSetSettings() satisfies formattingSettings.CompositeCard;
+  readonly style = new UpSetStyleSettings() satisfies formattingSettings.CompositeCard;
+
+  // Add formatting settings card to cards list in model
+  cards: formattingSettings.Cards[] = [this.license];
 }
 
 export class UpSetThemeSettings extends UpSetBaseThemeSettings {

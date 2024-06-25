@@ -2,7 +2,7 @@
  * @upsetjs/powerbi_visuals
  * https://github.com/upsetjs/upsetjs_powerbi_visuals
  *
- * Copyright (c) 2021 Samuel Gratzl <sam@sgratzl.com>
+ * Copyright (c) 2024 Samuel Gratzl <sam@sgratzl.com>
  */
 
 import type { UpSetProps } from '@upsetjs/bundle';
@@ -21,13 +21,15 @@ import { UpSetCategoricalAttribute, UpSetNumericAttribute, isNumeric } from './u
 import VisualSettings, { UpSetThemeSettings } from './VisualSettings';
 import type { IPowerBIElem, IPowerBIElems } from './utils/interfaces';
 import { UniqueColorPalette } from './utils/UniqueColorPalette';
+import { FormattingSettingsService } from 'powerbi-visuals-utils-formattingmodel';
 
 const EMPTY_ARRAY: any[] = [];
 
 export class Visual implements powerbi.extensibility.visual.IVisual {
   private readonly target: HTMLElement;
-  private settings: VisualSettings = <VisualSettings>VisualSettings.getDefault();
+  private settings: VisualSettings = new VisualSettings();
   private readonly selectionManager: powerbi.extensibility.ISelectionManager;
+  private readonly formattingSettingsService: FormattingSettingsService;
   private readonly host: powerbi.extensibility.visual.IVisualHost;
   private readonly licensePlans: powerbi.IPromise<powerbi.extensibility.visual.LicenseInfoResult>;
 
@@ -42,6 +44,7 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
   private props: UpSetProps<IPowerBIElem> = { sets: [], width: 100, height: 100 };
 
   constructor(options: powerbi.extensibility.visual.VisualConstructorOptions) {
+    this.formattingSettingsService = new FormattingSettingsService(options.host.createLocalizationManager());
     this.licensePlans = options.host.licenseManager.getAvailableServicePlans();
     this.target = options.element;
     this.selectionManager = options.host.createSelectionManager();
@@ -106,7 +109,8 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
       return false;
     }
     const dataView = options.dataViews[0];
-    this.settings = VisualSettings.parse(dataView);
+    this.settings = this.formattingSettingsService.populateFormattingSettingsModel(VisualSettings, dataView);
+
     if (!dataView.categorical || !dataView.categorical.categories) {
       this.colorPalette.clear();
       return false;
@@ -262,6 +266,10 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
       };
     }
     return VisualSettings.enumerateObjectInstances(this.settings, options);
+  }
+
+  getFormattingModel(): powerbi.visuals.FormattingModel {
+    return this.formattingSettingsService.buildFormattingModel(this.formattingSettings);
   }
 }
 

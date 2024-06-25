@@ -40,7 +40,7 @@
     "core-js": "^3.37.1",
     "powerbi-models": "^1.15.2",
     "powerbi-visuals-api": "~4.7.0",
-    "powerbi-visuals-utils-dataviewutils": "^6.1.0"
+    "powerbi-visuals-utils-formattingmodel": "^6.0.2"
   },
   "devDependencies": {
     "@types/webpack": "5.28.5",
@@ -57,6 +57,7 @@
     "shx": "^0.3.4",
     "ts-loader": "^9.5.1",
     "typescript": "^5",
+    "vite-node": "^1.6.0",
     "webpack": "^5.92.1"
   }
 }
