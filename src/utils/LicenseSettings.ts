@@ -17,25 +17,54 @@ function isValidDate(decoded: string) {
 
   return new Date(year, month - 1, day);
 }
-
+import { formattingSettings } from 'powerbi-visuals-utils-formattingmodel';
 const KNOWN_LICENSES = ['test', 'test2'];
 
-export default class LicenseSettings {
-  code = '';
-  info = '';
-  contact = '';
+export default class LicenseSettings extends formattingSettings.CompositeCard {
+  readonly code = new formattingSettings.TextInput({
+    name: 'code',
+    displayName: 'Code',
+    displayNameKey: 'license.code',
+    description: 'license Code',
+    descriptionKey: 'license.code.description',
+    placeholder: '',
+    value: '',
+  });
+  readonly info = new formattingSettings.TextInput({
+    name: 'info',
+    displayName: 'Info',
+    displayNameKey: 'license.info',
+    description: 'will print whether the license could be verified',
+    descriptionKey: 'license.info.description',
+    placeholder: '',
+    value: '',
+  });
+  readonly contact = new formattingSettings.TextInput({
+    name: 'contact',
+    displayName: 'Contact',
+    displayNameKey: 'license.contact',
+    placeholder: '',
+    value: '',
+  });
+
+  override readonly name = 'license';
+  override readonly displayName = 'License';
+  override readonly displayNameKey = 'license';
+  override readonly analyticsPane = false;
+  override readonly slices: formattingSettings.Slice[] = [this.code, this.info, this.contact];
 
   readonly _decoder: (code: string) => Promise<string | null>;
   readonly _url: string;
 
   constructor(decoder: (code: string) => Promise<string | null>, url: string) {
+    super();
     this._decoder = decoder;
     this._url = url;
-    this.contact = url;
+    this.contact.value = url;
   }
 
   private updateInfo(host: powerbi.extensibility.visual.IVisualHost, info: string) {
-    if (this.info === info) {
+    if (this.info.value === info) {
       return;
     }
     host.persistProperties({
@@ -104,7 +133,7 @@ export default class LicenseSettings {
     licensePlans: powerbi.IPromise<powerbi.extensibility.visual.LicenseInfoResult>,
     usesProFeatures: () => boolean
   ) {
-    return Promise.all([this._decoder(this.code), licensePlans]).then(([decoded, plans]) => {
+    return Promise.all([this._decoder(this.code.value), licensePlans]).then(([decoded, plans]) => {
       const state = this.deriveLicenseState(decoded, host, plans);
       if (state === 'valid' || !usesProFeatures()) {
         this.resetWatermark(target);

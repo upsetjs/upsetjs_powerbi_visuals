@@ -23,7 +23,7 @@ export default class VisualSettings extends formattingSettings.Model {
   readonly style = new UpSetStyleSettings() satisfies formattingSettings.CompositeCard;
 
   // Add formatting settings card to cards list in model
-  cards: formattingSettings.Cards[] = [this.license];
+  cards: formattingSettings.Cards[] = [this.license, this.theme, this.fonts, this.combinations, this.sets, this.style];
 }
 
 export class UpSetThemeSettings extends UpSetBaseThemeSettings {
