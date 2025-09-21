@@ -5,25 +5,38 @@
  * Copyright (c) 2025 Samuel Gratzl <sam@sgratzl.com>
  */
 
-import type { UpSetProps } from '@upsetjs/bundle';
-import { boxplotAddon, categoricalAddon, render, renderSkeleton } from '@upsetjs/bundle';
-import type powerbi from 'powerbi-visuals-api';
+import type { UpSetProps } from "@upsetjs/bundle";
+import {
+  boxplotAddon,
+  categoricalAddon,
+  render,
+  renderSkeleton,
+} from "@upsetjs/bundle";
+import type powerbi from "powerbi-visuals-api";
 import {
   extractElems,
   resolveSelection,
   resolveElementsFromSelection,
   createColorResolver,
   extractSetsAndCombinations,
-} from './utils/model';
-import type { OnHandler } from './utils/handler';
-import { createTooltipHandler, createContextMenuHandler, createSelectionHandler } from './utils/handler';
-import { UpSetCategoricalAttribute, UpSetNumericAttribute, isNumeric } from './utils/attributes';
+} from "./utils/model";
+import type { OnHandler } from "./utils/handler";
+import {
+  createTooltipHandler,
+  createContextMenuHandler,
+  createSelectionHandler,
+} from "./utils/handler";
+import {
+  UpSetCategoricalAttribute,
+  UpSetNumericAttribute,
+  isNumeric,
+} from "./utils/attributes";
 import VisualFormattingSettingsModel from "./VisualFormattingSettingsModel";
-import type { IPowerBIElem, IPowerBIElems } from './utils/interfaces';
-import { UniqueColorPalette } from './utils/UniqueColorPalette';
-import { FormattingSettingsService } from 'powerbi-visuals-utils-formattingmodel';
+import type { IPowerBIElem, IPowerBIElems } from "./utils/interfaces";
+import { UniqueColorPalette } from "./utils/UniqueColorPalette";
+import { FormattingSettingsService } from "powerbi-visuals-utils-formattingmodel";
 
-const EMPTY_ARRAY: any[] = [];
+const EMPTY_ARRAY: unknown[] = [];
 
 export class UpSetPlot implements powerbi.extensibility.visual.IVisual {
   private readonly target: HTMLElement;
@@ -193,8 +206,9 @@ export class UpSetPlot implements powerbi.extensibility.visual.IVisual {
     );
 
     if (this.attributes.length === 0) {
-      this.props.setAddons = EMPTY_ARRAY;
-      this.props.combinationAddons = EMPTY_ARRAY;
+      this.props.setAddons = EMPTY_ARRAY as UpSetProps["setAddons"];
+      this.props.combinationAddons =
+        EMPTY_ARRAY as UpSetProps["combinationAddons"];
     } else {
       this.props.setAddons = this.attributes.map((attr, i) =>
         asAddon(attr, i, false),
@@ -272,7 +286,11 @@ export class UpSetPlot implements powerbi.extensibility.visual.IVisual {
   }
 }
 
-function asAddon(attr: UpSetNumericAttribute | UpSetCategoricalAttribute, i: number, vertical: boolean) {
+function asAddon(
+  attr: UpSetNumericAttribute | UpSetCategoricalAttribute,
+  i: number,
+  vertical: boolean,
+) {
   if (attr instanceof UpSetNumericAttribute) {
     return boxplotAddon(
       (v: IPowerBIElem) => <number>v.attrs[i],
@@ -282,8 +300,8 @@ function asAddon(attr: UpSetNumericAttribute | UpSetCategoricalAttribute, i: num
       },
       {
         name: attr.displayName,
-        orient: vertical ? 'vertical' : 'horizontal',
-      }
+        orient: vertical ? "vertical" : "horizontal",
+      },
     );
   }
   return categoricalAddon(
@@ -293,7 +311,7 @@ function asAddon(attr: UpSetNumericAttribute | UpSetCategoricalAttribute, i: num
     },
     {
       name: attr.displayName,
-      orient: vertical ? 'vertical' : 'horizontal',
-    }
+      orient: vertical ? "vertical" : "horizontal",
+    },
   );
 }

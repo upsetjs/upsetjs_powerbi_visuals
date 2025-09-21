@@ -4,12 +4,15 @@
  *
  * Copyright (c) 2025 Samuel Gratzl <sam@sgratzl.com>
  */
-import type powerbi from 'powerbi-visuals-api';
-import type { ICategory } from '@upsetjs/bundle';
+import type powerbi from "powerbi-visuals-api";
+import type { ICategory } from "@upsetjs/bundle";
 
 export function isNumeric(data: powerbi.DataViewValueColumn): boolean {
   const source = data.source;
-  return Boolean(source.type != null && (source.type.integer || source.type.numeric || source.type.duration));
+  return Boolean(
+    source.type != null &&
+      (source.type.integer || source.type.numeric || source.type.duration),
+  );
 }
 
 export class UpSetNumericAttribute {
@@ -25,7 +28,7 @@ export class UpSetNumericAttribute {
 }
 
 export class UpSetCategoricalAttribute {
-  static readonly OBJECT_NAME = 'attributeColors';
+  static readonly OBJECT_NAME = "attributeColors";
 
   readonly data: powerbi.DataViewValueColumn;
   readonly categories: readonly (ICategory & {
@@ -37,11 +40,13 @@ export class UpSetCategoricalAttribute {
     data: powerbi.DataViewValueColumn,
     cat: powerbi.DataViewCategoryColumn,
     host: powerbi.extensibility.visual.IVisualHost,
-    offset: number
+    offset: number,
   ) {
     this.data = data;
 
-    const categories = Array.from(new Set(data.values.map((v) => v.toString()))).sort();
+    const categories = Array.from(
+      new Set(data.values.map((v) => v.toString())),
+    ).sort();
     const resolveColor = (i: number, value: string) => {
       // FIXME
       if (cat.objects && cat.objects[i]) {
@@ -62,7 +67,11 @@ export class UpSetCategoricalAttribute {
         value,
         color: resolveColor(index, value),
         index,
-        selector: host.createSelectionIdBuilder().withCategory(cat, index).createSelectionId().getSelector(),
+        selector: host
+          .createSelectionIdBuilder()
+          .withCategory(cat, index)
+          .createSelectionId()
+          .getSelector(),
       };
     });
   }

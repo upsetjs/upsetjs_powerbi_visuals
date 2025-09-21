@@ -8,14 +8,13 @@ import {
 import {
   GenerateSetCombinationsOptions,
   SetCombinationType,
-  UpSetLayoutProps,
-  UpSetStyleProps,
   UpSetProps,
 } from "@upsetjs/bundle/dist";
-import { IPowerBIElem, } from "utils/interfaces";
+import { IPowerBIElem } from "utils/interfaces";
 import { SetOptions } from "utils/model";
 
-const { SimpleCard, ItemDropdown, Model, TextInput,NumUpDown, ToggleSwitch } = formattingSettings;
+const { SimpleCard, ItemDropdown, Model, TextInput, NumUpDown, ToggleSwitch } =
+  formattingSettings;
 
 export class StyleCardSettings extends SimpleCard {
   numericScale = new ItemDropdown({
@@ -92,7 +91,7 @@ export class StyleCardSettings extends SimpleCard {
 
   generate(): Partial<UpSetProps<unknown>> {
     return {
-      numericScale: this.numericScale.value.value as UpSetProps['numericScale'],
+      numericScale: this.numericScale.value.value as UpSetProps["numericScale"],
       setName: this.setName.value,
       setLabelAlignment: this.setLabelAlignment.value
         .value as UpSetProps["setLabelAlignment"],
@@ -144,7 +143,7 @@ export class SetsCardSettings extends SimpleCard {
   generate(): SetOptions {
     return {
       limit: this.limit.value,
-      order: this.order.value.value as SetOptions['order']
+      order: this.order.value.value as SetOptions["order"],
     };
   }
 }
@@ -253,18 +252,17 @@ export class CombinationsCardSettings extends SimpleCard {
       max: this.max.value,
       empty: this.empty.value,
       limit: this.limit.value,
-      order: <'cardinality'>fixOrder(this.order.value.value as string),
+      order: <"cardinality">fixOrder(this.order.value.value as string),
     };
   }
 }
 
 function fixOrder(order: string) {
-  if (order.includes(',')) {
-    return order.split(',');
+  if (order.includes(",")) {
+    return order.split(",");
   }
   return order;
 }
-
 
 export default class VisualFormattingSettingsModel extends Model {
   public sets = new SetsCardSettings();

@@ -6,12 +6,7 @@
  */
 
 import type powerbi from "powerbi-visuals-api";
-import {
-  UpSetThemes,
-  UpSetFontSizes,
-  UpSetFullProps,
-  UpSetProps,
-} from "@upsetjs/bundle";
+import { UpSetThemes, UpSetFontSizes } from "@upsetjs/bundle";
 import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
 import { fillDefaults, ISets } from "@upsetjs/bundle";
 import type { IPowerBISets, PartialProps } from "./interfaces";
