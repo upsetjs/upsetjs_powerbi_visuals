@@ -62,6 +62,7 @@ export class UpSetPlot implements powerbi.extensibility.visual.IVisual {
     [this.onHover, this.onMouseMove] = createTooltipHandler(
       this.target,
       this.host,
+      this.localizationManager,
     );
     this.onContextMenu = createContextMenuHandler(this.selectionManager);
     this.target.addEventListener("contextmenu", (e) => {
@@ -94,7 +95,7 @@ export class UpSetPlot implements powerbi.extensibility.visual.IVisual {
       (d): d is UpSetCategoricalAttribute =>
         d instanceof UpSetCategoricalAttribute,
     );
-    this.settings.addonColors.derive(categoricalAttributes);
+    this.settings.attributeColors.derive(categoricalAttributes);
     return this.formattingSettingsService.buildFormattingModel(this.settings);
   }
 
@@ -232,7 +233,7 @@ export class UpSetPlot implements powerbi.extensibility.visual.IVisual {
     return extractSetsAndCombinations(
       rows,
       dataView.categorical!,
-      this.settings.sets,
+      this.settings.sets.generate(),
       colorResolver,
       this.deriveOptions(),
     );
@@ -241,7 +242,7 @@ export class UpSetPlot implements powerbi.extensibility.visual.IVisual {
   private deriveOptions() {
     const genOptions = this.settings.combinations.generate();
     genOptions.elems = this.rows;
-    if (!this.settings.theme.deriveCombinationColor.value.value) {
+    if (!this.settings.theme.deriveCombinationColor) {
       genOptions.mergeColors = () => undefined;
     }
     return genOptions;

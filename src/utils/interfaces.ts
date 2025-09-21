@@ -4,8 +4,10 @@
  *
  * Copyright (c) 2025 Samuel Gratzl <sam@sgratzl.com>
  */
-import type { ISet, ISetCombination, ISetLike } from "@upsetjs/bundle";
+import type { ISet, ISetCombination, ISetLike, UpSetProps } from "@upsetjs/bundle";
 import type powerbi from "powerbi-visuals-api";
+
+export declare type PartialProps = Partial<UpSetProps<unknown>>;
 
 export declare type IPowerBIElem = {
   s?: powerbi.visuals.ISelectionId;

@@ -43,8 +43,11 @@ export class UpSetCategoricalAttribute {
 
     const categories = Array.from(new Set(data.values.map((v) => v.toString()))).sort();
     const resolveColor = (i: number, value: string) => {
+      // FIXME
       if (cat.objects && cat.objects[i]) {
-        const c = (<powerbi.Fill>cat.objects[i][UpSetCategoricalAttribute.OBJECT_NAME].fill).solid!.color!;
+        const c = (<powerbi.Fill>(
+          cat.objects[i][UpSetCategoricalAttribute.OBJECT_NAME].fill
+        )).solid!.color!;
         if (c) {
           return c;
         }
@@ -66,24 +69,5 @@ export class UpSetCategoricalAttribute {
 
   get displayName() {
     return this.data.source.displayName;
-  }
-
-  asPropertyInstance(): powerbi.VisualObjectInstance[] {
-    return this.categories.map((cat) => ({
-      objectName: UpSetCategoricalAttribute.OBJECT_NAME,
-      displayName: `${this.displayName} - ${cat.label ?? cat.value}`,
-      // selector, can be {metData: ...source.queryName}
-      // to store in a column
-      // selector can be createSelectionIdBuilder().withCategory(cat, i).createSelectionId().getSelector()
-      // to store at the ith category value index
-      selector: cat.selector,
-      properties: {
-        fill: {
-          solid: {
-            color: cat.color,
-          },
-        },
-      },
-    }));
   }
 }

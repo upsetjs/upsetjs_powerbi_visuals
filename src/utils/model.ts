@@ -7,8 +7,10 @@
 import {
   asSets,
   extractFromExpression,
+  ExtractFromExpressionOptions,
   generateCombinations,
   GenerateSetCombinationsOptions,
+  ISet,
   ISetCombinations,
   mergeColors,
 } from "@upsetjs/bundle";
@@ -34,7 +36,7 @@ export function isSelection(
 function findSet(
   selection: IPowerBIElems | undefined,
   sets: IPowerBISets,
-  combinations: ISetCombinations<IPowerBIElem>,
+  combinations: ISetCombinations,
 ) {
   if (!selection || selection.length === 0) {
     return undefined;
@@ -169,13 +171,21 @@ function isPartOfSet(v: powerbi.PrimitiveValue) {
   return !(!v || String(v).toLowerCase().startsWith("f"));
 }
 
+type R = {
+  value: powerbi.DataViewValueColumn;
+  index: number;
+  values: powerbi.PrimitiveValue[];
+  name: string;
+  color: string;
+}[];
+
 function extractBaseSets(
   data: powerbi.DataViewCategorical,
   colorResolver: (
     value: powerbi.DataViewValueColumn,
     i: number,
   ) => string | undefined,
-) {
+): R {
   // just the sets
   const sets = data.values
     ? data.values.filter((d) => d.source?.roles?.sets)
@@ -193,8 +203,8 @@ function extractBaseSets(
 
 function extractSets(
   elems: IPowerBIElems,
-  baseSets: ReturnType<typeof extractBaseSets>,
-  options: UpSetSetSettings
+  baseSets: R,
+  options: SetOptions,
 ): readonly IPowerBISet[] {
   const setObjects = asSets(
     baseSets.map((s) => {
@@ -210,25 +220,33 @@ function extractSets(
   return postProcessSets(options, setObjects);
 }
 
-function postProcessSets(options: UpSetSetSettings, setObjects: IPowerBISet[]): readonly IPowerBISet[] {
-  const byName = (a: ISet<IPowerBIElem>, b: ISet<IPowerBIElem>) => a.name.localeCompare(b.name);
-  if (options.order === 'cardinality:desc') {
+export interface SetOptions {
+  limit: number;
+  order: "inherit" | "name" | "cardinality" | "cardinality:desc";
+}
+
+function postProcessSets(
+  options: SetOptions,
+  setObjects: IPowerBISet[],
+): readonly IPowerBISet[] {
+  const byName = (a: ISet, b: ISet) => a.name.localeCompare(b.name);
+  if (options.order === "cardinality:desc") {
     setObjects.sort((a, b) => {
       if (a.cardinality === b.cardinality) {
         return byName(a, b);
       }
       return b.cardinality - a.cardinality;
     });
-  } else if (options.order === 'cardinality') {
+  } else if (options.order === "cardinality") {
     setObjects.sort((a, b) => {
       if (a.cardinality === b.cardinality) {
         return byName(a, b);
       }
       return a.cardinality - b.cardinality;
     });
-  } else if (options.order === 'name') {
+  } else if (options.order === "name") {
     setObjects.sort(byName);
-  } else if (options.order === 'inherit') {
+  } else if (options.order === "inherit") {
     setObjects.sort((a, b) => a.index - b.index);
   }
   if (setObjects.length > options.limit) {
@@ -243,9 +261,9 @@ function postProcessSets(options: UpSetSetSettings, setObjects: IPowerBISet[]): 
 
 function extractExpressionInput(
   elems: IPowerBIElems,
-  baseSets: ReturnType<typeof extractBaseSets>,
-  options: UpSetSetSettings,
-  genOptions: GenerateSetCombinationsOptions<IPowerBIElem>
+  baseSets: R,
+  options: SetOptions,
+  genOptions: GenerateSetCombinationsOptions,
 ): {
   sets: IPowerBISets;
   combinations: IPowerBISetCombinations;
@@ -262,7 +280,7 @@ function extractExpressionInput(
     (e) =>
       baseSets.filter((d) => isPartOfSet(d.values[e.index])).map((d) => d.name),
     {
-      setOrder: <ExtractFromExpressionOptions['setOrder']>options.order,
+      setOrder: options.order as ExtractFromExpressionOptions["setOrder"],
       combinationOrder: genOptions.order,
       type,
     },
@@ -305,9 +323,12 @@ function extractExpressionInput(
 export function extractSetsAndCombinations(
   elems: IPowerBIElems,
   data: powerbi.DataViewCategorical,
-  options: UpSetSetSettings,
-  colorResolver: (value: powerbi.DataViewValueColumn) => string | undefined,
-  genOptions: GenerateSetCombinationsOptions<IPowerBIElem>
+  options: SetOptions,
+  colorResolver: (
+    value: powerbi.DataViewValueColumn,
+    i: number,
+  ) => string | undefined,
+  genOptions: GenerateSetCombinationsOptions,
 ): {
   sets: IPowerBISets;
   combinations: IPowerBISetCombinations;
