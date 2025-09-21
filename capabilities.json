@@ -2,36 +2,22 @@
   "dataRoles": [
     {
       "name": "elements",
-      "displayName": "Elements",
-      "description": "exactly one grouping representing the list of elements that are synced",
+      "displayNameKey": "Role_Elements",
+      "descriptionKey": "Role_Elements_Desc",
       "kind": "Grouping",
-      "preferredTypes": [
-        {
-          "text": true
-        },
-        {
-          "integer": true
-        }
-      ]
+      "preferredTypes": [{ "text": true }, { "integer": true }]
     },
     {
       "name": "sets",
-      "displayName": "Sets",
-      "description": "one or more grouping or measures where each is interpreted as a set, a trueish value in row i is interpreted that the corresponding element i is part of this set",
+      "displayNameKey": "Role_Sets",
+      "descriptionKey": "Role_Sets_Desc",
       "kind": "GroupingOrMeasure",
-      "preferredTypes": [
-        {
-          "bool": true
-        },
-        {
-          "integer": true
-        }
-      ]
+      "preferredTypes": [{ "bool": true }, { "integer": true }]
     },
     {
       "name": "attributes",
-      "displayName": "Attributes",
-      "description": "zero or more numerical/text measures which are used to render boxplots or mosaic plots",
+      "displayNameKey": "Role_Attributes",
+      "descriptionKey": "Role_Attributes_Desc",
       "kind": "Measure",
       "preferredTypes": [
         {
@@ -47,75 +33,37 @@
     },
     {
       "name": "counts",
-      "displayName": "Cardinality Expression Measure",
-      "description": "numerical measure defining the number of elements in the set, see also expression input",
+      "displayNameKey": "Role_Counts",
+      "descriptionKey": "Role_Counts_Desc",
       "kind": "Measure",
-      "preferredTypes": [
-        {
-          "numeric": true
-        },
-        {
-          "integer": true
-        }
-      ]
+      "preferredTypes": [{ "numeric": true }, { "integer": true }]
     }
   ],
   "dataViewMappings": [
     {
-      "conditions": [
-        {
-          "elements": { "max": 1 }
-        },
-        {
-          "counts": { "max": 1 }
-        }
-      ],
+      "conditions": [{ "elements": { "max": 1 } }, { "counts": { "max": 1 } }],
       "categorical": {
         "categories": {
           "for": { "in": "elements" },
           "dataReductionAlgorithm": {
-            "window": {
-              "count": 10000
-            }
+            "window": { "count": 30000 }
           }
         },
         "values": {
-          "select": [{ "bind": { "to": "sets" } }, { "bind": { "to": "attributes" } }, { "bind": { "to": "counts" } }]
+          "select": [
+            { "bind": { "to": "sets" } },
+            { "bind": { "to": "counts" } }
+          ]
         }
       }
     }
   ],
   "suppressDefaultTitle": true,
+  "supportsMultiVisualSelection": true,
+  "privileges": [],
   "objects": {
-    "license": {
-      "displayName": "License",
-      "displayNameKey": "license",
-      "objectCategory": 1,
-      "properties": {
-        "code": {
-          "displayName": "Code",
-          "displayNameKey": "license.code",
-          "description": "license Code",
-          "descriptionKey": "license.code.description",
-          "type": { "text": true }
-        },
-        "info": {
-          "displayName": "Info",
-          "displayNameKey": "license.info",
-          "description": "will print whether the license could be verified",
-          "descriptionKey": "license.info.description",
-          "type": { "text": true }
-        },
-        "contact": {
-          "displayName": "Contact",
-          "displayNameKey": "license.contact",
-          "type": { "text": true }
-        }
-      }
-    },
     "sets": {
       "displayName": "Sets",
-      "displayNameKey": "sets",
       "objectCategory": 2,
       "properties": {
         "show": {
@@ -130,23 +78,29 @@
         },
         "order": {
           "displayName": "Order Sets By",
-          "displayNameKey": "sets.order",
           "type": {
             "enumeration": [
-              { "value": "inherit", "displayName": "Inherit Order", "displayNameKey": "sets.order.inherit" },
-              { "value": "name", "displayName": "Name", "displayNameKey": "sets.order.name" },
-              { "value": "cardinality", "displayName": "Cardinality", "displayNameKey": "sets.order.cardinality" },
+              {
+                "value": "inherit",
+                "displayName": "Inherit Order"
+              },
+              {
+                "value": "name",
+                "displayName": "Name"
+              },
+              {
+                "value": "cardinality",
+                "displayName": "Cardinality"
+              },
               {
                 "value": "cardinality:desc",
-                "displayName": "Cardinality (decreasing)",
-                "displayNameKey": "sets.order.cardinalityDesc"
+                "displayName": "Cardinality (decreasing)"
               }
             ]
           }
         },
         "limit": {
           "displayName": "Limit to Top N Sets",
-          "displayNameKey": "sets.limit",
           "type": {
             "numeric": true
           }
@@ -155,7 +109,6 @@
     },
     "combinations": {
       "displayName": "Set Combinations",
-      "displayNameKey": "combinations",
       "objectCategory": 2,
       "properties": {
         "show": {
@@ -170,23 +123,19 @@
         },
         "mode": {
           "displayName": "Generation Mode",
-          "displayNameKey": "combinations.mode",
           "description": "specify the set combination generation mode",
           "type": {
             "enumeration": [
               {
                 "displayName": "Set Intersections",
-                "displayNameKey": "combinations.mode.intersection",
                 "value": "intersection"
               },
               {
                 "displayName": "Set Unions",
-                "displayNameKey": "combinations.mode.union",
                 "value": "union"
               },
               {
                 "displayName": "Distinct Set Intersections",
-                "displayNameKey": "combinations.mode.distinct",
                 "value": "distinctIntersection"
               }
             ]
@@ -194,81 +143,70 @@
         },
         "min": {
           "displayName": "Minimum Degree",
-          "displayNameKey": "combinations.min",
           "description": "minimum number of sets in a set combination",
-          "descriptionKey": "combinations.min.description",
           "type": {
             "numeric": true
           }
         },
         "max": {
           "displayName": "Maximum Degree",
-          "displayNameKey": "combinations.max",
           "description": "maximum number of sets in a set combination",
-          "descriptionKey": "combinations.max.description",
+
           "type": {
             "numeric": true
           }
         },
         "empty": {
           "displayName": "Show Empty Combinations",
-          "displayNameKey": "combinations.empty",
+
           "type": {
             "bool": true
           }
         },
         "limit": {
           "displayName": "Limit to Top N Combinations",
-          "displayNameKey": "combinations.limit",
+
           "type": {
             "numeric": true
           }
         },
         "order": {
           "displayName": "Order Combinations By",
-          "displayNameKey": "combinations.order",
+
           "type": {
             "enumeration": [
               { "value": "name", "displayName": "1. Name" },
               {
                 "value": "cardinality,name",
-                "displayName": "1. Cardinality 2. Name",
-                "displayNameKey": "combinations.order.cn"
+                "displayName": "1. Cardinality 2. Name"
               },
               {
                 "value": "cardinality,degree,name",
-                "displayName": "1. Cardinality 2. Degree 3. Name",
-                "displayNameKey": "combinations.order.cdn"
+                "displayName": "1. Cardinality 2. Degree 3. Name"
               },
               {
                 "value": "degree,name",
-                "displayName": "1. Degree 2. Name",
-                "displayNameKey": "combinations.order.dn"
+                "displayName": "1. Degree 2. Name"
               },
               {
                 "value": "degree,cardinality,name",
-                "displayName": "1. Degree 2. Cardinality 3. Name",
-                "displayNameKey": "combinations.order.dcn"
+                "displayName": "1. Degree 2. Cardinality 3. Name"
               },
               {
                 "value": "group,name",
-                "displayName": "1. Set Group 2. Name",
-                "displayNameKey": "combinations.order.gn"
+                "displayName": "1. Set Group 2. Name"
               },
               {
                 "value": "group,cardinality,name",
-                "displayName": "1. Set Group 2. Cardinality 3. Name",
-                "displayNameKey": "combinations.order.gcn"
+                "displayName": "1. Set Group 2. Cardinality 3. Name"
               },
               {
                 "value": "group,degree,name",
-                "displayName": "1. Set Group 2. Degree 3. Name",
-                "displayNameKey": "combinations.order.gdn"
+                "displayName": "1. Set Group 2. Degree 3. Name"
               },
               {
                 "value": "group,degree,cardinality,name",
-                "displayName": "1. Set Group 2. Degree 3. Cardinality 4. Name",
-                "displayNameKey": "combinations.order.gdcn"
+                "displayName": "1. Set Group 2. Degree 3. Cardinality 4. Name"
               }
             ]
           }
@@ -276,109 +214,74 @@
       }
     },
     "theme": {
-      "displayName": "Theme",
-      "displayNameKey": "theme",
+      "displayNameKey": "Theme_DisplayName",
       "objectCategory": 1,
       "properties": {
         "theme": {
-          "displayName": "Theme",
-          "displayNameKey": "theme.theme",
+          "displayNameKey": "Theme_Theme_DisplayName",
           "type": {
             "enumeration": [
               {
-                "displayName": "Light",
-                "displayNameKey": "theme.theme.light",
+                "displayNameKey": "Theme_Theme_Light_DisplayName",
                 "value": "light"
               },
               {
-                "displayName": "Individual Colors",
-                "displayNameKey": "theme.theme.individualColors",
+                "displayNameKey": "Theme_Theme_IndividualColors_DisplayName",
                 "value": "powerbi"
               },
               {
-                "displayName": "Colored Sets",
-                "displayNameKey": "theme.theme.coloredSets",
+                "displayNameKey": "Theme_Theme_ColoredSets_DisplayName",
                 "value": "powerbi-set"
               },
               {
-                "displayName": "Single Color",
-                "displayNameKey": "theme.theme.singleColor",
+                "displayNameKey": "Theme_Theme_SingleColor_DisplayName",
                 "value": "auto"
               },
               {
-                "displayName": "Dark",
-                "displayNameKey": "theme.theme.dark",
+                "displayNameKey": "Theme_Theme_Dark_DisplayName",
                 "value": "dark"
               },
               {
-                "displayName": "Vega",
-                "displayNameKey": "theme.theme.vega",
+                "displayNameKey": "Theme_Theme_Vega_DisplayName",
                 "value": "vega"
               }
             ]
           }
         },
         "selectionColor": {
-          "displayName": "Selection Color",
-          "displayNameKey": "theme.selectionColor",
+          "displayNameKey": "Theme_SelectionColor_DisplayName",
           "type": {
-            "fill": {
-              "solid": {
-                "color": true
-              }
-            }
+            "fill": { "solid": { "color": true } }
           }
         },
         "color": {
-          "displayName": "Color",
-          "displayNameKey": "theme.color",
+          "displayNameKey": "Theme_Color_DisplayName",
           "type": {
-            "fill": {
-              "solid": {
-                "color": true
-              }
-            }
+            "fill": { "solid": { "color": true } }
           }
         },
         "opacity": {
-          "displayName": "Opacity",
-          "displayNameKey": "theme.opacity",
-          "type": {
-            "numeric": true
-          }
+          "displayNameKey": "Theme_Opacity_DisplayName",
+          "type": { "numeric": true }
         },
         "hasSelectionColor": {
-          "displayName": "Color when selection is present",
-          "displayNameKey": "theme.hasSelectionColor",
+          "displayNameKey": "Theme_HasSelectionColor_DisplayName",
           "type": {
-            "fill": {
-              "solid": {
-                "color": true
-              }
-            }
+            "fill": { "solid": { "color": true } }
           }
         },
         "hasSelectionOpacity": {
-          "displayName": "Opacity when selection is present",
-          "displayNameKey": "theme.hasSelectionOpacity",
-          "type": {
-            "numeric": true
-          }
+          "displayNameKey": "Theme_HasSelectionOpacity_DisplayName",
+          "type": { "numeric": true }
         },
         "textColor": {
-          "displayName": "Text Color",
-          "displayNameKey": "theme.textColor",
+          "displayNameKey": "Theme_TextColor_DisplayName",
           "type": {
-            "fill": {
-              "solid": {
-                "color": true
-              }
-            }
+            "fill": { "solid": { "color": true } }
           }
         },
         "hoverHintColor": {
           "displayName": "Hover Hint Color",
-          "displayNameKey": "theme.hoverHintColor",
           "type": {
             "fill": {
               "solid": {
@@ -389,7 +292,6 @@
         },
         "notMemberColor": {
           "displayName": "Not Member Color",
-          "displayNameKey": "theme.notMemberColor",
           "type": {
             "fill": {
               "solid": {
@@ -400,7 +302,6 @@
         },
         "alternatingBackgroundColor": {
           "displayName": "Alternating Background Color",
-          "displayNameKey": "theme.alternatingBackgroundColor",
           "type": {
             "fill": {
               "solid": {
@@ -413,105 +314,206 @@
     },
     "setColors": {
       "displayName": "Set Colors",
-      "displayNameKey": "theme.setColors",
       "objectCategory": 1,
       "properties": {
-        "fill": {
-          "displayName": "Color",
-          "displayNameKey": "theme.setColors.fill",
+        "setColor1": {
+          "displayName": "Set Color 1",
           "type": {
-            "fill": {
-              "solid": {
-                "color": true
-              }
-            }
+            "fill": { "solid": { "color": true } }
+          }
+        },
+        "setColor2": {
+          "displayName": "Set Color 2",
+          "type": {
+            "fill": { "solid": { "color": true } }
+          }
+        },
+        "setColor3": {
+          "displayName": "Set Color 3",
+          "type": {
+            "fill": { "solid": { "color": true } }
+          }
+        },
+        "setColor4": {
+          "displayName": "Set Color 4",
+          "type": {
+            "fill": { "solid": { "color": true } }
+          }
+        },
+        "setColor5": {
+          "displayName": "Set Color 5",
+          "type": {
+            "fill": { "solid": { "color": true } }
+          }
+        },
+        "setColor6": {
+          "displayName": "Set Color 6",
+          "type": {
+            "fill": { "solid": { "color": true } }
+          }
+        },
+        "setColor7": {
+          "displayName": "Set Color 7",
+          "type": {
+            "fill": { "solid": { "color": true } }
+          }
+        },
+        "setColor8": {
+          "displayName": "Set Color 8",
+          "type": {
+            "fill": { "solid": { "color": true } }
+          }
+        },
+        "setColor9": {
+          "displayName": "Set Color 9",
+          "type": {
+            "fill": { "solid": { "color": true } }
+          }
+        },
+        "setColor10": {
+          "displayName": "Set Color 10",
+          "type": {
+            "fill": { "solid": { "color": true } }
           }
         }
       }
     },
     "attributeColors": {
       "displayName": "Attribute Colors",
-      "displayNameKey": "attributeColors",
       "objectCategory": 1,
       "description": "customize the colors of categorical attributes",
-      "descriptionKey": "attributeColors.description",
       "properties": {
-        "fill": {
-          "displayName": "Color",
-          "displayNameKey": "attributeColors.fill",
+        "attributeColor1": {
+          "displayName": "Attribute Color 1",
           "type": {
-            "fill": {
-              "solid": {
-                "color": true
-              }
-            }
+            "fill": { "solid": { "color": true } }
+          }
+        },
+        "attributeColor2": {
+          "displayName": "Attribute Color 2",
+          "type": {
+            "fill": { "solid": { "color": true } }
+          }
+        },
+        "attributeColor3": {
+          "displayName": "Attribute Color 3",
+          "type": {
+            "fill": { "solid": { "color": true } }
+          }
+        },
+        "attributeColor4": {
+          "displayName": "Attribute Color 4",
+          "type": {
+            "fill": { "solid": { "color": true } }
+          }
+        },
+        "attributeColor5": {
+          "displayName": "Attribute Color 5",
+          "type": {
+            "fill": { "solid": { "color": true } }
+          }
+        },
+        "attributeColor6": {
+          "displayName": "Attribute Color 6",
+          "type": {
+            "fill": { "solid": { "color": true } }
+          }
+        },
+        "attributeColor7": {
+          "displayName": "Attribute Color 7",
+          "type": {
+            "fill": { "solid": { "color": true } }
+          }
+        },
+        "attributeColor8": {
+          "displayName": "Attribute Color 8",
+          "type": {
+            "fill": { "solid": { "color": true } }
+          }
+        },
+        "attributeColor9": {
+          "displayName": "Attribute Color 9",
+          "type": {
+            "fill": { "solid": { "color": true } }
+          }
+        },
+        "attributeColor10": {
+          "displayName": "Attribute Color 10",
+          "type": {
+            "fill": { "solid": { "color": true } }
           }
         }
       }
     },
     "style": {
       "displayName": "Style",
-      "displayNameKey": "style",
       "properties": {
         "numericScale": {
           "displayName": "Scale",
-          "displayNameKey": "style.scale",
           "type": {
             "enumeration": [
-              { "displayName": "Linear Scale", "value": "linear", "displayNameKey": "style.scale.linear" },
-              { "displayName": "Log Scale", "value": "log", "displayNameKey": "style.scale.log" }
+              {
+                "displayName": "Linear Scale",
+                "value": "linear"
+              },
+              {
+                "displayName": "Log Scale",
+                "value": "log"
+              }
             ]
           }
         },
         "setName": {
           "displayName": "Set Axis Name",
-          "displayNameKey": "style.setName",
           "type": {
             "text": true
           }
         },
         "setLabelAlignment": {
           "displayName": "Set Label Alignment",
-          "displayNameKey": "style.setLabelAlignment",
           "type": {
             "enumeration": [
-              { "displayName": "Left", "value": "left", "displayNameKey": "style.setLabelAlignment.left" },
-              { "displayName": "Center", "value": "center", "displayNameKey": "style.setLabelAlignment.center" },
-              { "displayName": "Right", "value": "right", "displayNameKey": "style.setLabelAlignment.right" }
+              {
+                "displayName": "Left",
+                "value": "left"
+              },
+              {
+                "displayName": "Center",
+                "value": "center"
+              },
+              {
+                "displayName": "Right",
+                "value": "right"
+              }
             ]
           }
         },
         "combinationName": {
           "displayName": "Combination Axis Name",
-          "displayNameKey": "style.combinationName",
           "type": {
             "text": true
           }
         },
         "setNameAxisOffset": {
           "displayName": "Set Axis Offset",
-          "displayNameKey": "style.setNameAxisOffset",
           "type": {
             "numeric": true
           }
         },
         "combinationNameAxisOffset": {
           "displayName": "Combination Axis Offset",
-          "displayNameKey": "style.combinationNameAxisOffset",
           "type": {
             "numeric": true
           }
         },
         "setMaxScale": {
           "displayName": "Set Scale Maximum",
-          "displayNameKey": "style.setMaxScale",
           "type": {
             "numeric": true
           }
         },
         "combinationScaleMax": {
           "displayName": "Combination Scale Maximum",
-          "displayNameKey": "style.combinationScaleMax",
           "type": {
             "numeric": true
           }
@@ -519,21 +521,16 @@
       }
     },
     "fonts": {
-      "displayName": "Fonts",
-      "displayNameKey": "fonts",
+      "displayNameKey": "Fonts_DisplayName",
       "properties": {
         "fontFamily": {
-          "displayName": "Font Family",
-          "displayNameKey": "fonts.fontFamily",
+          "displayNameKey": "Fonts_FontFamily_DisplayName",
           "type": {
-            "formatting": {
-              "fontFamily": true
-            }
+            "formatting": { "fontFamily": true }
           }
         },
         "chartLabel": {
           "displayName": "Chart Label",
-          "displayNameKey": "fonts.chartLabel",
           "type": {
             "formatting": {
               "fontSize": true
@@ -541,17 +538,13 @@
           }
         },
         "setLabel": {
-          "displayName": "Set Label",
-          "displayNameKey": "fonts.setLabel",
+          "displayNameKey": "Fonts_SetLabel_DisplayName",
           "type": {
-            "formatting": {
-              "fontSize": true
-            }
+            "formatting": { "fontSize": true }
           }
         },
         "barLabel": {
           "displayName": "Bar Label",
-          "displayNameKey": "fonts.barLabel",
           "type": {
             "formatting": {
               "fontSize": true
@@ -564,7 +557,8 @@
   "supportsHighlight": true,
   "supportsLandingPage": true,
   "supportsEmptyDataView": true,
-  "supportsMultiVisualSelection": true,
+  "supportsSynchronizingFilterState": true,
+  "supportsKeyboardFocus": true,
   "tooltips": {
     "supportEnhancedTooltips": true,
     "supportedTypes": {
@@ -572,6 +566,5 @@
       "canvas": true
     },
     "roles": ["tooltips"]
-  },
-  "privileges": []
+  }
 }
