@@ -6,60 +6,53 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
-          node-version: 20
+          node-version: lts/*
           cache: npm
-      - name: copy example secret
-        run: cp src/secrets.example.ts src/secrets.ts
-      - name: create secrets from action secret
-        env:
-          LICENSE_INFO: ${{ secrets.LICENSE_KEY }}
-        if: env.LICENSE_INFO != null
-        run: |
-          echo '${{ env.LICENSE_INFO }}' > src/secrets.ts
       - run: npm ci
       - run: npm run build
+      - run: npm run build:preview
       - run: npm test
       - run: npm run lint
-      - run: |
-          mkdir -p public/integrations/powerbi
-          cp dist/upsetjs.pbiviz public/integrations/powerbi/
-          cp dist/upsetjs_preview.pbiviz public/integrations/powerbi/
-          cp README.md public/integrations/powerbi/
-          cp samples/got.pbix public/integrations/powerbi/
-          cp samples/sample.pbix public/integrations/powerbi/
+      # - run: |
+      #     mkdir -p public/integrations/powerbi
+      #     cp dist/upsetjs.pbiviz public/integrations/powerbi/
+      #     cp dist/upsetjs_preview.pbiviz public/integrations/powerbi/
+      #     cp README.md public/integrations/powerbi/
+      #     cp samples/got.pbix public/integrations/powerbi/
+      #     cp samples/sample.pbix public/integrations/powerbi/
 
-      - name: Deploy Main
-        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        uses: upsetjs/actions-gh-pages@sgratzl
-        env:
-          ACTIONS_ALLOW_UNSECURE_COMMANDS: true
-        with:
-          deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
-          external_repository: upsetjs/upsetjs.github.io
-          publish_branch: main
-          publish_dir: ./public
-          enable_jekyll: true
-          keep_files: true
+      # - name: Deploy Main
+      #   if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      #   uses: upsetjs/actions-gh-pages@sgratzl
+      #   env:
+      #     ACTIONS_ALLOW_UNSECURE_COMMANDS: true
+      #   with:
+      #     deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
+      #     external_repository: upsetjs/upsetjs.github.io
+      #     publish_branch: main
+      #     publish_dir: ./public
+      #     enable_jekyll: true
+      #     keep_files: true
 
-      - if: github.ref == 'refs/heads/dev'
-        # move to next directory
-        run: |
-          mv public public2
-          mkdir -p public
-          mv public2 public/next
+      # - if: github.ref == 'refs/heads/dev'
+      #   # move to next directory
+      #   run: |
+      #     mv public public2
+      #     mkdir -p public
+      #     mv public2 public/next
 
-      - name: Deploy Develop
-        if: github.ref == 'refs/heads/dev' && github.event_name == 'push'
-        uses: upsetjs/actions-gh-pages@sgratzl
-        env:
-          ACTIONS_ALLOW_UNSECURE_COMMANDS: true
-        with:
-          deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
-          external_repository: upsetjs/upsetjs.github.io
-          publish_branch: main
-          publish_dir: ./public
-          enable_jekyll: true
-          keep_files: true
+      # - name: Deploy Develop
+      #   if: github.ref == 'refs/heads/dev' && github.event_name == 'push'
+      #   uses: upsetjs/actions-gh-pages@sgratzl
+      #   env:
+      #     ACTIONS_ALLOW_UNSECURE_COMMANDS: true
+      #   with:
+      #     deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
+      #     external_repository: upsetjs/upsetjs.github.io
+      #     publish_branch: main
+      #     publish_dir: ./public
+      #     enable_jekyll: true
+      #     keep_files: true
