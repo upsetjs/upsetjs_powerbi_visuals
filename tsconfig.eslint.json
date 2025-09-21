@@ -1,13 +1,16 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
+    "allowJs": true,
     "strict": true,
+    "noEmit": true,
     "alwaysStrict": true,
     "strictNullChecks": true,
     "stripInternal": true,
     "strictPropertyInitialization": true,
     "strictFunctionTypes": true,
-    "noImplicitAny": true
+    "noImplicitAny": true,
+    "importsNotUsedAsValues": "error"
   },
-  "include": ["./src/**.ts"]
+  "include": ["src/**/*.ts", "*.js", "*.cjs", "*.mjs"]
 }

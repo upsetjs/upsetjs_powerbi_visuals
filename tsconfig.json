@@ -9,7 +9,6 @@
     "moduleResolution": "node",
     "declaration": true,
     "lib": ["es2015", "dom"],
-    "resolveJsonModule": true,
     "baseUrl": "./",
     "paths": {
       "@": ["./"],
@@ -17,7 +16,7 @@
     },
     "module": "esnext",
     "importHelpers": true,
-    "verbatimModuleSyntax": false,
+    "importsNotUsedAsValues": "remove",
     "forceConsistentCasingInFileNames": true,
     "strictBindCallApply": true,
     "noImplicitAny": false,
@@ -28,5 +27,5 @@
     "noFallthroughCasesInSwitch": true,
     "esModuleInterop": true
   },
-  "files": ["./src/visual.ts"]
+  "files": ["src/visual.ts"]
 }
