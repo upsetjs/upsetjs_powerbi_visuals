@@ -10,7 +10,6 @@ import {
   SetCombinationType,
   UpSetProps,
 } from "@upsetjs/bundle/dist";
-import { IPowerBIElem } from "utils/interfaces";
 import { SetOptions } from "utils/model";
 
 const { SimpleCard, ItemDropdown, Model, TextInput, NumUpDown, ToggleSwitch } =
@@ -19,24 +18,24 @@ const { SimpleCard, ItemDropdown, Model, TextInput, NumUpDown, ToggleSwitch } =
 export class StyleCardSettings extends SimpleCard {
   numericScale = new ItemDropdown({
     name: "numericScale",
-    displayName: "Scale",
+    displayNameKey: "Style_NumericScale_DisplayName",
     items: [
-      { displayName: "Linear Scale", value: "linear" },
-      { displayName: "Log Scale", value: "log" },
+      { displayNameKey: "Style_NumericScale_Linear", value: "linear" },
+      { displayNameKey: "Style_NumericScale_Log", value: "log" },
     ],
-    value: { displayName: "Linear Scale", value: "linear" },
+    value: { displayNameKey: "Style_NumericScale_Linear", value: "linear" },
   });
 
   setName = new TextInput({
     name: "setName",
-    displayName: "Set Axis Name",
+    displayNameKey: "Style_SetName_DisplayName",
     placeholder: "The label on the set axis",
     value: "",
   });
 
   setLabelAlignment = new ItemDropdown({
     name: "setLabelAlignment",
-    displayName: "Set Label Alignment",
+    displayNameKey: "Style_SetLabelAlignment_DisplayName",
     items: [
       { displayName: "Left", value: "left" },
       { displayName: "Center", value: "center" },
@@ -47,38 +46,38 @@ export class StyleCardSettings extends SimpleCard {
 
   combinationName = new TextInput({
     name: "combinationName",
-    displayName: "Combination Axis Name",
+    displayNameKey: "Style_CombinationName_DisplayName",
     placeholder: "The label on the combination axis",
     value: "",
   });
 
   setNameAxisOffset = new NumUpDown({
     name: "setNameAxisOffset",
-    displayName: "Set Axis Offset",
+    displayNameKey: "Style_SetNameAxisOffset_DisplayName",
     value: 0,
   });
 
   combinationNameAxisOffset = new NumUpDown({
     name: "combinationNameAxisOffset",
-    displayName: "Combination Axis Offset",
+    displayNameKey: "Style_CombinationNameAxisOffset_DisplayName",
     value: 0,
   });
 
   setMaxScale = new NumUpDown({
     name: "setMaxScale",
-    displayName: "Set Scale Maximum",
-    value: 100,
+    displayNameKey: "Style_SetMaxScale_DisplayName",
+    value: undefined,
   });
 
   combinationScaleMax = new NumUpDown({
     name: "combinationScaleMax",
-    displayName: "Combination Scale Maximum",
-    value: 100,
+    displayNameKey: "Style_CombinationScaleMax_DisplayName",
+    value: undefined,
   });
 
   name: string = "style";
-  displayName: string = "Style";
-  slice = [
+  displayNameKey: string = "Style_DisplayName";
+  slices = [
     this.numericScale,
     this.setName,
     this.setLabelAlignment,
@@ -89,7 +88,8 @@ export class StyleCardSettings extends SimpleCard {
     this.combinationScaleMax,
   ];
 
-  generate(): Partial<UpSetProps<unknown>> {
+  generate() {
+    // }: Partial<UpSetProps<unknown>> {
     return {
       numericScale: this.numericScale.value.value as UpSetProps["numericScale"],
       setName: this.setName.value,
@@ -105,40 +105,30 @@ export class StyleCardSettings extends SimpleCard {
 }
 
 export class SetsCardSettings extends SimpleCard {
-  show = new ToggleSwitch({
-    name: "show",
-    displayName: "Show",
-    value: true,
-  });
-
-  displayNameAttr = new TextInput({
-    name: "displayName",
-    displayName: "Display Name",
-    placeholder: "The name to show",
-    value: "",
-  });
-
   order = new ItemDropdown({
     name: "order",
-    displayName: "Order Sets By",
+    displayNameKey: "Sets_Order_DisplayName",
     items: [
-      { displayName: "Inherit Order", value: "inherit" },
-      { displayName: "Name", value: "name" },
-      { displayName: "Cardinality", value: "cardinality" },
-      { displayName: "Cardinality (decreasing)", value: "cardinality:desc" },
+      { displayNameKey: "Sets_Order_Inherit", value: "inherit" },
+      { displayNameKey: "Sets_Order_Name", value: "name" },
+      { displayNameKey: "Sets_Order_Cardinality", value: "cardinality" },
+      {
+        displayNameKey: "Sets_Order_Cardinality_Desc",
+        value: "cardinality:desc",
+      },
     ],
-    value: { displayName: "Inherit Order", value: "inherit" },
+    value: { displayNameKey: "Sets_Order_Inherit", value: "inherit" },
   });
 
   limit = new NumUpDown({
     name: "limit",
-    displayName: "Limit to Top N Sets",
+    displayNameKey: "Sets_Limit",
     value: 10,
   });
 
   name: string = "sets";
-  displayName: string = "Sets";
-  slices = [this.show, this.displayNameAttr, this.order, this.limit];
+  displayNameKey: string = "Sets_DisplayName";
+  slices = [this.order, this.limit];
 
   generate(): SetOptions {
     return {
@@ -149,103 +139,93 @@ export class SetsCardSettings extends SimpleCard {
 }
 
 export class CombinationsCardSettings extends SimpleCard {
-  show = new ToggleSwitch({
-    name: "show",
-    displayName: "Show",
-    value: true,
-  });
-
-  displayNameAttr = new TextInput({
-    name: "displayName",
-    displayName: "Display Name",
-    placeholder: "The name to show",
-    value: "",
-  });
-
   mode = new ItemDropdown({
     name: "mode",
-    displayName: "Generation Mode",
+    displayNameKey: "Combinations_Mode_DisplayName",
     items: [
-      { displayName: "Set Intersections", value: "intersection" },
-      { displayName: "Set Unions", value: "union" },
       {
-        displayName: "Distinct Set Intersections",
+        displayNameKey: "Combinations_Mode_Intersection",
+        value: "intersection",
+      },
+      { displayNameKey: "Combinations_Mode_Union", value: "union" },
+      {
+        displayNameKey: "Combinations_Mode_DistinctIntersection",
         value: "distinctIntersection",
       },
     ],
-    value: { displayName: "Set Intersections", value: "intersection" },
+    value: {
+      displayNameKey: "Combinations_Mode_Intersection",
+      value: "intersection",
+    },
   });
 
   min = new NumUpDown({
     name: "min",
-    displayName: "Minimum Degree",
+    displayNameKey: "Combinations_Min",
     value: 1,
   });
 
   max = new NumUpDown({
     name: "max",
-    displayName: "Maximum Degree",
+    displayNameKey: "Combinations_Max",
     value: 5,
   });
 
   empty = new ToggleSwitch({
     name: "empty",
-    displayName: "Show Empty Combinations",
+    displayNameKey: "Combinations_Empty",
     value: false,
   });
 
   limit = new NumUpDown({
     name: "limit",
-    displayName: "Limit to Top N Combinations",
+    displayNameKey: "Combinations_Limit",
     value: 20,
   });
 
   order = new ItemDropdown({
     name: "order",
-    displayName: "Order Combinations By",
+    displayNameKey: "Combinations_Order",
     items: [
-      { displayName: "1. Name", value: "name" },
-      { displayName: "1. Cardinality 2. Name", value: "cardinality,name" },
+      { displayNameKey: "Combinations_Order_Name", value: "name" },
       {
-        displayName: "1. Cardinality 2. Degree 3. Name",
+        displayNameKey: "Combinations_Order_Cardinality_Name",
+        value: "cardinality,name",
+      },
+      {
+        displayNameKey: "Combinations_Order_Cardinality_Degree_Name",
         value: "cardinality,degree,name",
       },
-      { displayName: "1. Degree 2. Name", value: "degree,name" },
       {
-        displayName: "1. Degree 2. Cardinality 3. Name",
+        displayNameKey: "Combinations_Order_Degree_Name",
+        value: "degree,name",
+      },
+      {
+        displayNameKey: "Combinations_Order_Degree_Cardinality_Name",
         value: "degree,cardinality,name",
       },
-      { displayName: "1. Set Group 2. Name", value: "group,name" },
+      { displayNameKey: "Combinations_Order_Group_Name", value: "group,name" },
       {
-        displayName: "1. Set Group 2. Cardinality 3. Name",
+        displayNameKey: "Combinations_Order_Group_Cardinality_Name",
         value: "group,cardinality,name",
       },
       {
-        displayName: "1. Set Group 2. Degree 3. Name",
+        displayNameKey: "Combinations_Order_Group_Degree_Name",
         value: "group,degree,name",
       },
       {
-        displayName: "1. Set Group 2. Degree 3. Cardinality 4. Name",
+        displayNameKey: "Combinations_Order_Group_Degree_Cardinality_Name",
         value: "group,degree,cardinality,name",
       },
     ],
-    value: { displayName: "1. Name", value: "name" },
+    value: { displayNameKey: "Combinations_Order_Name", value: "name" },
   });
 
   name: string = "combinations";
-  displayName: string = "Set Combinations";
-  slices = [
-    this.show,
-    this.displayNameAttr,
-    this.mode,
-    this.min,
-    this.max,
-    this.empty,
-    this.limit,
-    this.order,
-  ];
+  displayNameKey: string = "Combinations_DisplayName";
+  slices = [this.mode, this.min, this.max, this.empty, this.limit, this.order];
 
-  generate(): GenerateSetCombinationsOptions<IPowerBIElem> {
+  generate(): GenerateSetCombinationsOptions {
     return {
       type: this.mode.value.value as SetCombinationType,
       min: this.min.value,

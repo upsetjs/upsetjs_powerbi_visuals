@@ -57,9 +57,9 @@
   "Theme_HasSelectionColor_DisplayName": "Color when selection is present",
   "Theme_HasSelectionOpacity_DisplayName": "Opacity when selection is present",
   "Theme_TextColor_DisplayName": "Text Color",
-  "Theme_Hover_Hint_Color": "Hover Hint Color",
-  "Theme_Not_Member_Color": "Not Member Color",
-  "Theme_Alternating_Background_Color": "Alternating Background Color",
+  "Theme_Hover_Hint_Color_DisplayName": "Hover Hint Color",
+  "Theme_Not_Member_Color_DisplayName": "Not Member Color",
+  "Theme_Alternating_Background_Color_DisplayName": "Alternating Background Color",
 
   "Fonts_DisplayName": "Fonts",
   "Fonts_FontFamily_DisplayName": "Font Family",

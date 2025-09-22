@@ -68,7 +68,7 @@
   "objects": {
     "sets": {
       "displayNameKey": "Sets_DisplayName",
-      "objectCategory": 2,
+      "objectCategory": 1,
       "properties": {
         "order": {
           "displayNameKey": "Sets_Order_DisplayName",
@@ -103,7 +103,7 @@
     },
     "combinations": {
       "displayNameKey": "Combinations_DisplayName",
-      "objectCategory": 2,
+      "objectCategory": 1,
       "properties": {
         "mode": {
           "displayNameKey": "Combinations_Mode_DisplayName",
@@ -264,7 +264,7 @@
           }
         },
         "hoverHintColor": {
-          "displayNameKey": "Theme_Hover_Hint_Color",
+          "displayNameKey": "Theme_Hover_Hint_Color_DisplayName",
           "type": {
             "fill": {
               "solid": {
@@ -274,7 +274,7 @@
           }
         },
         "notMemberColor": {
-          "displayNameKey": "Theme_Not_Member_Color",
+          "displayNameKey": "Theme_Not_Member_Color_DisplayName",
           "type": {
             "fill": {
               "solid": {
@@ -284,7 +284,7 @@
           }
         },
         "alternatingBackgroundColor": {
-          "displayNameKey": "Theme_Alternating_Background_Color",
+          "displayNameKey": "Theme_Alternating_Background_Color_DisplayName",
           "type": {
             "fill": {
               "solid": {
