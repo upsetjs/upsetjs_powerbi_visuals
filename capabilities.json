@@ -2,6 +2,7 @@
   "dataRoles": [
     {
       "name": "elements",
+      "displayName": "Elements",
       "displayNameKey": "Role_Elements",
       "descriptionKey": "Role_Elements_Desc",
       "kind": "Grouping",
@@ -9,6 +10,7 @@
     },
     {
       "name": "sets",
+      "displayName": "Set",
       "displayNameKey": "Role_Sets",
       "descriptionKey": "Role_Sets_Desc",
       "kind": "GroupingOrMeasure",
@@ -16,6 +18,7 @@
     },
     {
       "name": "attributes",
+      "displayName": "Attributes",
       "displayNameKey": "Role_Attributes",
       "descriptionKey": "Role_Attributes_Desc",
       "kind": "Measure",
@@ -33,6 +36,7 @@
     },
     {
       "name": "counts",
+      "displayName": "Cardinality Expression Measure",
       "displayNameKey": "Role_Counts",
       "descriptionKey": "Role_Counts_Desc",
       "kind": "Measure",
@@ -63,44 +67,34 @@
   "privileges": [],
   "objects": {
     "sets": {
-      "displayName": "Sets",
+      "displayNameKey": "Sets_DisplayName",
       "objectCategory": 2,
       "properties": {
-        "show": {
-          "type": {
-            "bool": true
-          }
-        },
-        "displayName": {
-          "type": {
-            "text": true
-          }
-        },
         "order": {
-          "displayName": "Order Sets By",
+          "displayNameKey": "Sets_Order_DisplayName",
           "type": {
             "enumeration": [
               {
-                "value": "inherit",
-                "displayName": "Inherit Order"
+                "displayNameKey": "Sets_Order_Inherit",
+                "value": "inherit"
               },
               {
-                "value": "name",
-                "displayName": "Name"
+                "displayNameKey": "Sets_Order_Name",
+                "value": "name"
               },
               {
-                "value": "cardinality",
-                "displayName": "Cardinality"
+                "displayNameKey": "Sets_Order_Cardinality",
+                "value": "cardinality"
               },
               {
-                "value": "cardinality:desc",
-                "displayName": "Cardinality (decreasing)"
+                "displayNameKey": "Sets_Order_Cardinality_Desc",
+                "value": "cardinality:desc"
               }
             ]
           }
         },
         "limit": {
-          "displayName": "Limit to Top N Sets",
+          "displayNameKey": "Sets_Limit",
           "type": {
             "numeric": true
           }
@@ -108,105 +102,94 @@
       }
     },
     "combinations": {
-      "displayName": "Set Combinations",
+      "displayNameKey": "Combinations_DisplayName",
       "objectCategory": 2,
       "properties": {
-        "show": {
-          "type": {
-            "bool": true
-          }
-        },
-        "displayName": {
-          "type": {
-            "text": true
-          }
-        },
         "mode": {
-          "displayName": "Generation Mode",
+          "displayNameKey": "Combinations_Mode_DisplayName",
           "description": "specify the set combination generation mode",
           "type": {
             "enumeration": [
               {
-                "displayName": "Set Intersections",
+                "displayNameKey": "Combinations_Mode_Intersection",
                 "value": "intersection"
               },
               {
-                "displayName": "Set Unions",
+                "displayNameKey": "Combinations_Mode_Union",
                 "value": "union"
               },
               {
-                "displayName": "Distinct Set Intersections",
+                "displayNameKey": "Combinations_Mode_DistinctIntersection",
                 "value": "distinctIntersection"
               }
             ]
           }
         },
         "min": {
-          "displayName": "Minimum Degree",
+          "displayNameKey": "Combinations_Min",
           "description": "minimum number of sets in a set combination",
           "type": {
             "numeric": true
           }
         },
         "max": {
-          "displayName": "Maximum Degree",
+          "displayNameKey": "Combinations_Max",
           "description": "maximum number of sets in a set combination",
-
           "type": {
             "numeric": true
           }
         },
         "empty": {
-          "displayName": "Show Empty Combinations",
-
+          "displayNameKey": "Combinations_Empty",
           "type": {
             "bool": true
           }
         },
         "limit": {
-          "displayName": "Limit to Top N Combinations",
-
+          "displayNameKey": "Combinations_Limit",
           "type": {
             "numeric": true
           }
         },
         "order": {
-          "displayName": "Order Combinations By",
-
+          "displayNameKey": "Combinations_Order",
           "type": {
             "enumeration": [
-              { "value": "name", "displayName": "1. Name" },
               {
-                "value": "cardinality,name",
-                "displayName": "1. Cardinality 2. Name"
+                "displayNameKey": "Combinations_Order_Name",
+                "value": "name"
               },
               {
-                "value": "cardinality,degree,name",
-                "displayName": "1. Cardinality 2. Degree 3. Name"
+                "displayNameKey": "Combinations_Order_Cardinality_Name",
+                "value": "cardinality,name"
               },
               {
-                "value": "degree,name",
-                "displayName": "1. Degree 2. Name"
+                "displayNameKey": "Combinations_Order_Cardinality_Degree_Name",
+                "value": "cardinality,degree,name"
               },
               {
-                "value": "degree,cardinality,name",
-                "displayName": "1. Degree 2. Cardinality 3. Name"
+                "displayNameKey": "Combinations_Order_Degree_Name",
+                "value": "degree,name"
               },
               {
-                "value": "group,name",
-                "displayName": "1. Set Group 2. Name"
+                "displayNameKey": "Combinations_Order_Degree_Cardinality_Name",
+                "value": "degree,cardinality,name"
               },
               {
-                "value": "group,cardinality,name",
-                "displayName": "1. Set Group 2. Cardinality 3. Name"
+                "displayNameKey": "Combinations_Order_Group_Name",
+                "value": "group,name"
               },
               {
-                "value": "group,degree,name",
-                "displayName": "1. Set Group 2. Degree 3. Name"
+                "displayNameKey": "Combinations_Order_Group_Cardinality_Name",
+                "value": "group,cardinality,name"
               },
               {
-                "value": "group,degree,cardinality,name",
-                "displayName": "1. Set Group 2. Degree 3. Cardinality 4. Name"
+                "displayNameKey": "Combinations_Order_Group_Degree_Name",
+                "value": "group,degree,name"
+              },
+              {
+                "displayNameKey": "Combinations_Order_Group_Degree_Cardinality_Name",
+                "value": "group,degree,cardinality,name"
               }
             ]
           }
@@ -281,7 +264,7 @@
           }
         },
         "hoverHintColor": {
-          "displayName": "Hover Hint Color",
+          "displayNameKey": "Theme_Hover_Hint_Color",
           "type": {
             "fill": {
               "solid": {
@@ -291,7 +274,7 @@
           }
         },
         "notMemberColor": {
-          "displayName": "Not Member Color",
+          "displayNameKey": "Theme_Not_Member_Color",
           "type": {
             "fill": {
               "solid": {
@@ -301,7 +284,7 @@
           }
         },
         "alternatingBackgroundColor": {
-          "displayName": "Alternating Background Color",
+          "displayNameKey": "Theme_Alternating_Background_Color",
           "type": {
             "fill": {
               "solid": {
@@ -446,31 +429,31 @@
       }
     },
     "style": {
-      "displayName": "Style",
+      "displayNameKey": "Style_DisplayName",
       "properties": {
         "numericScale": {
-          "displayName": "Scale",
+          "displayNameKey": "Style_NumericScale_DisplayName",
           "type": {
             "enumeration": [
               {
-                "displayName": "Linear Scale",
+                "displayNameKey": "Style_NumericScale_Linear",
                 "value": "linear"
               },
               {
-                "displayName": "Log Scale",
+                "displayNameKey": "Style_NumericScale_Log",
                 "value": "log"
               }
             ]
           }
         },
         "setName": {
-          "displayName": "Set Axis Name",
+          "displayNameKey": "Style_SetName_DisplayName",
           "type": {
             "text": true
           }
         },
         "setLabelAlignment": {
-          "displayName": "Set Label Alignment",
+          "displayNameKey": "Style_SetLabelAlignment_DisplayName",
           "type": {
             "enumeration": [
               {
@@ -489,31 +472,31 @@
           }
         },
         "combinationName": {
-          "displayName": "Combination Axis Name",
+          "displayNameKey": "Style_CombinationName_DisplayName",
           "type": {
             "text": true
           }
         },
         "setNameAxisOffset": {
-          "displayName": "Set Axis Offset",
+          "displayNameKey": "Style_SetNameAxisOffset_DisplayName",
           "type": {
             "numeric": true
           }
         },
         "combinationNameAxisOffset": {
-          "displayName": "Combination Axis Offset",
+          "displayNameKey": "Style_CombinationNameAxisOffset_DisplayName",
           "type": {
             "numeric": true
           }
         },
         "setMaxScale": {
-          "displayName": "Set Scale Maximum",
+          "displayNameKey": "Style_SetMaxScale_DisplayName",
           "type": {
             "numeric": true
           }
         },
         "combinationScaleMax": {
-          "displayName": "Combination Scale Maximum",
+          "displayNameKey": "Style_CombinationScaleMax_DisplayName",
           "type": {
             "numeric": true
           }
@@ -530,7 +513,7 @@
           }
         },
         "chartLabel": {
-          "displayName": "Chart Label",
+          "displayNameKey": "Fonts_ChartLabel_DisplayName",
           "type": {
             "formatting": {
               "fontSize": true
@@ -544,7 +527,7 @@
           }
         },
         "barLabel": {
-          "displayName": "Bar Label",
+          "displayNameKey": "Fonts_BarLabel_DisplayName",
           "type": {
             "formatting": {
               "fontSize": true
