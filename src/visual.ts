@@ -2,31 +2,48 @@
  * @upsetjs/powerbi_visuals
  * https://github.com/upsetjs/upsetjs_powerbi_visuals
  *
- * Copyright (c) 2021 Samuel Gratzl <sam@sgratzl.com>
+ * Copyright (c) 2025 Samuel Gratzl <sam@sgratzl.com>
  */
 
-import { boxplotAddon, categoricalAddon, render, renderSkeleton, UpSetProps } from '@upsetjs/bundle';
-import type powerbi from 'powerbi-visuals-api';
+import type { UpSetProps } from "@upsetjs/bundle";
+import {
+  boxplotAddon,
+  categoricalAddon,
+  render,
+  renderSkeleton,
+} from "@upsetjs/bundle";
+import type powerbi from "powerbi-visuals-api";
 import {
   extractElems,
   resolveSelection,
   resolveElementsFromSelection,
   createColorResolver,
   extractSetsAndCombinations,
-} from './utils/model';
-import { OnHandler, createTooltipHandler, createContextMenuHandler, createSelectionHandler } from './utils/handler';
-import { UpSetCategoricalAttribute, UpSetNumericAttribute, isNumeric } from './utils/attributes';
-import VisualSettings, { UpSetThemeSettings } from './VisualSettings';
-import type { IPowerBIElem, IPowerBIElems } from './utils/interfaces';
-import { UniqueColorPalette } from './utils/UniqueColorPalette';
+} from "./utils/model";
+import type { OnHandler } from "./utils/handler";
+import {
+  createTooltipHandler,
+  createContextMenuHandler,
+  createSelectionHandler,
+} from "./utils/handler";
+import {
+  UpSetCategoricalAttribute,
+  UpSetNumericAttribute,
+  isNumeric,
+} from "./utils/attributes";
+import VisualFormattingSettingsModel from "./VisualFormattingSettingsModel";
+import type { IPowerBIElem, IPowerBIElems } from "./utils/interfaces";
+import { UniqueColorPalette } from "./utils/UniqueColorPalette";
+import { FormattingSettingsService } from "powerbi-visuals-utils-formattingmodel";
 
-const EMPTY_ARRAY: any[] = [];
+const EMPTY_ARRAY: unknown[] = [];
 
-export class Visual implements powerbi.extensibility.visual.IVisual {
+export class UpSetPlot implements powerbi.extensibility.visual.IVisual {
   private readonly target: HTMLElement;
-  private settings: VisualSettings = <VisualSettings>VisualSettings.getDefault();
   private readonly selectionManager: powerbi.extensibility.ISelectionManager;
   private readonly host: powerbi.extensibility.visual.IVisualHost;
+  private readonly localizationManager: powerbi.extensibility.ILocalizationManager;
+  private readonly formattingSettingsService: FormattingSettingsService;
 
   private readonly onContextMenu: OnHandler;
   private readonly setSelection: OnHandler;
@@ -34,27 +51,41 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
   private readonly onMouseMove: undefined | OnHandler;
   private readonly colorPalette: UniqueColorPalette;
 
-  private attributes: (UpSetCategoricalAttribute | UpSetNumericAttribute)[] = [];
+  private settings: VisualFormattingSettingsModel;
+  private attributes: (UpSetCategoricalAttribute | UpSetNumericAttribute)[] =
+    [];
   private rows: IPowerBIElems = [];
-  private props: UpSetProps<IPowerBIElem> = { sets: [], width: 100, height: 100 };
+  private props: UpSetProps = { sets: [], width: 100, height: 100 };
 
   constructor(options: powerbi.extensibility.visual.VisualConstructorOptions) {
     this.target = options.element;
+    this.localizationManager = options.host.createLocalizationManager();
+    this.selectionManager = options.host.createSelectionManager();
     this.selectionManager = options.host.createSelectionManager();
     this.colorPalette = new UniqueColorPalette(options.host.colorPalette);
     this.host = options.host;
+    this.formattingSettingsService = new FormattingSettingsService(
+      this.localizationManager,
+    );
+    this.settings = new VisualFormattingSettingsModel();
+    this.settings.theme.applyColorPalette(options.host.colorPalette);
+
     this.renderPlaceholder();
 
-    [this.onHover, this.onMouseMove] = createTooltipHandler(this.target, this.host);
+    [this.onHover, this.onMouseMove] = createTooltipHandler(
+      this.target,
+      this.host,
+      this.localizationManager,
+    );
     this.onContextMenu = createContextMenuHandler(this.selectionManager);
-    this.target.addEventListener('contextmenu', (e) => {
+    this.target.addEventListener("contextmenu", (e) => {
       e.preventDefault();
       this.selectionManager.showContextMenu(
         {},
         {
           x: e.clientX,
           y: e.clientY,
-        }
+        },
       );
     });
     this.setSelection = createSelectionHandler(this.selectionManager, (s) => {
@@ -65,6 +96,20 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
       this.props.selection = resolveElementsFromSelection(ids, this.rows);
       this.render();
     });
+  }
+
+  public getFormattingModel(): powerbi.visuals.FormattingModel {
+    this.settings.setColors.derive(
+      this.props.sets,
+      this.settings.theme.supportIndividualColors(),
+      this.colorPalette,
+    );
+    const categoricalAttributes = this.attributes.filter(
+      (d): d is UpSetCategoricalAttribute =>
+        d instanceof UpSetCategoricalAttribute,
+    );
+    this.settings.attributeColors.derive(categoricalAttributes);
+    return this.formattingSettingsService.buildFormattingModel(this.settings);
   }
 
   private render() {
@@ -85,24 +130,28 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
   }
 
   private renderPlaceholder() {
-    this.target.textContent = '';
-    this.target.style.position = 'relative';
+    this.target.textContent = "";
+    this.target.style.position = "relative";
     renderSkeleton(this.target, {
-      width: '100%',
-      height: '100%',
+      width: "100%",
+      height: "100%",
     });
   }
 
-  private renderImpl(options: powerbi.extensibility.visual.VisualUpdateOptions) {
-    // reset watermark
-    this.settings.license.resetWatermark(this.target);
-
+  private renderImpl(
+    options: powerbi.extensibility.visual.VisualUpdateOptions,
+  ) {
     if (!options.dataViews || options.dataViews.length === 0) {
       this.colorPalette.clear();
       return false;
     }
     const dataView = options.dataViews[0];
-    this.settings = VisualSettings.parse(dataView);
+    this.settings =
+      this.formattingSettingsService.populateFormattingSettingsModel(
+        VisualFormattingSettingsModel,
+        dataView,
+      );
+
     if (!dataView.categorical || !dataView.categorical.categories) {
       this.colorPalette.clear();
       return false;
@@ -128,11 +177,6 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
 
     const { sets, combinations } = this.generateSetsAndCombinations(dataView);
 
-    this.verifyLicense(
-      sets.length,
-      dataView.categorical!.values.reduce((acc, d) => acc + (d.source?.roles?.attributes ? 1 : 0), 0)
-    );
-
     if (sets.length === 0 || combinations.length === 0) {
       this.colorPalette.clear();
       return false;
@@ -144,7 +188,7 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
       combinations,
       dataView.categorical!,
       this.selectionManager,
-      !areDummyValues && this.host.hostCapabilities.allowInteractions === true
+      !areDummyValues && this.host.hostCapabilities.allowInteractions === true,
     );
 
     this.props = Object.assign(
@@ -158,15 +202,20 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
       },
       this.settings.fonts.generate(),
       this.settings.theme.generate(this.colorPalette, dataView.categorical!),
-      this.settings.style
+      this.settings.style.generate(),
     );
 
     if (this.attributes.length === 0) {
-      this.props.setAddons = EMPTY_ARRAY;
-      this.props.combinationAddons = EMPTY_ARRAY;
+      this.props.setAddons = EMPTY_ARRAY as UpSetProps["setAddons"];
+      this.props.combinationAddons =
+        EMPTY_ARRAY as UpSetProps["combinationAddons"];
     } else {
-      this.props.setAddons = this.attributes.map((attr, i) => asAddon(attr, i, false));
-      this.props.combinationAddons = this.attributes.map((attr, i) => asAddon(attr, i, true));
+      this.props.setAddons = this.attributes.map((attr, i) =>
+        asAddon(attr, i, false),
+      );
+      this.props.combinationAddons = this.attributes.map((attr, i) =>
+        asAddon(attr, i, true),
+      );
     }
 
     if (!areDummyValues && this.host.hostCapabilities.allowInteractions) {
@@ -190,15 +239,17 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
 
     const colorResolver = createColorResolver(
       this.colorPalette,
-      settings.theme.supportIndividualColors() ? UpSetThemeSettings.SET_COLORS_OBJECT_NAME : undefined
+      settings.theme.supportIndividualColors()
+        ? this.settings.setColors.toColors()
+        : undefined,
     );
 
     return extractSetsAndCombinations(
       rows,
       dataView.categorical!,
-      this.settings.sets,
+      this.settings.sets.generate(),
       colorResolver,
-      this.deriveOptions()
+      this.deriveOptions(),
     );
   }
 
@@ -215,76 +266,33 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
     const cat = dataView.categorical!.categories![0];
     // we need some offset since individual categories cannot be directly selected just categories rows
     let enumerationOffset = 0;
-    return dataView.categorical!.values
-      ? dataView
-          .categorical!.values.filter((d) => d.source?.roles?.attributes)
-          .map((attr) => {
-            if (isNumeric(attr)) {
-              return new UpSetNumericAttribute(attr);
-            }
-            const c = new UpSetCategoricalAttribute(attr, cat, this.host, enumerationOffset);
-            enumerationOffset += c.categories.length;
-            return c;
-          })
-      : [];
-  }
-
-  private verifyLicense(numSets: number, numAttributes: number) {
-    this.settings.license.updateLicenseState(this.target, this.host, () =>
-      usesProFeatures(numSets, numAttributes, this.settings)
+    const colors = this.settings.attributeColors.toColors();
+    return (
+      dataView.categorical?.values
+        .filter((d) => d.source?.roles?.attributes)
+        .map((attr) => {
+          if (isNumeric(attr)) {
+            return new UpSetNumericAttribute(attr);
+          }
+          const c = new UpSetCategoricalAttribute(
+            attr,
+            cat,
+            this.host,
+            enumerationOffset,
+            colors,
+          );
+          enumerationOffset += c.categories.length;
+          return c;
+        }) ?? []
     );
   }
-
-  /**
-   * This function gets called for each of the objects defined in the capabilities files and allows you to select which of the
-   * objects and properties you want to expose to the users in the property pane.
-   *
-   */
-  enumerateObjectInstances(
-    options: powerbi.EnumerateVisualObjectInstancesOptions
-  ): powerbi.VisualObjectInstance[] | powerbi.VisualObjectInstanceEnumerationObject {
-    if (options.objectName === UpSetThemeSettings.SET_COLORS_OBJECT_NAME) {
-      return this.settings.theme.enumerateSetColors(this.props.sets);
-    }
-    if (options.objectName === UpSetCategoricalAttribute.OBJECT_NAME) {
-      const categoricalAttributes = this.attributes.filter(
-        (d): d is UpSetCategoricalAttribute => d instanceof UpSetCategoricalAttribute
-      );
-      const instances = (<powerbi.VisualObjectInstance[]>[]).concat(
-        ...categoricalAttributes.map((cat) => cat.asPropertyInstance())
-      );
-      return {
-        instances,
-      };
-    }
-    return VisualSettings.enumerateObjectInstances(this.settings, options);
-  }
 }
 
-function usesProFeatures(numSets: number, numAttributes: number, settings: VisualSettings) {
-  if (numSets > 4 || numAttributes > 0) {
-    return true;
-  }
-
-  const theme = settings.theme;
-  if (theme.theme !== 'light') {
-    return true;
-  }
-
-  const combinations = settings.combinations;
-  if (<string>combinations.order !== 'cardinality,name') {
-    return true;
-  }
-
-  const style = settings.style;
-  if (style.numericScale !== 'linear') {
-    return true;
-  }
-
-  return false;
-}
-
-function asAddon(attr: UpSetNumericAttribute | UpSetCategoricalAttribute, i: number, vertical: boolean) {
+function asAddon(
+  attr: UpSetNumericAttribute | UpSetCategoricalAttribute,
+  i: number,
+  vertical: boolean,
+) {
   if (attr instanceof UpSetNumericAttribute) {
     return boxplotAddon(
       (v: IPowerBIElem) => <number>v.attrs[i],
@@ -294,8 +302,8 @@ function asAddon(attr: UpSetNumericAttribute | UpSetCategoricalAttribute, i: num
       },
       {
         name: attr.displayName,
-        orient: vertical ? 'vertical' : 'horizontal',
-      }
+        orient: vertical ? "vertical" : "horizontal",
+      },
     );
   }
   return categoricalAddon(
@@ -305,7 +313,7 @@ function asAddon(attr: UpSetNumericAttribute | UpSetCategoricalAttribute, i: num
     },
     {
       name: attr.displayName,
-      orient: vertical ? 'vertical' : 'horizontal',
-    }
+      orient: vertical ? "vertical" : "horizontal",
+    },
   );
 }
