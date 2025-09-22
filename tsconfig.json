@@ -9,7 +9,6 @@
     "moduleResolution": "node",
     "declaration": true,
     "lib": ["es2015", "dom"],
-    "resolveJsonModule": true,
     "baseUrl": "./",
     "paths": {
       "@": ["./"],
@@ -28,5 +27,5 @@
     "noFallthroughCasesInSwitch": true,
     "esModuleInterop": true
   },
-  "files": ["./src/visual.ts"]
+  "files": ["src/visual.ts"]
 }
