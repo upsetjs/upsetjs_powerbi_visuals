@@ -41,6 +41,7 @@ export class UpSetCategoricalAttribute {
     cat: powerbi.DataViewCategoryColumn,
     host: powerbi.extensibility.visual.IVisualHost,
     offset: number,
+    colors: string[],
   ) {
     this.data = data;
 
@@ -48,16 +49,7 @@ export class UpSetCategoricalAttribute {
       new Set(data.values.map((v) => v.toString())),
     ).sort();
     const resolveColor = (i: number, value: string) => {
-      // FIXME
-      if (cat.objects && cat.objects[i]) {
-        const c = (<powerbi.Fill>(
-          cat.objects[i][UpSetCategoricalAttribute.OBJECT_NAME].fill
-        )).solid!.color!;
-        if (c) {
-          return c;
-        }
-      }
-      return host.colorPalette.getColor(value).value;
+      return colors[offset + i] ?? host.colorPalette.getColor(value).value;
     };
     // selector c
     this.categories = categories.map((value, i) => {

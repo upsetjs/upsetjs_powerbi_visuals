@@ -266,6 +266,7 @@ export class UpSetPlot implements powerbi.extensibility.visual.IVisual {
     const cat = dataView.categorical!.categories![0];
     // we need some offset since individual categories cannot be directly selected just categories rows
     let enumerationOffset = 0;
+    const colors = this.settings.attributeColors.toColors();
     return (
       dataView.categorical?.values
         .filter((d) => d.source?.roles?.attributes)
@@ -278,6 +279,7 @@ export class UpSetPlot implements powerbi.extensibility.visual.IVisual {
             cat,
             this.host,
             enumerationOffset,
+            colors,
           );
           enumerationOffset += c.categories.length;
           return c;
