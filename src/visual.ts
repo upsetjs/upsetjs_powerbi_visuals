@@ -266,23 +266,23 @@ export class UpSetPlot implements powerbi.extensibility.visual.IVisual {
     const cat = dataView.categorical!.categories![0];
     // we need some offset since individual categories cannot be directly selected just categories rows
     let enumerationOffset = 0;
-    return dataView.categorical!.values
-      ? dataView
-          .categorical!.values.filter((d) => d.source?.roles?.attributes)
-          .map((attr) => {
-            if (isNumeric(attr)) {
-              return new UpSetNumericAttribute(attr);
-            }
-            const c = new UpSetCategoricalAttribute(
-              attr,
-              cat,
-              this.host,
-              enumerationOffset,
-            );
-            enumerationOffset += c.categories.length;
-            return c;
-          })
-      : [];
+    return (
+      dataView.categorical?.values
+        .filter((d) => d.source?.roles?.attributes)
+        .map((attr) => {
+          if (isNumeric(attr)) {
+            return new UpSetNumericAttribute(attr);
+          }
+          const c = new UpSetCategoricalAttribute(
+            attr,
+            cat,
+            this.host,
+            enumerationOffset,
+          );
+          enumerationOffset += c.categories.length;
+          return c;
+        }) ?? []
+    );
   }
 }
 
