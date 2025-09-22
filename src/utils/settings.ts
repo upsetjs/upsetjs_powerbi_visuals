@@ -179,17 +179,17 @@ export class ThemeCardSettings extends SimpleCard {
   });
   public hoverHintColor = new ColorPicker({
     name: "hoverHintColor",
-    displayNameKey: "Theme_HoverHintColor_DisplayName",
+    displayNameKey: "Theme_Hover_Hint_Color_DisplayName",
     value: { value: defaults.hoverHintColor },
   });
   public notMemberColor = new ColorPicker({
     name: "notMemberColor",
-    displayNameKey: "Theme_NotMemberColor_DisplayName",
+    displayNameKey: "Theme_Not_Member_Color_DisplayName",
     value: { value: defaults.notMemberColor },
   });
   public alternatingBackgroundColor = new ColorPicker({
     name: "alternatingBackgroundColor",
-    displayNameKey: "Theme_AlternatingBackgroundColor_DisplayName",
+    displayNameKey: "Theme_Alternating_Background_Color_DisplayName",
     value: {
       value:
         defaults.alternatingBackgroundColor == false
