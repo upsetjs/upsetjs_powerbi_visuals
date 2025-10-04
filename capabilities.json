@@ -4,17 +4,19 @@
       "name": "elements",
       "displayName": "Elements",
       "displayNameKey": "Role_Elements",
+      "description": "exactly one grouping representing the list of elements that are synced",
       "descriptionKey": "Role_Elements_Desc",
       "kind": "Grouping",
-      "preferredTypes": [{ "text": true }, { "integer": true }]
+      "requiredTypes": [{ "text": true }, { "integer": true }]
     },
     {
       "name": "sets",
-      "displayName": "Set",
+      "displayName": "Sets",
       "displayNameKey": "Role_Sets",
+      "description": "one or more grouping or measures where each is interpreted as a set, a trueish value in row i is interpreted that the corresponding element i is part of this set",
       "descriptionKey": "Role_Sets_Desc",
       "kind": "GroupingOrMeasure",
-      "preferredTypes": [{ "bool": true }, { "integer": true }]
+      "requiredTypes": [{ "bool": true }, { "integer": true }]
     },
     {
       "name": "attributes",
@@ -22,7 +24,7 @@
       "displayNameKey": "Role_Attributes",
       "descriptionKey": "Role_Attributes_Desc",
       "kind": "Measure",
-      "preferredTypes": [
+      "requiredTypes": [
         {
           "numeric": true
         },
@@ -38,9 +40,10 @@
       "name": "counts",
       "displayName": "Cardinality Expression Measure",
       "displayNameKey": "Role_Counts",
+      "description": "numerical measure defining the number of elements in the set, see also expression input",
       "descriptionKey": "Role_Counts_Desc",
       "kind": "Measure",
-      "preferredTypes": [{ "numeric": true }, { "integer": true }]
+      "requiredTypes": [{ "numeric": true }, { "integer": true }]
     }
   ],
   "dataViewMappings": [
